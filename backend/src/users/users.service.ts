@@ -1,50 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from './users.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
-  ) {}
+  constructor(@InjectModel(Users.name) private userModel: Model<UsersDocument>) {}
 
-  // Fetch all users
-  async getAllUsers(): Promise<Users[]> {
+  async findAll(): Promise<Users[]> {
     return this.userModel.find().exec();
   }
 
-  // Fetch a user by ID
-  async getUserById(id: string): Promise<Users> {
-    const user = await this.userModel.findById(id).exec();
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return user;
+  async findOneByUsername(username: string): Promise<Users | null> {
+    return this.userModel.findOne({ username }).lean().exec(); // Using lean to return a plain object
   }
 
-  // Create a new user
-  async createUser(userData: Partial<Users>): Promise<Users> {
-    const newUser = new this.userModel(userData);
-    return newUser.save();
+  async create(createUserDto: Users): Promise<Users> {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const user = new this.userModel({ ...createUserDto, password: hashedPassword });
+    return user.save();
   }
 
-  // Update a user by ID
-  async updateUser(id: string, updateData: Partial<Users>): Promise<Users> {
-    const updatedUser = await this.userModel
-      .findByIdAndUpdate(id, updateData, { new: true })
-      .exec();
-    if (!updatedUser) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
-    return updatedUser;
+  async update(username: string, updateUserDto: Partial<Users>): Promise<Users> {
+    return this.userModel.findOneAndUpdate({ username }, updateUserDto, { new: true }).exec();
   }
 
-  // Delete a user by ID
-  async deleteUser(id: string): Promise<void> {
-    const result = await this.userModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException(`User with ID ${id} not found`);
-    }
+  async remove(username: string): Promise<void> {
+    await this.userModel.deleteOne({ username }).exec();
   }
 }

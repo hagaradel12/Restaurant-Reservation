@@ -6,7 +6,7 @@ export type UsersDocument = Users & Document;
 @Schema()
 export class Users {
   @Prop({ required: true })
-  Name: string;
+  name: string;
 
   @Prop({ required: true })
   isAdmin: boolean;
@@ -18,7 +18,7 @@ export class Users {
   password: string;
 
   @Prop({ required: true })
-  PhoneNo: string;
+  phoneNo: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

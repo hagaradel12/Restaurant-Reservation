@@ -1,41 +1,44 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Users } from './users.schema';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { CreateUserDto, UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-  // Get all users
   @Get()
-  async getAllUsers(): Promise<Users[]> {
-    return this.userService.getAllUsers();
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin') // Only admin can view all users
+  findAll(): Promise<Users[]> {
+    return this.usersService.findAll();
   }
-
-  // Get a user by ID
-  @Get(':id')
-  async getUserById(@Param('id') id: string): Promise<Users> {
-    return this.userService.getUserById(id);
+//user or admin can get by their username since it will actually be passed from the token (uses: profile)
+  @Get(':username')
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('username') username: string): Promise<Users> {
+    return this.usersService.findOneByUsername(username);
   }
-
-  // Create a new user
+//(create for admin and user)
   @Post()
-  async createUser(@Body() userData: Partial<Users>): Promise<Users> {
-    return this.userService.createUser(userData);
+//  @UseGuards(JwtAuthGuard)
+  create(@Body() createUserDto: CreateUserDto): Promise<Users> {
+    return this.usersService.create(createUserDto);
+  }
+//change user data for admin or user
+  @Patch(':username')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  update(@Param('username') username: string, @Body() updateUserDto: UpdateUserDto): Promise<Users> {
+    return this.usersService.update(username, updateUserDto);
   }
 
-  // Update a user by ID
-  @Put(':id')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() updateData: Partial<Users>,
-  ): Promise<Users> {
-    return this.userService.updateUser(id, updateData);
-  }
-
-  // Delete a user by ID
-  @Delete(':id')
-  async deleteUser(@Param('id') id: string): Promise<void> {
-    return this.userService.deleteUser(id);
+  //delete, for user it will choose username in token, for admin it will display input for admin to delete any user
+  @Delete(':username')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  remove(@Param('username') username: string): Promise<void> {
+    return this.usersService.remove(username);
   }
 }
