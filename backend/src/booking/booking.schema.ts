@@ -6,9 +6,6 @@ export type BookingDocument = Booking & Document;
 @Schema()
 export class Booking {
   @Prop({ required: true })
-  customer_name: string;
-
-  @Prop({ required: true })
   no_of_people: number;
 
   @Prop({ required: true })

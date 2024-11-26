@@ -5,6 +5,9 @@ export type OrdersDocument = Orders & Document;
 
 @Schema()
 export class Orders {
+  @Prop({ required: true })
+  orderNo: number;
+  
  @Prop({ type: [{ type:mongoose.Schema.Types.ObjectId, ref: 'products' }] })
   products: Products[];
 
