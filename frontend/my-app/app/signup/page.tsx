@@ -1,5 +1,4 @@
-"use client"; // Mark the component as client-side
-
+"use client"
 import { useState } from "react";
 import Link from "next/link";
 
@@ -12,27 +11,54 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
   const [isAdmin, setIsAdmin] = useState(false); // Handle the isAdmin checkbox state
   const [error, setError] = useState(""); // To manage error messages
+  const [isLoading, setIsLoading] = useState(false); // For loading state
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Log the form data (this can be sent to the backend)
-    console.log({
+    // Prepare the user data
+    const userData = {
       fullName,
       phoneNo,
       username,
       password,
       isAdmin,
-    });
+    };
 
-    // Optionally, redirect to the login page or handle form processing
+    setIsLoading(true);
+
+    try {
+      // Send data to the backend
+      const response = await fetch('http://localhost:3000/register', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Handle success (you can redirect to login or display a success message)
+        alert('Registration successful!');
+      } else {
+        // Handle error
+        setError(result.message || 'An error occurred');
+      }
+    } catch (err) {
+      console.error('Error during registration:', err);
+      setError('An error occurred during registration');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Handle checkbox toggle
@@ -50,6 +76,7 @@ const SignupPage = () => {
 
           {/* Sign Up Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Form Fields */}
             <div>
               <label htmlFor="fullName" className="block text-sm font-medium text-black">Full Name</label>
               <input
@@ -130,8 +157,9 @@ const SignupPage = () => {
             <button
               type="submit"
               className="w-full px-6 py-3 bg-[#C9A47F] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
+              disabled={isLoading}
             >
-              Sign Up
+              {isLoading ? 'Registering...' : 'Sign Up'}
             </button>
           </form>
 
