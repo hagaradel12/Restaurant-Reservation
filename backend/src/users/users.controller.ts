@@ -25,7 +25,7 @@ export class UsersController {
 //(create for admin and user)
   @Post()
 //  @UseGuards(JwtAuthGuard)
-  create(@Body() createUserDto: CreateUserDto): Promise<Users> {
+  create(@Body() createUserDto: any): Promise<Users> {
     return this.usersService.create(createUserDto);
   }
 //change user data for admin or user
@@ -40,5 +40,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   remove(@Param('username') username: string): Promise<void> {
     return this.usersService.remove(username);
+  }
+  @Get(':email')
+  @UseGuards(JwtAuthGuard)
+  findOneEmail(@Param('email') email: string): Promise<Users> {
+    return this.usersService.findOneByemail(email);
   }
 }
