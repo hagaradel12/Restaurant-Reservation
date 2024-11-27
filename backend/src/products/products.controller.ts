@@ -34,5 +34,10 @@ async updateProduct(
 ): Promise<Products> {
   return this.productsService.update(productCode, updateProductDto);
 }
-
+//GET: get a product by its name 
+@Get(':name')
+  async getProductByName(@Param('name')name:string){
+    const product =await this.productsService.findByName(name);
+    return product;
+  }
 }

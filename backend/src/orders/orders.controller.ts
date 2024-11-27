@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post ,Put} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post ,Put,Get} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { Orders } from './orders.schema';
 import { CreateOrderDto } from './dto/CreateOrder.dto';
@@ -24,4 +24,10 @@ export class OrdersController {
  async update(@Param('orderNo') orderNo: number, @Body() updateOrderStatusDto: UpdateOrderStatusDto): Promise<Orders> {
    return this.ordersService.update(orderNo, updateOrderStatusDto);
  }
+  //get an order by its number 
+  @Get(':orderNo')
+  async getOrder(@Param('orderNo')orderNo: number){
+    const order =await this.ordersService.findByNumber(orderNo);
+    return order;
+  }
 }
