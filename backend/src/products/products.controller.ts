@@ -5,7 +5,6 @@ import { Products } from './products.schema';
 import { CreateProductDto } from './dto/create.dto';
 import { UpdateProductDto } from './dto/update.dto';
 
-
 @Controller('products')
 export class ProductsController {
 constructor(private productsService: ProductsService){}
@@ -30,9 +29,14 @@ async deleteProduct(@Param('productCode') productCode: number): Promise<Products
 @Put(':productCode')
 async updateProduct(
   @Param('productCode') productCode: number,
-  @Body() updateProductDto: UpdateProductDto,
-): Promise<Products> {
+  @Body() updateProductDto: UpdateProductDto,): Promise<Products> {
   return this.productsService.update(productCode, updateProductDto);
 }
 
+//GET: get a product by its name 
+@Get(':name')
+  async getProductByName(@Param('name') name:string){
+    const product =await this.productsService.findByName(name);
+    return product;
+  }
 }

@@ -42,4 +42,12 @@ export class ProductsService {
         }
         return updatedProduct;
     }
+    //get a product 
+    async findByName(name: string): Promise<Products> {
+        const product = await this.productModel.findOne({ name }).exec();
+    if (!product) {
+      throw new NotFoundException("product with the name ${name} not found");
+    }
+    return product;
+}
 }
