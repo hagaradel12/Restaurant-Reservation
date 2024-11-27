@@ -29,4 +29,8 @@ export class UsersService {
   async remove(username: string): Promise<void> {
     await this.userModel.deleteOne({ username }).exec();
   }
+   //for regiseration check
+   async findOneByemail(email: string): Promise<Users | null> {
+    return this.userModel.findOne({ email }).lean().exec(); 
+  }
 }
