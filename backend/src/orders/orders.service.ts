@@ -35,10 +35,10 @@ async deleteOrder(orderNo: number): Promise<Orders> {
   }
 
   //find an order by order no 
-  async findByNumber(OrderNo: number): Promise<Orders> {
-    const order= await this.orderModel.findOne({ OrderNo }).exec();
+  async findByNumber(orderNo: number): Promise<Orders> {
+    const order= await this.orderModel.findOne({ orderNo }).exec();
     if (!order) {
-      throw new NotFoundException("Order with number ${OrderNo} not found");
+      throw new NotFoundException("Order with number ${orderNo} not found");
     }
     return order; 
 }
