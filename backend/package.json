@@ -35,7 +35,7 @@
     "class-validator": "^0.14.1",
     "core-util-is": "^1.0.3",
     "mongodb": "^5.9.2",
-    "mongoose": "^8.8.2",
+    "mongoose": "^8.8.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.13.1",
