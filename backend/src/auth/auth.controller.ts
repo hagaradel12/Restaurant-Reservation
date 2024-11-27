@@ -13,21 +13,20 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
   @Post('register')
-  async register(@Body() registerDto: RegisterDto){
-    try{
+  async register(@Body() registerDto: RegisterDto) {
+    try {
       const result = await this.authService.register(registerDto);
-      return{
-        statusCode:HttpStatus.CREATED,
-        message:'User registered successfully',
-        data: result 
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'User registered successfully',
+        data: result,
       };
-
-    }catch(err){
-      if(err.status==409){
+    } catch (err) {
+      if (err.status === 409) {
         throw new HttpException(
           {
             statusCode: HttpStatus.CONFLICT,
-            message:'User alerady registered'
+            message: 'User already registered',
           },
           HttpStatus.CONFLICT,
         );
