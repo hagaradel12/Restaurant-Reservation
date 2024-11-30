@@ -1,57 +1,79 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { LoginDto } from './dto/login.dto';
-import bcrypt from 'bcrypt';
+import { UsersService } from 'src/users/users.service';
 import { RegisterDto } from './dto/register.dto';
-
+import { createDto } from 'src/users/dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { LoginDto } from './dto/login.dto';
+import * as dotenv from 'dotenv';
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+    constructor(
+        private usersService: UsersService,
+        private jwtService: JwtService,
+      ) {}
 
-  // Validate user login based on username and password
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneByUsername(username);
-    if (user && await bcrypt.compare(pass, user.password)) {
-      const { password, ...result } = user;  // No need to use toObject() when using lean()
-      return result;
-    }
-    return null;
-  }
+      async register(user: RegisterDto): Promise<string> {
+        const existingUser = await this.usersService.findOneByemail(user.email);
+        if (existingUser) {
+          throw new ConflictException('Email already exists');
+        }
+    
+        // Hash password before saving
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+    
+        // Create a new user object for saving
+        const newUser: createDto = {
+          ...user,
+          password: hashedPassword, // Correct field name
+        };
+    
+        // Save the new user to the database
+        await this.usersService.create(newUser);
+    
+        return 'Registered successfully';
+      }
+      
+      async login(loginDto: LoginDto) {
+        const { username, password } = loginDto;
+      
+        // Log username for debugging
+        console.log(`Attempting login for username: ${username}`);
+      
+        // Find user by username
+        const user = await this.usersService.findOneByUsername(username);
+        if (!user) {
+          console.error(`User not found for username: ${username}`);
+          throw new NotFoundException('User not found');
+        }
+      
+        console.log('Password Provided:', password);
+        console.log('Password Stored:', user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Password Validation Result:', isPasswordValid);
+        if (!isPasswordValid) {
+          console.error(`Invalid password for user: ${username}`);
+          throw new UnauthorizedException('Invalid credentials');
+        }
+      
+        console.log(`User authenticated: ${username}, generating token...`);
+      
+        // JWT payload
+        const payload = { username: user.username, role: user.isAdmin };
+        console.log("payload met");
+        // Debugging JWT configuration
+        const secret = process.env.JWT_SECRET || 'yourSuperSecretKey';
+        const expiresIn = process.env.JWT_EXPIRES_IN || '1h';
+        console.log('JWT Configuration:', { secret, expiresIn });
+      
+        // Generate token
+        const token = await this.jwtService.signAsync(payload, { expiresIn });
+        console.log('Generated token:', token);
+      
+        return {
+          access_token: token,
+          payload,
+        };
 
-  // Generate JWT token with username and isAdmin
-  async login(loginDto: LoginDto) {
-    const user = await this.usersService.findOneByUsername(loginDto.username);
-
-    if (!user) {
-      throw new Error('Invalid username or password');
-    }
-
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Invalid username or password');
-    }
-
-    const payload = { username: user.username, isAdmin: user.isAdmin };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
-  }
-  async register(user:RegisterDto):Promise<string>{
-    const existingUser = await this.usersService.findOneByemail(user.email);
-    if(existingUser){
-      throw new ConflictException('email already exists');
-    }
-    const hashedPassword =await bcrypt.hash(user.password,10);
-    const newUser: RegisterDto ={...user,
-
-    password:hashedPassword,
-   
-  };
-    await this.usersService.create(newUser);
-    return 'registerd successfully';
 }
 }

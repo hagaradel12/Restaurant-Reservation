@@ -9,11 +9,14 @@ import { CreateBookingDto } from './dto/CreateBooking.dto';
 export class BookingService {
     constructor(
         @InjectModel(Booking.name) private bookingModel: Model<Booking> ) {}
- //Get: final all booking                                                      //ADMIN
-        async findAll(): Promise<Booking[]> {
-            return this.bookingModel.find().exec();
-          }
- //GET:booking by username                                                     //ADMIN
+  // Get: final all booking (ADMIN)
+  async findAllAdmin(): Promise<Booking[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
+    return this.bookingModel.find({ Date: { $gte: today } }).exec();
+  }
+
+ //GET:booking by username                                                     //ADMIN &client by token?
    async findByUsername(username: string): Promise<Booking[]> {
     const booking = await this.bookingModel.find({ username }).exec();
     if (!booking) {

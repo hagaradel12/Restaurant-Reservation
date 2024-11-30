@@ -1,11 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import mongoose from 'mongoose';
 import { Products } from 'src/products/products.schema';
 
-export type OrdersDocument = Orders & Document;
+
 
 @Schema()
+
 export class Orders {
+
+  @Prop({ required: true })
+  orderNo: Number;
+
  @Prop({ type: [{ type:mongoose.Schema.Types.ObjectId, ref: 'products' }] })
   products: Products[];
 

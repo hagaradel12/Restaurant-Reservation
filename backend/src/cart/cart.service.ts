@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { Cart, CartDocument } from './cart.schema';
-import { Products, ProductsDocument } from 'src/products/products.schema';
+import { Cart } from './cart.schema';
+import { Products} from 'src/products/products.schema';
 
 @Injectable()
 export class CartService {
   constructor(
-    @InjectModel(Cart.name) private readonly cartModel: Model<CartDocument>,
-    @InjectModel(Products.name) private readonly productModel: Model<ProductsDocument>,
+    @InjectModel(Cart.name) private readonly cartModel: Model<Cart>,
+    @InjectModel(Products.name) private readonly productModel: Model<Products>,
   ) {}
 
   // Get the user's cart from username extracted from token, called when user clicks on go to cart
