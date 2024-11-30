@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { UsersModule } from '../users/users.module';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt.strategy';
+import { AuthController } from './auth.controller';
+import { UsersModule } from 'src/users/users.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [
-    JwtModule.register({
-      secret: 'yourSecretKey', // use environment variable for production
-      signOptions: { expiresIn: '1d' },
-    }),
-    UsersModule,
-  ],
+  providers: [AuthService],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  imports:[UsersModule, JwtModule.register({
+    global:true,
+    secret:process.env.JWT_SECRET,
+    signOptions:{expiresIn:process.env.JWT_EXPIRES_IN},
+  })]
 })
 export class AuthModule {}

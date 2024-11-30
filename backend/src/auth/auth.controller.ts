@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, HttpException, ConflictException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -22,11 +22,12 @@ export class AuthController {
         data: result,
       };
     } catch (err) {
-      if (err.status === 409) {
+      console.error(err);  // Log the error for debugging
+      if (err instanceof ConflictException) {
         throw new HttpException(
           {
             statusCode: HttpStatus.CONFLICT,
-            message: 'User already registered',
+            message: err.message,
           },
           HttpStatus.CONFLICT,
         );
@@ -40,4 +41,5 @@ export class AuthController {
       );
     }
   }
+  
 }
