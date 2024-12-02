@@ -19,7 +19,7 @@ const Navbar = () => {
             <Link href="/book" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Book</Link> {/* Soft Ivory Text and Mint Green Hover */}
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/orders" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">My Orders</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/orders" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">My Orders</Link> {/* Soft Ivory Text and Mint Green Hover */}
           </h3>
           <h3 className="text-xl font-medium">
             <Link href="/signout" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Sign Out</Link> {/* Soft Ivory Text and Mint Green Hover */}

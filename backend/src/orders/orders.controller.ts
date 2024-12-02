@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post ,Put,Get, UseGuards} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post ,Put,Get, UseGuards, Req} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { Orders } from './orders.schema';
 import { CreateOrderDto } from './dto/CreateOrder.dto';
@@ -23,12 +23,25 @@ export class OrdersController {
  }
 
  // PUT /order/:orderNo: Update an existing order by its orderNo
- @Put(':orderNo')
- @Roles(Role.Admin)
+  @Put('update/:orderNo')
+  async updateStatus(
+    @Param('orderNo') orderNo: number,
+    @Body() updateOrderStatusDto: UpdateOrderStatusDto,
+    @Req() req: any // assuming the user’s token is in the request
+  ) {
+    const username = req.user.username; // You need to extract username from the JWT
+    return this.ordersService.updateStatus(orderNo, updateOrderStatusDto, username);
+  }
+
+  @Put('admin/update/:orderNo')
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard, AuthorizationGuard)
- async update(@Param('orderNo') orderNo: number, @Body() updateOrderStatusDto: UpdateOrderStatusDto): Promise<Orders> {
-   return this.ordersService.update(orderNo, updateOrderStatusDto);
- }
+  async updateByAdmin(
+    @Param('orderNo') orderNo: number,
+    @Body() updateOrderStatusDto: UpdateOrderStatusDto
+  ) {
+    return this.ordersService.update(orderNo, updateOrderStatusDto);
+  }
   //get an order by its number 
   @Get(':orderNo')
   @Roles(Role.Admin)

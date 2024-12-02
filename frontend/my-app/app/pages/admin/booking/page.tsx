@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation'; // Import from next/navigation
-import Sidebar from '@/components/admin/sidebar/Sidebar'; 
+import Sidebar from '@/app/components/admin/sidebar/page'; 
 
 export default function BookingPage() {
   const router = useRouter(); // Using the router hook from next/router

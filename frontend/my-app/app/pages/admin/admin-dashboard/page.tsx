@@ -3,7 +3,7 @@
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import Sidebar from "@/components/admin/sidebar/Sidebar"; 
+import Sidebar from "@/app/components/admin/sidebar/page"; 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 

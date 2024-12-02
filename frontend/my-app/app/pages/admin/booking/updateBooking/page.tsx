@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importing useRouter from next/navigation
-import Sidebar from '@/components/admin/sidebar/Sidebar'; 
+import Sidebar from '@/app/components/admin/sidebar/page'; 
 
 export default function UpdateBookingPage() {
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
