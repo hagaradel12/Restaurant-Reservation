@@ -3,6 +3,7 @@
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import Sidebar from "@/components/admin/sidebar/Sidebar"; 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -43,35 +44,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-800 p-6">
-        <div className="text-2xl font-bold text-[#C9A47F] mb-6">
-          Restaurant Admin
-        </div>
-        <nav>
-          <ul>
-            <li>
-              <Link href="/admin/dashboard" className="block py-3 hover:bg-gray-700">
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/menu" className="block py-3 hover:bg-gray-700">
-                Menu
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/bookings" className="block py-3 hover:bg-gray-700">
-                Bookings
-              </Link>
-            </li>
-            <li>
-              <Link href="/admin/profile" className="block py-3 hover:bg-gray-700">
-                Profile
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 p-6">
