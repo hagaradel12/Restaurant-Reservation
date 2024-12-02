@@ -11,12 +11,14 @@ constructor(
 ){}
 
  // Create a new order
+ //public
  async createOrder(createOrderDto: CreateOrderDto): Promise<Orders> {
     const newOrder = new this.orderModel(createOrderDto);
     return newOrder.save();
   }
 
 // Delete a order by orderNo
+//Customer
 async deleteOrder(orderNo: number): Promise<Orders> {
     const deletedOrder = await this.orderModel.findByIdAndDelete(orderNo).exec();
     if (!deletedOrder) {
@@ -26,6 +28,7 @@ async deleteOrder(orderNo: number): Promise<Orders> {
   }
 
   // Update an existing order by orderNo
+  //Admin
   async update(orderNo: number, updateOrderStatusDto: UpdateOrderStatusDto): Promise<Orders> {
     const updatedOrder = await this.orderModel.findByIdAndUpdate(orderNo, updateOrderStatusDto, { new: true }).exec();
     if (!updatedOrder) {
@@ -35,6 +38,7 @@ async deleteOrder(orderNo: number): Promise<Orders> {
   }
 
   //find an order by order no 
+  //Admin
   async findByNumber(orderNo: number): Promise<Orders> {
     const order= await this.orderModel.findOne({ orderNo }).exec();
     if (!order) {
@@ -42,5 +46,9 @@ async deleteOrder(orderNo: number): Promise<Orders> {
     }
     return order; 
 }
+  //customer get all his orders
+  async findAll(): Promise<Orders[]> {
+    return this.orderModel.find();
+  }
 
 }
