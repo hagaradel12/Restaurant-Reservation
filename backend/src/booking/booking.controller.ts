@@ -22,8 +22,7 @@ export class BookingController {
     }
 
     // GET /booking/:username: Retrieve bookinga of specifc user                          //ADMIN
-   
-  @Get(':username')
+  @Get('user/:username')
   // @Roles(Role.Admin)
   // @UseGuards(AuthGuard, AuthorizationGuard)
   async findByUsername(@Param('username') username: string): Promise<Booking[]> {
@@ -31,7 +30,7 @@ export class BookingController {
   }
 
   // GET /booking/:username: Retrieve booking of specifc date                          //ADMIN
-  @Get(':date')
+  @Get('date/:date')
   // @Roles(Role.Admin)
   // @UseGuards(AuthGuard, AuthorizationGuard)
   async findByDate(@Param('Date')date:Date): Promise<Booking[]> {
@@ -49,8 +48,7 @@ async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
 }
 
  // PUT /booking/:username:Date Update an existing booking by its username & date           //ADMIN
-
- @Put(':username:Date')
+ @Put(':username/:date')
 //  @Roles(Role.Admin)
 //   @UseGuards(AuthGuard, AuthorizationGuard)
  async update(@Param('username')username: string,  @Param('Date')date:Date, @Body() updateBookingDto: UpdateBookingDto): Promise<Booking> {
@@ -59,7 +57,7 @@ async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
 
 // DELETE /booking/:username:Date Delete an existing booking by its username & date          //ADMIN
  
-@Delete(':username:Date')
+@Delete(':username/:date')
 // @Roles(Role.Admin)
 //   @UseGuards(AuthGuard, AuthorizationGuard)
 async delete(@Param('username')username: string,  @Param('Date')date:Date): Promise<Booking> {
