@@ -1,6 +1,53 @@
+'use client';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import axiosInstance from "@/app/utils/axiosInstance";
 import Link from "next/link";
 
+let backend_url = "http://localhost:3001";
+
+interface LoginResponse {
+  user: {
+    username: string;
+    isAdmin: boolean;
+  };
+  access_token: string; // If your API returns a token as well
+}
+
 const LoginPage = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axiosInstance.post<LoginResponse>(`${backend_url}/auth/login`, {
+        email,
+        password,
+      });
+      const { status, data } = response;
+      console.log("status", response.data);
+
+      if (status === 201) {
+        localStorage.setItem("username", data.user.username);
+        localStorage.setItem("isAdmin", data.user.isAdmin.toString()); // Ensure it's a string
+
+        // Redirect based on admin status
+        if (data.user.isAdmin) {
+          router.push("/admin/dashboard"); // Redirect to admin dashboard
+        } else {
+          router.push("/client/homepage"); // Redirect to client homepage
+        }
+      } else {
+        console.log("Login failed, status not 201");
+        // Optionally set an error message here
+      }
+    } catch (err) {
+      alert("Login failed. Please check your credentials.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[url('/login-bg.jpg')] bg-cover bg-center flex items-center justify-center">
       {/* Overlay */}
@@ -15,7 +62,7 @@ const LoginPage = () => {
           </p>
 
           {/* Login Form */}
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email Address
@@ -24,6 +71,8 @@ const LoginPage = () => {
                 type="email"
                 id="email"
                 placeholder="example@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#C9A47F] focus:border-[#C9A47F]"
               />
             </div>
@@ -36,6 +85,8 @@ const LoginPage = () => {
                 type="password"
                 id="password"
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#C9A47F] focus:border-[#C9A47F]"
               />
             </div>
@@ -50,9 +101,9 @@ const LoginPage = () => {
 
           {/* Signup Link */}
           <p className="mt-6 text-center text-gray-600">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link href="/signup" className="text-[#C9A47F] font-semibold hover:underline">
-                Sign Up
+              Sign Up
             </Link>
           </p>
         </div>

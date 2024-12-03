@@ -1,8 +1,14 @@
-'use client'; // Marks this file as a client-side component
-
+'use client';
+import { useState } from "react";
+import axiosInstance from "@/app/utils/axiosInstance";
+import Link from "next/link";
 import React from 'react';
 import { useRouter } from 'next/navigation'; // Import from next/navigation
 import Sidebar from '@/app/components/admin/sidebar/page'; 
+
+
+let backend_url = "http://localhost:3001";
+
 
 export default function BookingPage() {
   const router = useRouter(); // Using the router hook from next/router
