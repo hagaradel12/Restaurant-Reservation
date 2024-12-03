@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://lojineamer:0000@cluster0.ras61.mongodb.net/Restaurant?retryWrites=true&w=majority'),
+    MongooseModule.forRoot('mongodb+srv://lojineamer:0000@cluster0.ras61.mongodb.net/test?retryWrites=true&w=majority'),
      UsersModule,
     BookingModule,
     ProductsModule,
