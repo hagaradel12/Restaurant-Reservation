@@ -3,16 +3,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Booking } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
+import { CreateBookingDto } from './dto/CreateBooking.dto';
 
 @Injectable()
 export class BookingService {
     constructor(
         @InjectModel(Booking.name) private bookingModel: Model<Booking> ) {}
- //Get: final all booking                                                      //ADMIN
-        async findAll(): Promise<Booking[]> {
-            return this.bookingModel.find().exec();
-          }
- //GET:booking by username                                                     //ADMIN
+  // Get: final all booking (ADMIN)
+  async findAllAdmin(): Promise<Booking[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
+    return this.bookingModel.find({ Date: { $gte: today } }).exec();
+  }
+
+ //GET:booking by username                                                     //ADMIN &client by token?
    async findByUsername(username: string): Promise<Booking[]> {
     const booking = await this.bookingModel.find({ username }).exec();
     if (!booking) {
@@ -21,13 +25,19 @@ export class BookingService {
     return booking;
   }
 
-  //GET: one booking by username and date                                            //ADMIN
-  async findByUsernameAndDate(username: string,date:Date): Promise<Booking> {
-    const booking = await this.bookingModel.findOne({ username,date }).exec();
+  //GET: booking by date                                            //ADMIN
+  async findByDate(date:Date): Promise<Booking[]> {
+    const booking = await this.bookingModel.find(date).exec();
     if (!booking) {
-      throw new NotFoundException(`Booking with username ${username} at ${date} not found`);
+      throw new NotFoundException(`Booking at ${date} not found`);
     }
     return booking;
+  }
+
+   // Create a new booking
+   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+    const newBooking = new this.bookingModel(createBookingDto);
+    return newBooking.save();
   }
 
     // PUT:Update an existing booking by title & date                                //ADMIN

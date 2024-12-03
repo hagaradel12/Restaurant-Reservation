@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Products } from './products.schema';
-
+import { CreateProductDto } from './dto/create.dto';
+import { UpdateProductDto } from './dto/update.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -11,9 +13,30 @@ constructor(private productsService: ProductsService){}
 async getAllProducts():Promise<Products[]>{
     return await this.productsService.findAll();
 }
-    @Post()
-    async createProduct(@Body() productData: Products){
-        return await this.productsService.create(productData);
-    }
+// POST: Create a new product
+@Post()
+async createProduct(@Body() createProductDto: CreateProductDto): Promise<Products> {
+  return await this.productsService.createProduct(createProductDto);
+}
 
+// DELETE: Delete a product by its productCode
+@Delete(':productCode')
+async deleteProduct(@Param('productCode') productCode: number): Promise<Products> {
+  return this.productsService.deleteProduct(productCode);
+}
+
+// PUT: Update an existing product by its productCode
+@Put(':productCode')
+async updateProduct(
+  @Param('productCode') productCode: number,
+  @Body() updateProductDto: UpdateProductDto,): Promise<Products> {
+  return this.productsService.update(productCode, updateProductDto);
+}
+
+//GET: get a product by its name 
+@Get(':name')
+  async getProductByName(@Param('name') name:string){
+    const product =await this.productsService.findByName(name);
+    return product;
+  }
 }

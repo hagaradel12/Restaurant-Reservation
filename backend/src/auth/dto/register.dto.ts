@@ -1,9 +1,9 @@
-
+import {Role} from 'src/auth/decorators/role.decorator'
 export class RegisterDto{
-    email:string;
     name:string;
-    password:string;
+    email:string;
     username:string;
-    phoneNo:string;
+    password:string;
     isAdmin:boolean;
+    phoneNo:string;
 }

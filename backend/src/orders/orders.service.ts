@@ -33,4 +33,14 @@ async deleteOrder(orderNo: number): Promise<Orders> {
     }
     return updatedOrder;
   }
+
+  //find an order by order no 
+  async findByNumber(orderNo: number): Promise<Orders> {
+    const order= await this.orderModel.findOne({ orderNo }).exec();
+    if (!order) {
+      throw new NotFoundException("Order with number ${orderNo} not found");
+    }
+    return order; 
+}
+
 }

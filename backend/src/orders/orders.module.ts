@@ -6,7 +6,7 @@ import { Orders, OrdersSchema } from './orders.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'Orders', schema: OrdersSchema }])
+    MongooseModule.forFeature([{ name: Orders.name, schema: OrdersSchema }])
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
