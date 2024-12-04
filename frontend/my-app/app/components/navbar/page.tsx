@@ -10,13 +10,16 @@ const Navbar = () => {
         {/* Menu Links */}
         <div className="flex space-x-6">
           <h3 className="text-xl font-medium">
-            <Link href="/profile" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Profile</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/profile" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Profile</Link> {/* Soft Ivory Text and Mint Green Hover */}
+          </h3>          
+          <h3 className="text-xl font-medium">
+            <Link href="/pages/client/products" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Menu Items</Link> {/* Soft Ivory Text and Mint Green Hover */}
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/menu" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Menu Items</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/cart" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Cart</Link> {/* Soft Ivory Text and Mint Green Hover */}
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/book" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Book</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/bookings" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Book</Link> {/* Soft Ivory Text and Mint Green Hover */}
           </h3>
           <h3 className="text-xl font-medium">
             <Link href="/pages/client/orders" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">My Orders</Link> {/* Soft Ivory Text and Mint Green Hover */}

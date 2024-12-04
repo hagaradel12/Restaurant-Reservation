@@ -2,37 +2,71 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import axios from "axios"; // Import axios for API calls
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const SignupPage = () => {
   // State management for form inputs
-  const [fullName, setFullName] = useState("");
   const [phoneNo, setPhoneNo] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
   const [isAdmin, setIsAdmin] = useState(false); // Handle the isAdmin checkbox state
   const [error, setError] = useState(""); // To manage error messages
+  const [success, setSuccess] = useState(""); // To display success message
+
+  // Initialize useRouter hook
+  const router = useRouter();
+
+  // Base URL for API calls
+  const baseURL = "http://localhost:3001"; // Replace with your backend URL if different
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Log the form data (this can be sent to the backend)
-    console.log({
-      fullName,
+    // Prepare the payload
+    const userData = {
       phoneNo,
       username,
       password,
       isAdmin,
-    });
+      name, 
+      email,
+    };
 
-    // Optionally, redirect to the login page or handle form processing
+    try {
+      // Make the API call
+      const response = await axios.post(`${baseURL}/auth/register`, userData);
+
+      // Handle success response
+      setSuccess("Registration successful!");
+      setError(""); // Clear any previous errors
+      console.log("User registered:", response.data);
+
+      // Redirect to login page after successful registration
+      router.push("/pages/auth/login"); // Adjust the path if needed
+
+    } catch (error) {
+      // Narrow down the error type
+      if (axios.isAxiosError(error)) {
+        // Handle Axios-specific error
+        setError(error.response?.data?.message || "Something went wrong");
+      } else {
+        // Handle generic error
+        setError("An unexpected error occurred");
+      }
+      setSuccess(""); // Clear any previous success messages
+      console.error("Registration error:", error);
+    }
   };
 
   // Handle checkbox toggle
@@ -51,13 +85,25 @@ const SignupPage = () => {
           {/* Sign Up Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-black">Full Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-black">Full Name</label>
               <input
                 type="text"
-                id="fullName"
+                id="name"
                 placeholder="John Doe"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#C9A47F] focus:border-[#C9A47F] text-black"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-black">Email</label>
+              <input
+                type="text"
+                id="email"
+                placeholder="JohnDoe123@gmail.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#C9A47F] focus:border-[#C9A47F] text-black"
               />
             </div>
@@ -127,6 +173,9 @@ const SignupPage = () => {
             {/* Error Message */}
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
+            {/* Success Message */}
+            {success && <p className="text-green-500 text-sm mt-2">{success}</p>}
+
             <button
               type="submit"
               className="w-full px-6 py-3 bg-[#C9A47F] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
@@ -138,8 +187,8 @@ const SignupPage = () => {
           {/* Login Link */}
           <p className="mt-6 text-center text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#C9A47F] font-semibold hover:underline">
-                Login
+            <Link href="/pages/auth/login" className="text-[#C9A47F] font-semibold hover:underline">
+              Login
             </Link>
           </p>
         </div>
