@@ -17,7 +17,7 @@ export class OrdersController {
     return await this.ordersService.createOrder(createOrderDto);
   }
  // DELETE /courses/:course_code: Delete a order by its number
- @Delete(':orderNo')
+ @Delete(':orderNo') 
  async deleteOrder(@Param('orderNo') orderNo: number): Promise<Orders> {
    return this.ordersService.deleteOrder(orderNo);
  }

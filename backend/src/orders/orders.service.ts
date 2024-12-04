@@ -1,13 +1,13 @@
 import { ForbiddenException, Injectable,NotFoundException } from '@nestjs/common';
 import { InjectModel} from '@nestjs/mongoose';
-import { Orders } from './orders.schema';
+import { Orders, OrdersDocument } from './orders.schema';
 import mongoose from 'mongoose'
 import { CreateOrderDto } from './dto/CreateOrder.dto';
 import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
 @Injectable()
 export class OrdersService {
 constructor(
-    @InjectModel(Orders.name)private orderModel: mongoose.Model<Orders>
+    @InjectModel(Orders.name)private orderModel: mongoose.Model<OrdersDocument>
 ){}
 
  // Create a new order
@@ -89,7 +89,7 @@ async update(orderNo: number, updateOrderStatusDto: UpdateOrderStatusDto): Promi
   async findByNumber(orderNo: number): Promise<Orders> {
     const order= await this.orderModel.findOne({ orderNo }).exec();
     if (!order) {
-      throw new NotFoundException("Order with number ${orderNo} not found");
+      throw new NotFoundException(`Order with number ${orderNo} not found`);
     }
     return order; 
 }

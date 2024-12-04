@@ -1,14 +1,13 @@
 import { Injectable ,NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Booking } from './booking.schema';
+import { Booking, bookingDocument } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
 import { CreateBookingDto } from './dto/CreateBooking.dto';
-
 @Injectable()
 export class BookingService {
     constructor(
-        @InjectModel(Booking.name) private bookingModel: Model<Booking> ) {}
+        @InjectModel(Booking.name) private bookingModel: Model<bookingDocument> ) {}
   // Get: final all booking (ADMIN)
   async findAllAdmin(): Promise<Booking[]> {
     const today = new Date();
