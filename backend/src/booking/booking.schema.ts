@@ -7,7 +7,7 @@ export class Booking {
   no_of_people: number;
 
   @Prop({ required: true })
-  date: Date;
+  date: string;
 
   @Prop({ required: true })
   time: string;
@@ -17,6 +17,6 @@ export class Booking {
 }
 
 // The HydratedDocument type is now explicitly used here.
-export type bookingDocument = HydratedDocument<Booking>;
+export type bookingDocument = HydratedDocument<Booking> ;
 
 export const BookingSchema = SchemaFactory.createForClass(Booking);

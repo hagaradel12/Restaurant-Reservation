@@ -46,7 +46,7 @@ const CartPage: React.FC = () => {
     if (!username) return;
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${backend_url}/cart/:hana1`);
+        const response = await axios.get(`${backend_url}/cart/hana1`);
         const fetchedItems = await Promise.all(
           response.data.products.map(async (item: { productId: string; quantity: number }) => {
             try {

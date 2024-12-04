@@ -1,27 +1,47 @@
 'use client';
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import axiosInstance from "@/app/utils/axiosInstance";
 import Link from "next/link";
-import React from 'react';
-import { useRouter } from 'next/navigation'; // Import from next/navigation
-import Sidebar from '@/app/components/admin/sidebar/page'; 
-
+import React from "react";
+import { useRouter } from "next/navigation"; // Import from next/navigation
+import Sidebar from "@/app/components/admin/sidebar/page";
+import axios from "axios";
 
 let backend_url = "http://localhost:3001";
 
+interface Booking {
+  _id: string,
+  no_of_people: number;
+  date: string; // ISO Date format
+  time: string;
+  username: string;
+}
+
 
 export default function BookingPage() {
-  const router = useRouter(); // Using the router hook from next/router
+  const router = useRouter();
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  // Mock bookings data
-  const bookings = [
-    { username: 'John Doe', date: '2024-12-02', time: '18:30', people: 4 },
-    { username: 'Jane Smith', date: '2024-12-03', time: '19:00', people: 2 },
-    { username: 'Mike Johnson', date: '2024-12-05', time: '20:00', people: 6 },
-  ];
+  // Fetch bookings on page load
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await axiosInstance.get(`${backend_url}/booking/`);
+        setBookings(response.data);
+      } catch (error) {
+        console.error("Error fetching bookings:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   const handleUpdate = (bookingId: string) => {
-    router.push(`/pages/admin/booking/updateBooking`); // Redirect to the desired URL
+    router.push(`/pages/admin/booking/updateBooking`);
   };
 
   return (
@@ -53,39 +73,46 @@ export default function BookingPage() {
 
         {/* Bookings Table */}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
-          <table className="w-full">
-            <thead className="bg-[#C6A570] text-white">
-              <tr>
-                <th className="text-left px-4 py-2">Username</th>
-                <th className="text-left px-4 py-2">Date</th>
-                <th className="text-left px-4 py-2">Time</th>
-                <th className="text-left px-4 py-2">No. of People</th>
-                <th className="text-center px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Rendering bookings dynamically */}
-              {bookings.map((booking, index) => (
-                <tr key={index} className="border-t border-[#B1B7B9]">
-                  <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
-                  <td className="px-4 py-2 text-[#3C312C]">{booking.date}</td>
-                  <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
-                  <td className="px-4 py-2 text-[#3C312C]">{booking.people}</td>
-                  <td className="px-4 py-2 text-center">
-                    <button
-                      className="mr-2 px-4 py-2 bg-[#C6A570] text-white rounded-lg hover:bg-[#D47043] transition"
-                      onClick={() => handleUpdate(booking.username)} // Pass booking ID here
-                    >
-                      Update
-                    </button>
-                    <button className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition">
-                      Delete
-                    </button>
-                  </td>
+          {loading ? (
+            <p className="text-center py-6">Loading bookings...</p>
+          ) : bookings.length === 0 ? (
+            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p>
+          ) : (
+            <table className="w-full">
+              <thead className="bg-[#C6A570] text-white">
+                <tr>
+                  <th className="text-left px-4 py-2">Username</th>
+                  <th className="text-left px-4 py-2">Date</th>
+                  <th className="text-left px-4 py-2">Time</th>
+                  <th className="text-left px-4 py-2">No. of People</th>
+                  <th className="text-center px-4 py-2">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {/* Rendering bookings dynamically */}
+                {bookings.map((booking, index) => (
+                  <tr key={booking._id} className="border-t border-[#B1B7B9]">
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">
+      {new Date(booking.date).toLocaleDateString()} {/* Formats date based on locale */}
+    </td>                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        className="mr-2 px-4 py-2 bg-[#C6A570] text-white rounded-lg hover:bg-[#D47043] transition"
+                        onClick={() => handleUpdate(booking.username)}
+                      >
+                        Update
+                      </button>
+                      <button className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

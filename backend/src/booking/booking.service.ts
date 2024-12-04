@@ -9,12 +9,16 @@ export class BookingService {
     constructor(
         @InjectModel(Booking.name) private bookingModel: Model<bookingDocument> ) {}
   // Get: final all booking (ADMIN)
-  async findAllAdmin(): Promise<Booking[]> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
-    return this.bookingModel.find({ Date: { $gte: today } }).exec();
-  }
+  // async findAllAdmin(): Promise<Booking[]> {
+  //   // const today = new Date();
+  //   // today.setHours(0, 0, 0, 0); // Set the time to the start of the day
+  // //  return this.bookingModel.find({ Date: { $gte: today } }).exec();
+  // }
 
+  async findAllAdmin(): Promise<bookingDocument[]> {
+    return this.bookingModel.find().exec();
+  }
+  
  //GET:booking by username                                                     //ADMIN &client by token?
    async findByUsername(username: string): Promise<Booking[]> {
     const booking = await this.bookingModel.find({ username }).exec();
