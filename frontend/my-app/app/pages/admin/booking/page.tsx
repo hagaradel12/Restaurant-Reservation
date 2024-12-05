@@ -1,4 +1,4 @@
-'use client';
+'use client'; // Marks this file as a client-side component
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/app/utils/axiosInstance";
@@ -6,23 +6,22 @@ import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation"; // Import from next/navigation
 import Sidebar from "@/app/components/admin/sidebar/page";
-import axios from "axios";
 
 let backend_url = "http://localhost:3001";
 
 interface Booking {
-  _id: string,
+  _id: string;
   no_of_people: number;
   date: string; // ISO Date format
   time: string;
   username: string;
 }
 
-
 export default function BookingPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // New state for search term
 
   // Fetch bookings on page load
   useEffect(() => {
@@ -40,7 +39,24 @@ export default function BookingPage() {
     fetchBookings();
   }, []);
 
-  const handleUpdate = (bookingId: string) => {
+  // Function to handle search
+  const handleSearch = async () => {
+    if (searchTerm.trim() === "") {
+      // If search term is empty, fetch all bookings
+      const response = await axiosInstance.get(`${backend_url}/booking/`);
+      setBookings(response.data);
+    } else {
+      // If search term exists, fetch bookings by username
+      try {
+        const response = await axiosInstance.get(`${backend_url}/booking/user/${searchTerm}`);
+        setBookings(response.data);
+      } catch (error) {
+        console.error("Error fetching bookings by username:", error);
+      }
+    }
+  };
+
+  const handleNavigateToUpdate = () => {
     router.push(`/pages/admin/booking/updateBooking`);
   };
 
@@ -54,20 +70,26 @@ export default function BookingPage() {
         {/* Page Title */}
         <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">Manage Bookings</h1>
 
-        {/* Search Bar and Button */}
+        {/* Search Bar and Buttons */}
         <div className="mb-6 flex items-center">
           <input
             type="text"
             placeholder="Search by username..."
+            value={searchTerm} // Bind the searchTerm state to the input
+            onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm state on input change
             className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
           />
           <button
             className="ml-4 px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
-            onClick={() => {
-              console.log("Search triggered");
-            }}
+            onClick={handleSearch} // Call handleSearch on button click
           >
             Search
+          </button>
+          <button
+            className="ml-4 px-6 py-2 bg-[#C6A570] text-white rounded-lg hover:bg-[#D47043] transition"
+            onClick={handleNavigateToUpdate}
+          >
+            Update
           </button>
         </div>
 
@@ -90,20 +112,13 @@ export default function BookingPage() {
               </thead>
               <tbody>
                 {/* Rendering bookings dynamically */}
-                {bookings.map((booking, index) => (
+                {bookings.map((booking) => (
                   <tr key={booking._id} className="border-t border-[#B1B7B9]">
                     <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">
-      {new Date(booking.date).toLocaleDateString()} {/* Formats date based on locale */}
-    </td>                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.date}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                     <td className="px-4 py-2 text-center">
-                      <button
-                        className="mr-2 px-4 py-2 bg-[#C6A570] text-white rounded-lg hover:bg-[#D47043] transition"
-                        onClick={() => handleUpdate(booking.username)}
-                      >
-                        Update
-                      </button>
                       <button className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition">
                         Delete
                       </button>
@@ -118,3 +133,4 @@ export default function BookingPage() {
     </div>
   );
 }
+

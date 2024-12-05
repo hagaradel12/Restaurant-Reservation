@@ -34,10 +34,18 @@ export class BookingController {
   @Get('date/:date')
   // @Roles(Role.Admin)
   // @UseGuards(AuthGuard, AuthorizationGuard)
-  async findByDate(@Param('Date')date:Date): Promise<Booking[]> {
+  async findByDate(@Param('Date')date:string): Promise<Booking[]> {
     return this.bookingService.findByDate(date);
   }
-///////NEED TO DO GET ALL BOOKING FOR CLIENT GET username from token
+
+// GET ALL BOOKING FOR CLIENT GET username from token
+@Get('user/:username')
+// @Roles(Role.Customer)
+// @UseGuards(AuthGuard, AuthorizationGuard)
+async findClient(@Param('username') username: string): Promise<Booking[]> {
+  return this.bookingService.findClient(username);
+}
+
 
 // POST /booking: Create a new booking
 
@@ -49,11 +57,11 @@ async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
 }
 
  // PUT /booking/:username:Date Update an existing booking by its username & date           //ADMIN
- @Put(':username/:date')
+ @Put(':username')
 //  @Roles(Role.Admin)
 //   @UseGuards(AuthGuard, AuthorizationGuard)
- async update(@Param('username')username: string,  @Param('Date')date:Date, @Body() updateBookingDto: UpdateBookingDto): Promise<Booking> {
-   return this.bookingService.update(username,date, updateBookingDto);
+ async update(@Param('username')username: string, @Body() updateBookingDto: UpdateBookingDto): Promise<Booking> {
+   return this.bookingService.update(username, updateBookingDto);
  }
 
 // DELETE /booking/:username:Date Delete an existing booking by its username & date          //ADMIN
@@ -61,7 +69,7 @@ async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
 @Delete(':username/:date')
 // @Roles(Role.Admin)
 //   @UseGuards(AuthGuard, AuthorizationGuard)
-async delete(@Param('username')username: string,  @Param('Date')date:Date): Promise<Booking> {
+async delete(@Param('username')username: string,  @Param('Date')date:string): Promise<Booking> {
   return this.bookingService.delete(username,date);
 }
 

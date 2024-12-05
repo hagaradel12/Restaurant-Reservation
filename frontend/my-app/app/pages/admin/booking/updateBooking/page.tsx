@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importing useRouter from next/navigation
-import Sidebar from '@/app/components/admin/sidebar/page'; 
+import Sidebar from '@/app/components/admin/sidebar/page';
 
 export default function UpdateBookingPage() {
+  const [username, setUsername] = useState<string>(''); // for username
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
   const [date, setDate] = useState<string>(''); // for date
   const [time, setTime] = useState<string>(''); // for time
@@ -13,9 +14,13 @@ export default function UpdateBookingPage() {
 
   const handleUpdate = () => {
     // Implement the logic for updating the booking here
-    console.log("Booking updated:", { noOfPeople, date, time });
+    console.log("Booking updated:", { username, noOfPeople, date, time });
     // After updating, redirect back to the bookings page or another page
-    router.push('/admin/booking'); // Redirect back to the bookings page
+    router.push('/pages/admin/booking'); // Redirect back to the bookings page
+  };
+
+  const handleCancel = () => {
+    router.push('/pages/admin/booking'); 
   };
 
   return (
@@ -30,6 +35,21 @@ export default function UpdateBookingPage() {
 
         {/* Form for Updating Booking */}
         <div className="bg-white shadow-md rounded-lg p-6">
+          {/* Username Field */}
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="username">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+            />
+          </div>
+
+          {/* No. of People Field */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="noOfPeople">
               No. of People
@@ -43,6 +63,7 @@ export default function UpdateBookingPage() {
             />
           </div>
 
+          {/* Date Field */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="date">
               Date
@@ -56,6 +77,7 @@ export default function UpdateBookingPage() {
             />
           </div>
 
+          {/* Time Field */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="time">
               Time
@@ -69,8 +91,14 @@ export default function UpdateBookingPage() {
             />
           </div>
 
-          {/* Update Button */}
-          <div className="flex justify-end">
+          {/* Buttons */}
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={handleCancel}
+              className="px-6 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
+            >
+              Cancel
+            </button>
             <button
               onClick={handleUpdate}
               className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
