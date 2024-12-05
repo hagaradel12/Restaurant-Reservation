@@ -1,205 +1,145 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { FaHatCowboySide, FaTrashAlt } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Corrected import
+import { Button, Grid, Typography, IconButton, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
-const backend_url = 'http://localhost:3001'; // Define the backend URL
+const CartPage = () => {
+  const [cart, setCart] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-interface CartItem {
-  productId: string; // Keep productId as string
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-  imageUrl: string;
-}
+  async function fetchCookieData() {
+    try {
+      const response = await fetch('http://localhost:3001/auth/get-cookie-data', { credentials: 'include' });
+      const { userData } = await response.json();
 
-// Define the correct interface for the decoded token
-interface DecodedToken {
-  username: string;  // Username field directly at the root
-  role: boolean;     // Role field directly at the root
-  exp: number;       // Expiration time
-}
-
-const CartPage: React.FC = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [username, setUsername] = useState<string | null>(null);
-
-  // Extract username from token on page load
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded: DecodedToken = jwtDecode(token);
-        setUsername(decoded.username);
-      } catch (error) {
-        console.error('Error decoding token:', error);
+      if (!userData) {
+        console.error('No cookie data found');
+        setError('No cookie data found');
+        setLoading(false);
+        return;
       }
+
+      const username = JSON.parse(userData).username;
+
+      axios
+        .get(`http://localhost:3001/cart/${username}`, { withCredentials: true })
+        .then(async (response) => {
+          const cartData = response.data;
+          const updatedCart = await Promise.all(
+            cartData.products.map(async (item: any) => {
+              try {
+                const productResponse = await axios.get(`http://localhost:3001/products/productId/${item.productId}`);
+                return { ...item, product: productResponse.data };
+              } catch (error) {
+                console.error(`Failed to fetch product with ID ${item.productId}`, error);
+                return item;
+              }
+            })
+          );
+          setCart({ ...cartData, products: updatedCart });
+          setLoading(false);
+        })
+        .catch((error) => {
+          setError(error.message);
+          setLoading(false);
+        });
+    } catch (error) {
+      setError('Error fetching cookie data');
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    fetchCookieData();
   }, []);
 
-  // Fetch the cart on page load
-  useEffect(() => {
-    if (!username) return;
-    const fetchCart = async () => {
-      try {
-        const response = await axios.get(`${backend_url}/cart/hana1`);
-        const fetchedItems = await Promise.all(
-          response.data.products.map(async (item: { productId: string; quantity: number }) => {
-            try {
-              const productResponse = await axios.get(`${backend_url}/product/${item.productId}`);
-              return {
-                productId: item.productId,
-                name: productResponse.data.name,
-                description: productResponse.data.description,
-                price: productResponse.data.price,
-                quantity: item.quantity,
-                imageUrl: productResponse.data.imageUrl,
-              };
-            } catch (error) {
-              console.error(`Error fetching product ${item.productId}:`, error);
-              return null;
-            }
-          })
-        );
-        setCartItems(fetchedItems.filter((item) => item !== null) as CartItem[]);
-      } catch (error) {
-        console.error('Error fetching cart:', error);
-        setCartItems([]); // Ensure cartItems is an empty array if there's an error
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCart();
-  }, [username]);
-
-  const handleIncrement = async (productId: string) => {
-    try {
-      const response = await axios.patch(
-        `${backend_url}/cart/${username}/product/${productId}/increment`
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    setCart((prevCart: any) => {
+      const updatedProducts = prevCart.products.map((product: any) =>
+        product.productId === productId
+          ? { ...product, quantity: newQuantity }
+          : product
       );
-      setCartItems(response.data.products);
-    } catch (error) {
-      console.error('Error incrementing quantity:', error);
-    }
+      return { ...prevCart, products: updatedProducts };
+    });
   };
 
-  const handleDecrement = async (productId: string) => {
-    try {
-      const response = await axios.patch(
-        `${backend_url}/cart/${username}/product/${productId}/decrement`
-      );
-      setCartItems(response.data.products);
-    } catch (error) {
-      console.error('Error decrementing quantity:', error);
-    }
+  const handleRemoveItem = (productId: string) => {
+    setCart((prevCart: any) => {
+      const updatedProducts = prevCart.products.filter((product: any) => product.productId !== productId);
+      return { ...prevCart, products: updatedProducts };
+    });
   };
 
-  const handleRemove = async (productId: string) => {
-    try {
-      const response = await axios.delete(
-        `${backend_url}/cart/${username}/product/${productId}`
-      );
-      setCartItems(response.data.products);
-    } catch (error) {
-      console.error('Error removing product from cart:', error);
-    }
-  };
-
-  const handleClearCart = async () => {
-    try {
-      await axios.delete(`${backend_url}/cart/${username}`);
-      setCartItems([]);
-    } catch (error) {
-      console.error('Error clearing cart:', error);
-    }
-  };
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="bg-gradient-to-r from-[#ffe0b2] to-[#ffcc80] p-8 min-h-screen text-gray-800">
-      <h1 className="text-center text-5xl font-extrabold text-indigo-900 mb-12 text-shadow-xl">
-        Ratatouille Bistro Cart
-      </h1>
-
-      {loading ? (
-        <p className="text-center text-lg">Loading...</p>
-      ) : (
-        <div className="space-y-10 max-w-7xl mx-auto">
-          {cartItems.length === 0 ? (
-            <div className="text-center text-lg text-gray-500">
-              <FaHatCowboySide className="text-6xl text-red-600 mb-4 animate-bounce" />
-              <p>Your cart is empty!</p>
-            </div>
-          ) : (
-            cartItems.map((item) => (
-              <div
-                key={item.productId}
-                className="flex bg-white rounded-lg p-6 shadow-xl hover:shadow-2xl transition-all duration-300 space-x-6"
-              >
-                <div className="flex-shrink-0 w-32 h-32">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                </div>
-                <div className="flex-grow">
-                  <h2 className="text-3xl font-semibold text-indigo-700 hover:text-indigo-900 transition-all">
-                    {item.name}
-                  </h2>
-                  <p className="text-sm text-gray-600 mt-2">{item.description}</p>
-                  <p className="text-lg text-green-600 mt-4">
-                    ${item.price.toFixed(2)}
-                  </p>
-                  <div className="flex items-center mt-4 space-x-4">
-                    <button
-                      onClick={() => handleDecrement(item.productId)}
-                      className="bg-gray-300 text-gray-800 p-2 rounded-full hover:bg-gray-400 transition-all duration-200"
-                    >
-                      -
-                    </button>
-                    <span className="text-xl">{item.quantity}</span>
-                    <button
-                      onClick={() => handleIncrement(item.productId)}
-                      className="bg-gray-300 text-gray-800 p-2 rounded-full hover:bg-gray-400 transition-all duration-200"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => handleRemove(item.productId)}
-                    className="mt-4 flex items-center space-x-2 text-red-600 hover:text-red-800 transition-all"
-                  >
-                    <FaTrashAlt className="mr-2" />
-                    <span>Remove</span>
-                  </button>
+    <div className="max-w-4xl mx-auto px-4 py-8 bg-white shadow-lg rounded-xl">
+      <Typography variant="h4" className="text-center text-gray-800 font-semibold mb-6">Your Cart</Typography>
+      
+      {cart && cart.products.length > 0 ? (
+        <div className="space-y-8">
+          {cart.products.map((item: any) => (
+            <div
+              key={item.productId}
+              className="flex items-center justify-between bg-gray-100 p-6 rounded-lg shadow-md hover:shadow-xl transition-all"
+            >
+              <div className="flex flex-col items-center md:flex-row space-y-4 md:space-y-0 md:space-x-6">
+                <img
+                  src={item.product?.image}
+                  alt={item.product?.name}
+                  className="w-32 h-32 object-cover rounded-lg shadow-md"
+                />
+                <div className="text-center md:text-left">
+                  <Typography variant="h6" className="text-gray-900 font-semibold mb-2">{item.product?.name}</Typography>
+                  <Typography variant="body2" className="text-gray-500 mb-2">{item.product?.description}</Typography>
+                  <Typography variant="h6" className="text-gray-800 font-bold">${item.product?.price.toFixed(2)}</Typography>
                 </div>
               </div>
-            ))
-          )}
-          {cartItems.length > 0 && (
-            <div className="flex justify-between items-center mt-10 bg-white p-6 rounded-lg shadow-xl">
-              <p className="text-xl font-semibold">
-                Total: ${totalAmount.toFixed(2)}
-              </p>
-              <button
-                onClick={handleClearCart}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-all duration-200"
-              >
-                Clear Cart
-              </button>
+
+              <div className="flex flex-col items-center md:flex-row space-y-4 md:space-y-0 md:space-x-6">
+                <FormControl variant="filled" fullWidth>
+                  <InputLabel>Quantity</InputLabel>
+                  <Select
+                    value={item.quantity}
+                    onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
+                    label="Quantity"
+                    className="w-24"
+                  >
+                    {[...Array(10).keys()].map((i) => (
+                      <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <IconButton
+                  onClick={() => handleRemoveItem(item.productId)}
+                  color="secondary"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Delete />
+                </IconButton>
+              </div>
             </div>
-          )}
+          ))}
         </div>
+      ) : (
+        <Typography variant="body1" className="text-center text-gray-500">No items in your cart.</Typography>
+      )}
+
+      {cart && cart.products.length > 0 && (
+        <Button
+          variant="contained"
+          color="primary"
+          className="w-full py-3 mt-8 text-white text-lg font-semibold rounded-xl shadow-lg hover:bg-indigo-700 transition-colors"
+        >
+          Proceed to Checkout
+        </Button>
       )}
     </div>
   );

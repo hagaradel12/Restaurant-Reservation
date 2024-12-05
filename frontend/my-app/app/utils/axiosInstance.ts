@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
   baseURL: 'http://localhost:3001',  // Your backend URL
+  withCredentials: true,
 });
 
 // Add the Authorization token from localStorage to every request
