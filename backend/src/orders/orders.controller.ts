@@ -25,6 +25,8 @@ export class OrdersController {
   }
 
   // Update order by order number
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
   @Put(':orderNo')
   async update(
     @Param('orderNo') orderNo: string,
@@ -34,18 +36,23 @@ export class OrdersController {
   }
 
   // Get all orders for a user
+
   @Get('user/:username')
   async getUserOrders(@Param('username') username: string) {
     return await this.ordersService.getUserOrders(username);
   }
 
   // Get a single order by order number
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
   @Get(':orderNo')
   async getOrderByOrderNo(@Param('orderNo') orderNo: string) {
     return await this.ordersService.getOrderByOrderNo(orderNo);
   }
 
   // Admin: Get all orders
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
   @Get('admin/all')
   async getAllOrders() {
     return await this.ordersService.getAllOrders();
@@ -62,6 +69,8 @@ export class OrdersController {
   }
 
   // Admin: Delete order by order number
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
   @Delete('admin/:orderNo')
   async adminDeleteOrder(@Param('orderNo') orderNo: string) {
     return await this.ordersService.adminDeleteOrder(orderNo);
