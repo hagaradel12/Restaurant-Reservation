@@ -16,8 +16,8 @@ export class BookingController {
    //Get all bookings as admin but not booking that have passed                     //ADMIN   
                 
     @Get()
-    @Roles(Role.Admin)
-    @UseGuards(AuthGuard, AuthorizationGuard)
+    // @Roles(Role.Admin)
+    // @UseGuards(AuthGuard, AuthorizationGuard)
     async findAllAdmin(): Promise<Booking[]> {
       return this.bookingService.findAllAdmin();
     }

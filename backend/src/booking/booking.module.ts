@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BookingController } from './booking.controller';
 import { BookingService } from './booking.service';
 import { Booking, BookingSchema } from './booking.schema';
-import { ExportService } from 'src/adapter/export/export.service';
-import { ExportController } from 'src/adapter/export/export.controller';
+import { ExportService } from 'src/export/export.service';
+import { ExportController } from 'src/export/export.controller';
 import { AdapterModule } from 'src/adapter/adapter.module'; // Import AdapterModule here
 
 @Module({

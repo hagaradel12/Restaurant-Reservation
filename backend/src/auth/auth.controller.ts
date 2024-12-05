@@ -22,7 +22,7 @@ export class AuthController {
     }
 
     @Post('login')
-    @UseGuards(AuthGuard) // Use the custom AuthGuard here
+    // @UseGuards(AuthGuard) // Use the custom AuthGuard here
     async login(@Body() signInDto: LoginDto, @Res({ passthrough: true }) res: Response) {
         try {
             console.log('Attempting login...');
