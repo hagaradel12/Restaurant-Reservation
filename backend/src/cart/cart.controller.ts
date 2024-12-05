@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { Cart } from './cart.schema';
+import { Cart, CartDocument } from './cart.schema';
 
 @Controller('cart')
 export class CartController {
@@ -18,7 +18,7 @@ export class CartController {
 
   // Get the user's cart
   @Get('/:username')
-  async getCart(@Param('username') username: string): Promise<Cart> {
+  async getCart(@Param('username') username: string): Promise<CartDocument> {
     return this.cartService.getCart(username);
   }
 

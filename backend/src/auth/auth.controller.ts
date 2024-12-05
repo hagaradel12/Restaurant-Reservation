@@ -1,25 +1,41 @@
-import { Body, Controller, HttpException, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import * as dotenv from 'dotenv';
+import { AuthGuard } from './guards/authentication.guard';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
 
+    @Get('get-cookie-data')
+    getCookieData(@Req() req: Request) {
+        const cookies = req.cookies;
+        const userData = cookies['user_data'] || null;
+
+        if (!userData) {
+            throw new HttpException('No user data found in the cookie', HttpStatus.NOT_FOUND);
+        }
+
+        return { userData };
+    }
+
+ 
+
+
     @Post('login')
-    async login(@Body() loginDto: LoginDto,@Res({ passthrough: true }) res) {
+    async login(@Body() signInDto: LoginDto,@Res({ passthrough: true }) res: Response) {
         try {
             console.log('Attempting login...');
             // Call the AuthService to handle login
-            const result = await this.authService.login(loginDto);
+            const result = await this.authService.login(signInDto);
 
            // Combine data into a single object
         const combinedData = {
             token: result.access_token,
             username: result.payload.username,
-            isAdmin: result.payload.role,
+            role: result.payload.role,
         };
 
         // Convert the object to a JSON string
@@ -57,6 +73,7 @@ export class AuthController {
             );
         }
     }
+
     @Post('register')
     async register(@Body() registerRequestDto: RegisterDto) {
         try {
@@ -104,5 +121,4 @@ export class AuthController {
             );
         }
     }
-
 }

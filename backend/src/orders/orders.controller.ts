@@ -1,59 +1,52 @@
-// import { Body, Controller, Delete, Param, Post ,Put,Get, UseGuards, Req} from '@nestjs/common';
-// import { OrdersService } from './orders.service';
-// import { Orders } from './orders.schema';
-// import { CreateOrderDto } from './dto/CreateOrder.dto';
-// import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
-// import { AuthGuard } from '@nestjs/passport';
-// import { Roles, Role } from 'src/auth/decorators/role.decorator';
-// import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { OrdersService } from './orders.service';
+import { Orders } from './orders.schema';
+import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
+import { CreateOrderDto } from './dto/CreateOrder.dto';
+import { Role, Roles } from 'src/auth/decorators/role.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
 
-// @Controller('orders')
-// export class OrdersController {
-//   constructor(private readonly ordersService: OrdersService) {}
+@Controller('orders')
+export class OrdersController {
+  constructor(private readonly ordersService: OrdersService) {}
+  @Post()
+  async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<Orders> {
+    return this.ordersService.create(createOrderDto);
+  }
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
+  @Delete(':orderNo')
+    async deleteOrder(@Param('orderNo') orderNo: number): Promise<Orders> {
+        return this.ordersService.delete(orderNo);
+    }
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
+  @Get(':orderNo')
+  async getOrder(@Param('orderNo')orderNo: number){
+    const order =await this.ordersService.findByNumber(orderNo);
+    return order;
+  }
+  @Get('/')
+  async findAll(){
+    return this.ordersService.findAll();
+  }
+  @Patch('update-details/:orderNo')
+  async updateOrderDetails(
+    @Param('orderNo') orderNo: number,
+    @Body() updateDetails: UpdateOrderStatusDto,
+    @Req() req, 
+  ): Promise<Orders> {
+    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
 
-//   //POST:Create order 
-//   @Post()
-//   async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<Orders> {
-//     return await this.ordersService.createOrder(createOrderDto);
-//   }
-//  // DELETE /courses/:course_code: Delete a order by its number
-//  @Delete(':orderNo') 
-//  async deleteOrder(@Param('orderNo') orderNo: number): Promise<Orders> {
-//    return this.ordersService.deleteOrder(orderNo);
-//  }
+    return this.ordersService.updateOrderDetails(username, orderNo, updateDetails);
+  }
 
-//  // PUT /order/:orderNo: Update an existing order by its orderNo
-//   @Put('update/:orderNo')
-//   async updateStatus(
-//     @Param('orderNo') orderNo: number,
-//     @Body() updateOrderStatusDto: UpdateOrderStatusDto,
-//     @Req() req: any // assuming the user’s token is in the request
-//   ) {
-//     const username = req.user.username; // You need to extract username from the JWT
-//     return this.ordersService.updateStatus(orderNo, updateOrderStatusDto, username);
-//   }
+  @Get('history')
+  async getCustomerOrders(@Req() req): Promise<Orders[]> {
+    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
 
-//   @Put('admin/update/:orderNo')
-//   @Roles(Role.Admin)
-//   @UseGuards(AuthGuard, AuthorizationGuard)
-//   async updateByAdmin(
-//     @Param('orderNo') orderNo: number,
-//     @Body() updateOrderStatusDto: UpdateOrderStatusDto
-//   ) {
-//     return this.ordersService.update(orderNo, updateOrderStatusDto);
-//   }
-//   //get an order by its number 
-//   @Get(':orderNo')
-//   @Roles(Role.Admin)
-//   @UseGuards(AuthGuard, AuthorizationGuard)
-//   async getOrder(@Param('orderNo')orderNo: number){
-//     const order =await this.ordersService.findByNumber(orderNo);
-//     return order;
-//   }
-//   //get all orders of the customer
-//   @Get()
-//   async getAll(){
-//     return this.ordersService.findAll();
-//   }
+    return this.ordersService.getCustomerOrders(username);
+  }
 
-// }
+}

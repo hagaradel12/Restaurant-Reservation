@@ -1,9 +1,10 @@
 
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Products } from './products.schema';
 import { CreateProductDto } from './dto/create.dto';
 import { UpdateProductDto } from './dto/update.dto';
+import mongoose from 'mongoose';
 
 @Controller('products')
 export class ProductsController {
@@ -38,5 +39,20 @@ async updateProduct(
   async getProductByName(@Param('name') name:string){
     const product =await this.productsService.findByName(name);
     return product;
+  }
+
+  @Get('productId/:id')
+  async findById(@Param('id') id: string): Promise<Products> {
+    try {
+      const idd=new mongoose.Types.ObjectId(id)
+      const product = await this.productsService.findById(idd);  // Call the service method
+      return product;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;  // Propagate the error if it's already a NotFoundException
+      } else {
+        throw new NotFoundException(`Product with ID ${id} not found`);
+      }
+    }
   }
 }

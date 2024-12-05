@@ -50,4 +50,11 @@ export class ProductsService {
     }
     return product;
 }
+async findById(id: mongoose.Types.ObjectId): Promise<Products> {
+    const product = await this.productModel.findOne({ _id:id }).exec();
+if (!product) {
+  throw new NotFoundException("product with the id ${id} not found");
+}
+return product;
+}
 }

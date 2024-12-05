@@ -1,101 +1,88 @@
-// import { ForbiddenException, Injectable,NotFoundException } from '@nestjs/common';
-// import { InjectModel} from '@nestjs/mongoose';
-// import { Orders, OrdersDocument } from './orders.schema';
-// import mongoose from 'mongoose'
-// import { CreateOrderDto } from './dto/CreateOrder.dto';
-// import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
-// @Injectable()
-// export class OrdersService {
-// constructor(
-//     @InjectModel(Orders.name)private orderModel: mongoose.Model<OrdersDocument>
-// ){}
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel} from '@nestjs/mongoose';
+import { Orders } from './orders.schema';
+import mongoose, { Model } from 'mongoose'
+import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
+import { Products } from 'src/products/products.schema';
+import { CreateOrderDto } from './dto/CreateOrder.dto';
+@Injectable()
+export class OrdersService {
+constructor(
+    @InjectModel(Orders.name)private orderModel: mongoose.Model<Orders>
+){}
+//customer hagar
+async create(orderData: CreateOrderDto): Promise<Orders> {
+    // Create a new instance of the Order model with the provided order data
+    const newOrder = new this.orderModel(orderData);
 
-//  // Create a new order
-//  //public
-//  async createOrder(createOrderDto: CreateOrderDto): Promise<Orders> {
-//   const newOrder = new this.orderModel({
-//     ...createOrderDto,
-//     createdAt: new Date(),
-//     status: 'Pending', // Default status
-//   });
-//   return newOrder.save();
-// }
+    // Save the new order to the database and return the created order
+    return await newOrder.save();
+  }
+//Admin
+async delete(OrderNo: number): Promise<Orders | null> {
+    return await this.orderModel.findOneAndDelete({ OrderNo });
+}
 
-// // Delete a order by orderNo
-// //Customer
-// async deleteOrder(orderNo: number): Promise<Orders> {
-//   const order = await this.orderModel.findOne({ orderNo }).exec();
-//   if (!order) {
-//     throw new NotFoundException(`Order with number ${orderNo} not found`);
-//   }
+ //find an order by order no  //Admin
+ async findByNumber(OrderNo: number): Promise<Orders> {
+    const order= await this.orderModel.findOne({ OrderNo }).exec();
+    if (!order) {
+      throw new NotFoundException("Order with number ${OrderNo} not found");
+    }
+    return order; 
+}
+//Admin
+async findAll():Promise<Orders[]>{
+    return this.orderModel.find();
+}
+//Admin
+async updateOrderStatus(updateOrderStatus: UpdateOrderStatusDto): Promise<Orders | null> {
+    const { orderNo, status } = updateOrderStatus;
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+        { orderNo }, // Find the order by OrderNo
+        { status }, // Update the status
+        { new: true } // Return the updated document
+    );
 
-//   const timeDifference = (Date.now() - new Date(order.createdAt).getTime()) / 1000; // Time in seconds
-//   if (timeDifference > 300) {
-//     throw new ForbiddenException('Order can only be deleted within 5 minutes');
-//   }
+    if (!updatedOrder) {
+        throw new NotFoundException(`Order with OrderNo ${orderNo} not found`);
+    }
 
-//   const deletedOrder = await this.orderModel.findByIdAndDelete(order._id).exec();
-//   return deletedOrder;
-// }
+    return updatedOrder;
+}
 
-// // Client can only update within 5 minutes
-// async updateStatus(orderNo: number, updateOrderStatusDto: UpdateOrderStatusDto, username: string): Promise<Orders> {
-//   // Find the order by its order number
-//   const order = await this.orderModel.findOne({ orderNo }).exec();
+//customer should be able to update his order details within 5 min after clicking at to cart
+async updateOrderDetails(username: string, OrderNo: number, updateDetails: any): Promise<Orders> {
+    // Find the order by OrderNo and username
+    const order = await this.orderModel.findOne({ OrderNo, username });
 
-//   if (!order) {
-//     throw new NotFoundException(`Order with number ${orderNo} not found`);
-//   }
+    if (!order) {
+        throw new NotFoundException(`Order with OrderNo ${OrderNo} not found for this username`);
+    }
 
-//   // Check if the order was created within the last 5 minutes
-//   const timeDifference = new Date().getTime() - new Date(order.createdAt).getTime();
-//   const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+    // Check if the order is within 5 minutes of being created
+    const timeDifference = new Date().getTime() - new Date(order.createdAt).getTime();
+    const fiveMinutesInMillis = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-//   if (timeDifference > fiveMinutes) {
-//     throw new ForbiddenException('You can no longer update this order. Please contact the admin.');
-//   }
+    if (timeDifference > fiveMinutesInMillis) {
+        throw new Error("You can only update your order within 5 minutes of placing it.");
+    }
 
-//   // Update the order if within the time limit and if the username matches
-//   if (order.username !== username) {
-//     throw new ForbiddenException('You cannot update an order that does not belong to you.');
-//   }
+    // Update order details
+    order.orderDetails = updateDetails;
+    order.updatedAt = new Date();
+    
+    await order.save();
+    return order;
+} 
+//customer should be able to view all his past orders
+async getCustomerOrders(username: string): Promise<Orders[]> {
+    const orders = await this.orderModel.find({ username });
 
-//   // Proceed with updating the order status
-//   const updatedOrder = await this.orderModel.findOneAndUpdate(
-//     { orderNo },
-//     { $set: updateOrderStatusDto },
-//     { new: true }
-//   ).exec();
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException(`No orders found for customer with username ${username}`);
+    }
 
-//   return updatedOrder;
-// }
-
-// // Admin can update any order at any time
-// async update(orderNo: number, updateOrderStatusDto: UpdateOrderStatusDto): Promise<Orders> {
-//   const updatedOrder = await this.orderModel.findOneAndUpdate(
-//     { orderNo },
-//     updateOrderStatusDto,
-//     { new: true }
-//   ).exec();
-
-//   if (!updatedOrder) {
-//     throw new NotFoundException(`Order with orderNo ${orderNo} not found`);
-//   }
-
-//   return updatedOrder;
-// }
-//   //find an order by order no 
-//   //Admin
-//   async findByNumber(orderNo: number): Promise<Orders> {
-//     const order= await this.orderModel.findOne({ orderNo }).exec();
-//     if (!order) {
-//       throw new NotFoundException(`Order with number ${orderNo} not found`);
-//     }
-//     return order; 
-// }
-//   //customer get all his orders
-//   async findAll(): Promise<Orders[]> {
-//     return this.orderModel.find();
-//   }
-
-// }
+    return orders;
+  }
+}

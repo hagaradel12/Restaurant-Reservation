@@ -12,7 +12,7 @@ export class CartService {
   ) {}
 
   // Get the user's cart from username extracted from token, called when user clicks on go to cart
-  async getCart(username: string): Promise<Cart> {
+  async getCart(username: string): Promise<CartDocument> {
     const cart = await this.cartModel.findOne({ username }).exec();
     if (!cart) {
       throw new NotFoundException('Cart not found');
