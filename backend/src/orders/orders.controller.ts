@@ -1,52 +1,69 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { Orders } from './orders.schema';
-import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
-import { CreateOrderDto } from './dto/CreateOrder.dto';
-import { Role, Roles } from 'src/auth/decorators/role.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateOrderDto } from './dto/createOrderDto';
+import { UpdateOrderDto } from './dto/updateOrderDto';
+import { Roles, Role } from 'src/auth/decorators/role.decorator';
 import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  // Create a new order
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<Orders> {
-    return this.ordersService.create(createOrderDto);
+  async create(@Body() createOrderDto: CreateOrderDto) {
+    return await this.ordersService.create(createOrderDto);
   }
+
+  // Delete order by order number
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, AuthorizationGuard)
   @Delete(':orderNo')
-    async deleteOrder(@Param('orderNo') orderNo: number): Promise<Orders> {
-        return this.ordersService.delete(orderNo);
-    }
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, AuthorizationGuard)
+  async delete(@Param('orderNo') orderNo: string) {
+    return await this.ordersService.delete(orderNo);
+  }
+
+  // Update order by order number
+  @Put(':orderNo')
+  async update(
+    @Param('orderNo') orderNo: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return await this.ordersService.update(orderNo, updateOrderDto);
+  }
+
+  // Get all orders for a user
+  @Get('user/:username')
+  async getUserOrders(@Param('username') username: string) {
+    return await this.ordersService.getUserOrders(username);
+  }
+
+  // Get a single order by order number
   @Get(':orderNo')
-  async getOrder(@Param('orderNo')orderNo: number){
-    const order =await this.ordersService.findByNumber(orderNo);
-    return order;
-  }
-  @Get('/')
-  async findAll(){
-    return this.ordersService.findAll();
-  }
-  @Patch('update-details/:orderNo')
-  async updateOrderDetails(
-    @Param('orderNo') orderNo: number,
-    @Body() updateDetails: UpdateOrderStatusDto,
-    @Req() req, 
-  ): Promise<Orders> {
-    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
-
-    return this.ordersService.updateOrderDetails(username, orderNo, updateDetails);
+  async getOrderByOrderNo(@Param('orderNo') orderNo: string) {
+    return await this.ordersService.getOrderByOrderNo(orderNo);
   }
 
-  @Get('history')
-  async getCustomerOrders(@Req() req): Promise<Orders[]> {
-    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
-
-    return this.ordersService.getCustomerOrders(username);
+  // Admin: Get all orders
+  @Get('admin/all')
+  async getAllOrders() {
+    return await this.ordersService.getAllOrders();
   }
 
+  // Admin: Update order status
+  @Roles(Role.Admin)
+  @Put('admin/status/:orderNo')
+  async adminUpdateOrderStatus(
+    @Param('orderNo') orderNo: string,
+    @Body() status: string,
+  ) {
+    return await this.ordersService.adminUpdateOrderStatus(orderNo, status);
+  }
+
+  // Admin: Delete order by order number
+  @Delete('admin/:orderNo')
+  async adminDeleteOrder(@Param('orderNo') orderNo: string) {
+    return await this.ordersService.adminDeleteOrder(orderNo);
+  }
 }

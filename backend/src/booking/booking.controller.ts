@@ -3,9 +3,10 @@ import { BookingService } from './booking.service';
 import { Booking } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
 import { CreateBookingDto } from './dto/CreateBooking.dto';
-import { AuthGuard } from '@nestjs/passport';
-// import { Roles, Role } from 'src/auth/decorators/role.decorator';
-// import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { Roles, Role } from 'src/auth/decorators/role.decorator';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+
 
 
 @Controller('booking')
@@ -15,8 +16,8 @@ export class BookingController {
    //Get all bookings as admin but not booking that have passed                     //ADMIN   
                 
     @Get()
-    // @Roles(Role.Admin)
-    // @UseGuards(AuthGuard, AuthorizationGuard)
+    @Roles(Role.Admin)
+    @UseGuards(AuthGuard, AuthorizationGuard)
     async findAllAdmin(): Promise<Booking[]> {
       return this.bookingService.findAllAdmin();
     }
