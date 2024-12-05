@@ -50,7 +50,7 @@ const handleLogin = async (e: React.FormEvent) => {
     if (status === 200 || status === 201) { // Check for 200 or 201 status
       const { access_token, user } = data;
 
-      // Validate if the token exists and decode it
+      // Instead of storing the token in localStorage, it's stored as a cookie by the backend
       if (access_token) {
         try {
           const decodedToken: DecodedToken = jwtDecode(access_token); // Decoding token
@@ -59,10 +59,9 @@ const handleLogin = async (e: React.FormEvent) => {
           if (decodedToken && decodedToken.username && decodedToken.role !== undefined) {
             const { username, role } = decodedToken;
 
-            // Store the decoded data in localStorage
+            // Store the decoded data in localStorage (optional, to use in UI)
             localStorage.setItem("username", username);
             localStorage.setItem("role", role.toString());  // Store `role` as well
-            localStorage.setItem("access_token", access_token); // Store the token as well
 
             // Redirect based on role
             if (role) {
@@ -91,6 +90,7 @@ const handleLogin = async (e: React.FormEvent) => {
     alert("Login failed. Please check your credentials.");
   }
 };
+
 
   
   return (
