@@ -6,8 +6,8 @@ import { CreateProductDto } from './dto/create.dto';
 import { UpdateProductDto } from './dto/update.dto';
 
 @Injectable()
-export class ProductsService {
-    constructor(
+export class ProductsService {           //SRP It focuses solely on fetching the data and doesn't do anything else like validation or transformation
+    constructor(                                   
         @InjectModel(Products.name) private productModel: mongoose.Model<ProductsDocument>
     ) {}
 
