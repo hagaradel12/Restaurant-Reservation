@@ -6,8 +6,7 @@ import { UpdateProductDto } from './dto/update.dto';
 import mongoose from 'mongoose';
 import { AuthGuard } from 'src/auth/guards/authentication.guard'; 
 
-@Controller('products')       // SRP: Controller is focused on handling HTTP requests and delegating the business logic to the service layer
-    
+@Controller('products')    
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
@@ -18,21 +17,21 @@ export class ProductsController {
 
   // POST: Create a new product
   @Post()
-  @UseGuards(AuthGuard)  // Applying the auth guard to protect this route
+  @UseGuards(AuthGuard) 
   async createProduct(@Body() createProductDto: CreateProductDto): Promise<Products> {
     return await this.productsService.createProduct(createProductDto);
   }
 
   // DELETE: Delete a product by its productCode
   @Delete(':productCode')
-  @UseGuards(AuthGuard)  // Guard applied to restrict access
+  @UseGuards(AuthGuard)
   async deleteProduct(@Param('productCode') productCode: number): Promise<Products> {
     return await this.productsService.deleteProduct(productCode);
   }
 
   // PUT: Update an existing product by its productCode
   @Put(':productCode')
-  @UseGuards(AuthGuard)  // Guard applied to restrict access
+  @UseGuards(AuthGuard)  
   async updateProduct(
     @Param('productCode') productCode: number,
     @Body() updateProductDto: UpdateProductDto,
