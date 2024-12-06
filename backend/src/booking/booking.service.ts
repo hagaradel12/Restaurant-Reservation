@@ -28,11 +28,11 @@ export class BookingService {
     return booking;
   }
 
-  //GET: booking by date                                            //ADMIN
-  async findByDate(date:string): Promise<Booking[]> {
-    const booking = await this.bookingModel.find({date}).exec();
+  //GET: booking by id                                            //ADMIN
+  async findById(bookingId:number): Promise<Booking[]> {
+    const booking = await this.bookingModel.find({bookingId}).exec();
     if (!booking) {
-      throw new NotFoundException(`Booking at ${date} not found`);
+      throw new NotFoundException(`Booking with id ${bookingId} not found`);
     }
     return booking;
   }
@@ -44,26 +44,42 @@ async findClient(username: string): Promise<Booking[]> {
   return this.bookingModel.find({username});
 }
 
+//Method to randmoly generate id     //example of imperative programming as we focused on th how and how
+private generatedIds: Set<number> = new Set();
+private async randomizedId(): Promise<number> {
+    if (this.generatedIds.size >= 100) {
+        throw new Error("All possible IDs have been generated.");
+    }
+    let id: number;
+
+    do {
+        id = Math.floor(Math.random() * 100) + 1; 
+    } while (this.generatedIds.has(id)); // Ensure it's unique
+
+    this.generatedIds.add(id);
+    return id;
+}
    // Create a new booking
    async create(createBookingDto: CreateBookingDto): Promise<Booking> {
     const newBooking = new this.bookingModel(createBookingDto);
+    newBooking.bookingId = await this.randomizedId();
     return newBooking.save();
   }
 
-    // PUT:Update an existing booking by title & date                                //ADMIN
-    async update(username: string, updateBookingDto: UpdateBookingDto): Promise<Booking> {
-        const updatedBooking = await this.bookingModel.findOneAndUpdate({username, updateBookingDto}, { new: true }).exec();
+// PUT:Update an existing booking by title & date                                //ADMIN
+    async update(bookingId:number, updateBookingDto: UpdateBookingDto): Promise<Booking> {
+        const updatedBooking = await this.bookingModel.findOneAndUpdate({bookingId, updateBookingDto}, { new: true }).exec();
         if (!updatedBooking) {
-          throw new NotFoundException(`Booking with username ${username} not found`);
+          throw new NotFoundException(`Booking with id ${bookingId} not found`);
         }
         return updatedBooking;
       }
 
-       //DELETE: Delete a booking by title & date                                          //ADMIN
-  async delete(username: string,date:string): Promise<Booking> {
-    const deletedBooking = await this.bookingModel.findOneAndDelete({username,date}).exec();
+//DELETE: Delete a booking by title & date                                          //ADMIN
+  async delete(bookingId:number): Promise<Booking> {
+    const deletedBooking = await this.bookingModel.findOneAndDelete({bookingId}).exec();
     if (!deletedBooking) {
-      throw new NotFoundException(`Booking with username ${username} at ${date} not found`);
+      throw new NotFoundException(`Booking with id ${bookingId} not found`);
     }
     return deletedBooking;
   }
@@ -76,4 +92,3 @@ async findClient(username: string): Promise<Booking[]> {
 //affect existing findByusername method and create &update DTO allow for update done easily without changing create and update logic
 //Liskov Substitution Principle: subtypes compatible with base types example:use of BookingDocument which is subtype done 
 //for type safety and compatibilty with mongoos model schema 
-

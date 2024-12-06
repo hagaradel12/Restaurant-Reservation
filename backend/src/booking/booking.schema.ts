@@ -4,6 +4,9 @@ import { HydratedDocument } from 'mongoose';
 @Schema()
 export class Booking {
   @Prop({ required: true })
+  bookingId:number;
+  
+  @Prop({ required: true })
   no_of_people: number;
 
   @Prop({ required: true })
@@ -15,7 +18,6 @@ export class Booking {
   @Prop({ required: true })
   username: string;
 }
-
 // The HydratedDocument type is now explicitly used here.
 export type bookingDocument = HydratedDocument<Booking> ;
 

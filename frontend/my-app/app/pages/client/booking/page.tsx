@@ -22,7 +22,7 @@ export default function BookingPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const response = await axiosInstance.get(`${backend_url}/booking/`);
+        const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/`);
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);

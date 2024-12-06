@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'; // Importing useRouter from next/na
 import Sidebar from '@/app/components/admin/sidebar/page';
 
 export default function UpdateBookingPage() {
-  const [username, setUsername] = useState<string>(''); // for username
+  const [bookingId, setBookingId] = useState<string>(''); // for booking ID
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
   const [date, setDate] = useState<string>(''); // for date
   const [time, setTime] = useState<string>(''); // for time
@@ -14,7 +14,7 @@ export default function UpdateBookingPage() {
 
   const handleUpdate = () => {
     // Implement the logic for updating the booking here
-    console.log("Booking updated:", { username, noOfPeople, date, time });
+    console.log("Booking updated:", { bookingId, noOfPeople, date, time });
     // After updating, redirect back to the bookings page or another page
     router.push('/pages/admin/booking'); // Redirect back to the bookings page
   };
@@ -35,16 +35,16 @@ export default function UpdateBookingPage() {
 
         {/* Form for Updating Booking */}
         <div className="bg-white shadow-md rounded-lg p-6">
-          {/* Username Field */}
+          {/* Booking ID Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="username">
-              Username
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Booking ID">
+              Booking ID
             </label>
             <input
               type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="Booking ID"
+              value={bookingId}
+              onChange={(e) => setBookingId(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
           </div>
