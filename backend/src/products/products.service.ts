@@ -6,30 +6,30 @@ import { CreateProductDto } from './dto/create.dto';
 import { UpdateProductDto } from './dto/update.dto';
 
 @Injectable()
-export class ProductsService {
-    constructor(
+export class ProductsService {  
+    constructor(                                   
         @InjectModel(Products.name) private productModel: mongoose.Model<ProductsDocument>
-    ) {}
+    ) {} // DIP - Dependency Injection (injecting the model for products)
 
     // Get all products
     async findAll(): Promise<Products[]> {
         let products = await this.productModel.find();
-        return products;
+        return products; // SRP - Single Responsibility (delegating logic to the model)
     }
 
     // Create a new product
     async createProduct(createProductDto: CreateProductDto): Promise<Products> {
         const newProduct = new this.productModel(createProductDto);
-        return newProduct.save();
+        return newProduct.save(); // SRP - Single Responsibility (delegating logic to the model)
     }
 
     // Delete a product
     async deleteProduct(productCode: number): Promise<Products> {
         const deletedProduct = await this.productModel.findByIdAndDelete(productCode).exec();
         if (!deletedProduct) {
-            throw new NotFoundException("Product with code ${productCode} not found");
+            throw new NotFoundException("Product with code ${productCode} not found"); // SRP - Single Responsibility (handling exceptions)
         }
-        return deletedProduct;
+        return deletedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
 
     // Update a product
@@ -38,23 +38,26 @@ export class ProductsService {
             .findByIdAndUpdate(productCode, updateProductDto, { new: true })
             .exec();
         if (!updatedProduct) {
-            throw new NotFoundException("Product with code ${productCode} not found");
+            throw new NotFoundException("Product with code ${productCode} not found"); // SRP - Single Responsibility (handling exceptions)
         }
-        return updatedProduct;
+        return updatedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
-    //get a product 
+
+    // Get a product by name
     async findByName(name: string): Promise<Products> {
         const product = await this.productModel.findOne({ name }).exec();
-    if (!product) {
-      throw new NotFoundException("product with the name ${name} not found");
+        if (!product) {
+            throw new NotFoundException("product with the name ${name} not found"); // SRP - Single Responsibility (handling exceptions)
+        }
+        return product; // SRP - Single Responsibility (delegating logic to the model)
     }
-    return product;
-}
-async findById(id: mongoose.Types.ObjectId): Promise<Products> {
-    const product = await this.productModel.findOne({ _id:id }).exec();
-if (!product) {
-  throw new NotFoundException("product with the id ${id} not found");
-}
-return product;
-}
+
+    // Get a product by ID
+    async findById(id: mongoose.Types.ObjectId): Promise<Products> {
+        const product = await this.productModel.findOne({ _id:id }).exec();
+        if (!product) {
+            throw new NotFoundException("product with the id ${id} not found"); // SRP - Single Responsibility (handling exceptions)
+        }
+        return product; // SRP - Single Responsibility (delegating logic to the model)
+    }
 }
