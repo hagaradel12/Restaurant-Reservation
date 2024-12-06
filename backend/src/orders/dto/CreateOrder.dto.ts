@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsArray, IsNumber, Min } from 'class-validator';  // You may want to add validation decorators
+import { IsNotEmpty, IsString, IsArray, IsNumber, Min, IsEnum } from 'class-validator';  // You may want to add validation decorators
 import { Types } from 'mongoose';  // Import mongoose Types to use ObjectId
 
 export class CreateOrderDto {
@@ -8,9 +8,8 @@ export class CreateOrderDto {
   @IsNotEmpty()
   username: string;
 
-  @IsString()
-  @IsNotEmpty()
-  status: string = "pending";  // Default to "pending"
+  @IsEnum(['pending', 'shipped', 'delivered', 'canceled'])
+  status: string; // Default to "pending"
 
   @IsString()
   @IsNotEmpty()

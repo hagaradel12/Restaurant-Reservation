@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, Types } from 'mongoose';
 import { Orders, ordersDocument } from './orders.schema';
 import { UpdateOrderDto } from './dto/updateOrderDto';
-import { CreateOrderDto } from './dto/createOrderDto';
+import { CreateOrderDto } from './dto/CreateOrder.dto';
 
 @Injectable()
 export class OrdersService {

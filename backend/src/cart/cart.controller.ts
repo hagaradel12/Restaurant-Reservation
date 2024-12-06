@@ -55,7 +55,7 @@ export class CartController {
     @Body() body: { productId: string; quantity: number },
   ): Promise<Cart> {
     const { productId, quantity } = body;
-    return this.cartService.addeProductInCart(username, productId, quantity);
+    return this.cartService.addeProductInCart(username, productId);
   }
 
   @UseGuards(AuthorizationGuard)

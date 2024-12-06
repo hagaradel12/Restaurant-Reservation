@@ -26,20 +26,19 @@ export class ProductsController {
   }
 
   // DELETE /products/:productCode: Delete a product by its productCode           //ADMIN
-  @Delete(':productCode')
+  @Delete(':name')
   @UseGuards(AuthGuard, AuthorizationGuard) 
-  async deleteProduct(@Param('productCode') productCode: number): Promise<Products> {
-    return await this.productsService.deleteProduct(productCode); // SRP - Single Responsibility (delegating logic to service)
+  async deleteProduct(@Param('name') name: string): Promise<Products> {
+    return await this.productsService.deleteProduct(name); // SRP - Single Responsibility (delegating logic to service)
   }
 
   // PUT /products/:productCode: Update an existing product by its productCode     //ADMIN
-  @Put(':productCode')
+  @Put(':name')
   @UseGuards(AuthGuard, AuthorizationGuard) 
   async updateProduct(
-    @Param('productCode') productCode: number,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Products> {
-    return await this.productsService.update(productCode, updateProductDto); // SRP - Single Responsibility (delegating logic to service)
+    return await this.productsService.update(updateProductDto); // SRP - Single Responsibility (delegating logic to service)
   }
 
   // GET /products/:name: Retrieve a product by its name                           //ANY USER
@@ -54,18 +53,18 @@ export class ProductsController {
   }
 
   // GET /products/productId/:id: Retrieve a product by its ID                     //ANY USER
-  @Get('productId/:id')
-  @UseGuards(AuthGuard, AuthorizationGuard) 
-  async findById(@Param('id') id: string): Promise<Products> {
-    try {
-      const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
-      return product;
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;  // Propagate the error if it's already a NotFoundException
-      } else {
-        throw new NotFoundException(`Product with ID ${id} not found`); // SRP - Single Responsibility (handling HTTP exception)
-      }
-    }
-  }
+  // @Get('productId/:id')
+  // @UseGuards(AuthGuard, AuthorizationGuard) 
+  // async findById(@Param('id') id: string): Promise<Products> {
+  //   try {
+  //     const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
+  //     return product;
+  //   } catch (error) {
+  //     if (error instanceof NotFoundException) {
+  //       throw error;  // Propagate the error if it's already a NotFoundException
+  //     } else {
+  //       throw new NotFoundException(`Product with ID ${id} not found`); // SRP - Single Responsibility (handling HTTP exception)
+  //     }
+  //   }
+  // }
 }

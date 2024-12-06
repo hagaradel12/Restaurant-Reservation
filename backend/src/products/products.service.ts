@@ -24,18 +24,18 @@ export class ProductsService {
     }
 
     // Delete a product
-    async deleteProduct(productCode: number): Promise<Products> {
-        const deletedProduct = await this.productModel.findByIdAndDelete(productCode).exec();
+    async deleteProduct(name: string): Promise<Products> {
+        const deletedProduct = await this.productModel.findByIdAndDelete(name).exec();
         if (!deletedProduct) {
-            throw new NotFoundException("Product with code ${productCode} not found"); // SRP - Single Responsibility (handling exceptions)
+            throw new NotFoundException(`Product with code ${name} not found`); // SRP - Single Responsibility (handling exceptions)
         }
         return deletedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
 
     // Update a product
-    async update(productCode: number, updateProductDto: UpdateProductDto): Promise<Products> {
+    async update(updateProductDto: UpdateProductDto): Promise<Products> {
         const updatedProduct = await this.productModel
-            .findByIdAndUpdate(productCode, updateProductDto, { new: true })
+            .findByIdAndUpdate(updateProductDto, { new: true })
             .exec();
         if (!updatedProduct) {
             throw new NotFoundException("Product with code ${productCode} not found"); // SRP - Single Responsibility (handling exceptions)
@@ -52,12 +52,12 @@ export class ProductsService {
         return product; // SRP - Single Responsibility (delegating logic to the model)
     }
 
-    // Get a product by ID
-    async findById(id: mongoose.Types.ObjectId): Promise<Products> {
-        const product = await this.productModel.findOne({ _id:id }).exec();
-        if (!product) {
-            throw new NotFoundException("product with the id ${id} not found"); // SRP - Single Responsibility (handling exceptions)
-        }
-        return product; // SRP - Single Responsibility (delegating logic to the model)
-    }
+    // Get a product by ID WE DONT HAVE IDs
+    // async findById(id: mongoose.Types.ObjectId): Promise<Products> {
+    //     const product = await this.productModel.findOne({ _id:id }).exec();
+    //     if (!product) {
+    //         throw new NotFoundException("product with the id ${id} not found"); // SRP - Single Responsibility (handling exceptions)
+    //     }
+    //     return product; // SRP - Single Responsibility (delegating logic to the model)
+    // }
 }

@@ -44,6 +44,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.7",
     "core-util-is": "^1.0.3",
+    "data-fns": "^1.1.0",
     "date-fns": "^4.1.0",
     "exceljs": "^4.4.0",
     "mongodb": "^5.9.2",

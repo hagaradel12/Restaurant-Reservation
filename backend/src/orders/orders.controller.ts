@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards, Query, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from './dto/createOrderDto';
+import { CreateOrderDto } from './dto/CreateOrder.dto';
 import { UpdateOrderDto } from './dto/updateOrderDto';
 import { Roles, Role } from 'src/auth/decorators/role.decorator';
 import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';

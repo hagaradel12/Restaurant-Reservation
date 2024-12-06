@@ -22,26 +22,24 @@ export class Orders {
   })
   status: string;
 
-  @Prop({ required: true })
-  username: string; // Username of the customer who placed the order
-
-  @Prop({ default: Date.now })
-  createdAt: Date; // Timestamp of order creation
-
-  @Prop({ default: Date.now })
-  updatedAt: Date; // Timestamp of last order update
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  username: Users;
 
   @Prop({ required: true})
   paymentMethod: string;
 
+ 
   @Prop([
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
       quantity: { type: Number, required: true, min: 1 },
     },
   ])
-  items: { productId: mongoose.Types.ObjectId; quantity: number }[];
+   items: { productId: mongoose.Types.ObjectId; quantity: number }[];
 }
 
-// Create the schema for the Orders class
+
+export type ordersDocument = HydratedDocument<Orders> & { createdAt: Date; updatedAt: Date }; // Add createdAt and updatedAt explicitly
 export const OrdersSchema = SchemaFactory.createForClass(Orders);
+
+ 
