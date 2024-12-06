@@ -4,62 +4,67 @@ import { Products } from './products.schema';
 import { CreateProductDto } from './dto/create.dto';
 import { UpdateProductDto } from './dto/update.dto';
 import mongoose from 'mongoose';
-import { AuthGuard } from 'src/auth/guards/authentication.guard'; 
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
 
-@Controller('products')    
+@Controller('products')  
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {} // DIP - Dependency Injection
 
+  // GET /products/getAll: Retrieve all products                                  //ADMIN
   @Get('/getAll')
+  @UseGuards(AuthGuard, AuthorizationGuard) // OCP - Open for extension (adding new guards without modifying logic)
   async getAllProducts(): Promise<Products[]> {
-    return await this.productsService.findAll();
+    return await this.productsService.findAll(); // SRP - Single Responsibility (delegating logic to service)
   }
 
-  // POST: Create a new product
+  // POST /products: Create a new product                                          //ADMIN
   @Post()
-  @UseGuards(AuthGuard) 
+  @UseGuards(AuthGuard, AuthorizationGuard) // OCP - Open for extension (adding new guards without modifying logic)
   async createProduct(@Body() createProductDto: CreateProductDto): Promise<Products> {
-    return await this.productsService.createProduct(createProductDto);
+    return await this.productsService.createProduct(createProductDto); // SRP - Single Responsibility (delegating logic to service)
   }
 
-  // DELETE: Delete a product by its productCode
+  // DELETE /products/:productCode: Delete a product by its productCode           //ADMIN
   @Delete(':productCode')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, AuthorizationGuard) 
   async deleteProduct(@Param('productCode') productCode: number): Promise<Products> {
-    return await this.productsService.deleteProduct(productCode);
+    return await this.productsService.deleteProduct(productCode); // SRP - Single Responsibility (delegating logic to service)
   }
 
-  // PUT: Update an existing product by its productCode
+  // PUT /products/:productCode: Update an existing product by its productCode     //ADMIN
   @Put(':productCode')
-  @UseGuards(AuthGuard)  
+  @UseGuards(AuthGuard, AuthorizationGuard) 
   async updateProduct(
     @Param('productCode') productCode: number,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Products> {
-    return await this.productsService.update(productCode, updateProductDto);
+    return await this.productsService.update(productCode, updateProductDto); // SRP - Single Responsibility (delegating logic to service)
   }
 
-  // GET: get a product by its name
+  // GET /products/:name: Retrieve a product by its name                           //ANY USER
   @Get(':name')
+  @UseGuards(AuthGuard, AuthorizationGuard) 
   async getProductByName(@Param('name') name: string): Promise<Products> {
-    const product = await this.productsService.findByName(name);
+    const product = await this.productsService.findByName(name); // SRP - Single Responsibility (delegating logic to service)
     if (!product) {
-      throw new NotFoundException(`Product with name "${name}" not found`);
+      throw new NotFoundException(`Product with name "${name}" not found`); // SRP - Single Responsibility (handling HTTP exception)
     }
     return product;
   }
 
-  // GET: get a product by its ID
+  // GET /products/productId/:id: Retrieve a product by its ID                     //ANY USER
   @Get('productId/:id')
+  @UseGuards(AuthGuard, AuthorizationGuard) 
   async findById(@Param('id') id: string): Promise<Products> {
     try {
-      const product = await this.productsService.findById(new mongoose.Types.ObjectId(id));
+      const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
       return product;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;  // Propagate the error if it's already a NotFoundException
       } else {
-        throw new NotFoundException(`Product with ID ${id} not found`);
+        throw new NotFoundException(`Product with ID ${id} not found`); // SRP - Single Responsibility (handling HTTP exception)
       }
     }
   }
