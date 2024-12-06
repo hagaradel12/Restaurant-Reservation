@@ -4,23 +4,23 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importing useRouter from next/navigation
 import Sidebar from '@/app/components/admin/sidebar/page';
 
-export default function UpdateBookingPage() {
-  const [bookingId, setBookingId] = useState<string>(''); // for booking ID
+export default function CreateBookingPage() {
+  const [username, setUsername] = useState<string>(''); // for booking ID
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
   const [date, setDate] = useState<string>(''); // for date
   const [time, setTime] = useState<string>(''); // for time
 
   const router = useRouter(); // Hook to navigate
 
-  const handleUpdate = () => {
-    // Implement the logic for updating the booking here
-    console.log("Booking updated:", { bookingId, noOfPeople, date, time });
-    // After updating, redirect back to the bookings page or another page
-    router.push('/pages/admin/booking'); // Redirect back to the bookings page
+  const handleCreate = () => {
+    // Implement the logic for creating the booking here
+    console.log("New booking created:", { username, noOfPeople, date, time });
+    // After creating, redirect back to the bookings page or another page
+    router.push('/pages/client/booking'); // Redirect back to the bookings page
   };
 
   const handleCancel = () => {
-    router.push('/pages/admin/booking'); 
+    router.push('/pages/client/booking'); // Redirect to the bookings page
   };
 
   return (
@@ -31,20 +31,20 @@ export default function UpdateBookingPage() {
       {/* Main Content */}
       <div className="flex-1 p-6 bg-[#F7F4F2]">
         {/* Page Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">Update Booking</h1>
+        <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">Create Booking</h1>
 
-        {/* Form for Updating Booking */}
+        {/* Form for Creating Booking */}
         <div className="bg-white shadow-md rounded-lg p-6">
           {/* Booking ID Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Booking ID">
-              Booking ID
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Username">
+              Username
             </label>
             <input
               type="text"
-              id="Booking ID"
-              value={bookingId}
-              onChange={(e) => setBookingId(e.target.value)}
+              id="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
           </div>
@@ -100,10 +100,10 @@ export default function UpdateBookingPage() {
               Cancel
             </button>
             <button
-              onClick={handleUpdate}
+              onClick={handleCreate}
               className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
             >
-              Update Booking
+              Create Booking
             </button>
           </div>
         </div>

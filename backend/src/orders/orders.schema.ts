@@ -1,23 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Products } from 'src/products/products.schema';
+import { Users } from 'src/users/users.schema';
 
-
-
-@Schema()
+@Schema({ timestamps: true })
 export class Orders {
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }] })
-  products: Products[]; // List of products included in the order
+
+  @Prop({required: true, unique: true})
+  orderNo:number
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products' }] })
+  products: Products[];
 
   @Prop({ required: true })
-  Address: string; // Shipping address for the order
+  Address: string;
 
   @Prop({
     required: true,
     default: 'pending',
-    enum: ['pending', 'on its way', 'delivered', 'canceled'],
+    enum: ['pending', 'shipped', 'delivered', 'canceled'],
   })
-  status: string; // Order status
+  status: string;
 
   @Prop({ required: true })
   username: string; // Username of the customer who placed the order

@@ -1,52 +1,69 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards, Query, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { Orders } from './orders.schema';
-import { UpdateOrderStatusDto } from './dto/UpdateOrderStatus.dto';
-import { CreateOrderDto } from './dto/CreateOrder.dto';
-import { Role, Roles } from 'src/auth/decorators/role.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { CreateOrderDto } from './dto/createOrderDto';
+import { UpdateOrderDto } from './dto/updateOrderDto';
+import { Roles, Role } from 'src/auth/decorators/role.decorator';
 import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { AuthGuard } from 'src/auth/guards/authentication.guard';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
+
+  // Create a new order
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto): Promise<Orders> {
-    return this.ordersService.create(createOrderDto);
+  async create(@Body() createOrderDto: CreateOrderDto) {
+    return await this.ordersService.create(createOrderDto);
   }
-  @Roles(Role.Admin)
+
   @UseGuards(AuthGuard, AuthorizationGuard)
-  @Delete(':orderNo')
-    async deleteOrder(@Param('orderNo') orderNo: number): Promise<Orders> {
-        return this.ordersService.delete(orderNo);
+  @Roles(Role.Admin, Role.Customer) // Accessible by both admin and customer
+  @Get('user-orders')
+  getUserOrders(@Query('username') username: string) {
+    const current =this.ordersService.findCurrentOrder(username);
+    const past = this.ordersService.findPastOrders(username);
+      return{
+        currentOrder : current,
+        pastOrders:past
+      };
+  }
+
+
+
+  // Get a single order by order number
+  @Roles(Role.Admin) // Restrict access to Admins
+  @UseGuards(AuthGuard, AuthorizationGuard) 
+  @Get('search')
+  async getOrderByOrderNoOrUsername(
+    @Query('orderNo') orderNo?: string,  @Query('username') username?: string ) {
+    try {
+      const order = await this.ordersService.getOrderByOrderNoOrUsername(orderNo, username);
+      return order;
+    } catch (error) {
+      throw new Error(`Failed to fetch the order: ${error.message}`);
     }
+  }
+
+  // Admin: Get all orders
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, AuthorizationGuard)
-  @Get(':orderNo')
-  async getOrder(@Param('orderNo')orderNo: number){
-    const order =await this.ordersService.findByNumber(orderNo);
-    return order;
-  }
-  @Get('/')
-  async findAll(){
-    return this.ordersService.findAll();
-  }
-  @Patch('update-details/:orderNo')
-  async updateOrderDetails(
-    @Param('orderNo') orderNo: number,
-    @Body() updateDetails: UpdateOrderStatusDto,
-    @Req() req, 
-  ): Promise<Orders> {
-    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
-
-    return this.ordersService.updateOrderDetails(username, orderNo, updateDetails);
+  @Get('admin/all')
+  async getAllOrders() {
+    return await this.ordersService.getAllOrders();
   }
 
-  @Get('history')
-  async getCustomerOrders(@Req() req): Promise<Orders[]> {
-    const username = req.user.username; // assuming username is available in req.user (from JWT or session)
-
-    return this.ordersService.getCustomerOrders(username);
+  // Admin: Update order status
+  @Roles(Role.Admin)
+  @Put('admin/status/:orderNo')
+  async adminUpdateOrderStatus(@Param('orderNo') orderNo: string,@Body() status: string,) {
+    return await this.ordersService.adminUpdateOrderStatus(orderNo, status);
   }
 
+  // Admin: Delete order by order number
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
+  @Delete('admin/:orderNo')
+  async adminDeleteOrder(@Param('orderNo') orderNo: string) {
+    return await this.ordersService.adminDeleteOrder(orderNo);
+  }
 }
