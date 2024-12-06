@@ -6,7 +6,8 @@ import { UpdateProductDto } from './dto/update.dto';
 import mongoose from 'mongoose';
 import { AuthGuard } from 'src/auth/guards/authentication.guard'; 
 
-@Controller('products')
+@Controller('products')       // SRP: Controller is focused on handling HTTP requests and delegating the business logic to the service layer
+    
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
