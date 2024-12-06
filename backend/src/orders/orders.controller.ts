@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Param, Put, Delete, Get, UseGuards, Query, Req } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/createOrderDto';
 import { UpdateOrderDto } from './dto/updateOrderDto';
@@ -16,38 +16,32 @@ export class OrdersController {
     return await this.ordersService.create(createOrderDto);
   }
 
-  // Delete order by order number
-  @Roles(Role.Admin)
   @UseGuards(AuthGuard, AuthorizationGuard)
-  @Delete(':orderNo')
-  async delete(@Param('orderNo') orderNo: string) {
-    return await this.ordersService.delete(orderNo);
+  @Roles(Role.Admin, Role.Customer) // Accessible by both admin and customer
+  @Get('user-orders')
+  getUserOrders(@Query('username') username: string) {
+    const current =this.ordersService.findCurrentOrder(username);
+    const past = this.ordersService.findPastOrders(username);
+      return{
+        currentOrder : current,
+        pastOrders:past
+      };
   }
 
-  // Update order by order number
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, AuthorizationGuard)
-  @Put(':orderNo')
-  async update(
-    @Param('orderNo') orderNo: string,
-    @Body() updateOrderDto: UpdateOrderDto,
-  ) {
-    return await this.ordersService.update(orderNo, updateOrderDto);
-  }
 
-  // Get all orders for a user
-
-  @Get('user/:username')
-  async getUserOrders(@Param('username') username: string) {
-    return await this.ordersService.getUserOrders(username);
-  }
 
   // Get a single order by order number
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, AuthorizationGuard)
-  @Get(':orderNo')
-  async getOrderByOrderNo(@Param('orderNo') orderNo: string) {
-    return await this.ordersService.getOrderByOrderNo(orderNo);
+  @Roles(Role.Admin) // Restrict access to Admins
+  @UseGuards(AuthGuard, AuthorizationGuard) 
+  @Get('search')
+  async getOrderByOrderNoOrUsername(
+    @Query('orderNo') orderNo?: string,  @Query('username') username?: string ) {
+    try {
+      const order = await this.ordersService.getOrderByOrderNoOrUsername(orderNo, username);
+      return order;
+    } catch (error) {
+      throw new Error(`Failed to fetch the order: ${error.message}`);
+    }
   }
 
   // Admin: Get all orders
@@ -61,10 +55,7 @@ export class OrdersController {
   // Admin: Update order status
   @Roles(Role.Admin)
   @Put('admin/status/:orderNo')
-  async adminUpdateOrderStatus(
-    @Param('orderNo') orderNo: string,
-    @Body() status: string,
-  ) {
+  async adminUpdateOrderStatus(@Param('orderNo') orderNo: string,@Body() status: string,) {
     return await this.ordersService.adminUpdateOrderStatus(orderNo, status);
   }
 
