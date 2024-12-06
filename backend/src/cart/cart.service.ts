@@ -12,6 +12,9 @@ export class CartService {
   ) {}
 
   // Get the user's cart from username extracted from token, called when user clicks on go to cart
+  //imperative as it matually retrieves cart from carts
+  //database then checks if it exist,
+  //error handling and if conditions are imperative
   async getCart(username: string): Promise<CartDocument> {
     const cart = await this.cartModel.findOne({ username }).exec();
     if (!cart) {
@@ -20,7 +23,7 @@ export class CartService {
     return cart;
   }
 
-  //this is to retrive the product if it exists in the cart to display it to the user
+  //Retrieve a product from the user's cart
   async getProductInCart(username: string, productId: string): Promise<{ product: any; quantity: number }> {
     const objectId = new mongoose.Types.ObjectId(productId);
   
@@ -30,7 +33,10 @@ export class CartService {
       throw new NotFoundException('Cart not found');
     }
   
-    // Check if product exists in the cart
+    //Find a product in the cart by productId
+    //This applies single responsibility principle as it is a helper
+    //function dedicated for a single purpose
+    //Retieve full populated products from cart, after retrieving cart
     const productInCart = cart.products.find(
       (item) => item.productId.toString() === productId,
     );
@@ -49,12 +55,25 @@ export class CartService {
   }
   
   // Get all carts (for admin)
+  //Open-Closed PRINCIPLE: open for extension
+  //but closed for modification
+  //This means client cannot directly modify the function
+  //but extend it by applying conditions like filtering according
+  //to certain attribute, or sorting according to total price for all products in 
+  //the cart, for example to notify promising orders of bundles, or to decide
+  //on discounts and offers
+
+  //declarativ, no conditions/loops/or defined logic
+  //find is build in and does the fetching internally
   async getAllCarts(): Promise<Cart[]> {
     return this.cartModel.find().exec();
   }
 
   // Add a product in the user's cart, whether cart exists or not
   //this is called if user clicks on product not in cart or cart doesnt exist
+  //if cart exist and product in cart, menu shows +/- buttons that call increment
+  //and decrement
+  //imperative
   async addeProductInCart(username: string, productId: string, quantity: number): Promise<Cart> {
     const objectId = new mongoose.Types.ObjectId(productId);
     const product = await this.productModel.findById(objectId).exec();
@@ -81,7 +100,7 @@ export class CartService {
     return cart.save();
   }
   
-
+//Update th equantity of a product in the cart
 //this is called if product exists in cart and user changes quantity from drop down
   async updateProductQuantity(
     username: string,
@@ -117,6 +136,7 @@ export class CartService {
   }
   
 //increment product by 1 assuming it is already in cart 
+//single responsibility principle, only concerned about single unit quantity increment
 async incrementProductQuantity(
   username: string,
   productId: string,
@@ -135,7 +155,7 @@ async incrementProductQuantity(
     throw new NotFoundException('Cart not found');
   }
 
-  // Increment product quantity
+  // Increment product quantity, delarative approach in array function
   const existingProduct = cart.products.find(
     (item) => item.productId.toString() === productId,
   );
@@ -148,6 +168,7 @@ async incrementProductQuantity(
 
   return cart.save();
 }
+
 //same for decrement by 1
 async decrementProductQuantity(username: string, productId: string): Promise<Cart> {
   const objectId = new mongoose.Types.ObjectId(productId);
@@ -168,7 +189,7 @@ async decrementProductQuantity(username: string, productId: string): Promise<Car
   if (!existingProduct) {
     throw new NotFoundException('Product not found in cart');
   }
-
+//declerative approach
   if (existingProduct.quantity === 1) {
     cart.products = cart.products.filter(
       (item) => item.productId.toString() !== productId,
@@ -196,17 +217,7 @@ async decrementProductQuantity(username: string, productId: string): Promise<Car
     await cart.save();
   }
 
-  // Clear another user's cart (Admin only)
-  async clearOtherCart(username: string): Promise<void> {
-    const cart = await this.cartModel.findOne({ username }).exec();
-    if (!cart) {
-      throw new NotFoundException('Cart not found');
-    }
 
-    // Clear all products from the cart
-    cart.products = [];
-    await cart.save();
-  }
 
   // Delete a product from the user's cart
   async deleteProductFromCart(username: string, productId: string): Promise<Cart> {
@@ -225,7 +236,8 @@ async decrementProductQuantity(username: string, productId: string): Promise<Car
     }
 
     // Remove the product from the cart
-    cart.products.splice(productIndex, 1);
+    cart.products.splice(productIndex, 1);//imperative as
+    //it uses explicit action, push it another example
 
     return cart.save();
   }

@@ -69,7 +69,7 @@ async updateOrderDetails(username: string, OrderNo: number, updateDetails: any):
     }
 
     // Update order details
-    order.orderDetails = updateDetails;
+    order.items = updateDetails;
     order.updatedAt = new Date();
     
     await order.save();

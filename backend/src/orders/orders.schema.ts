@@ -28,8 +28,16 @@ export class Orders {
   @Prop({ default: Date.now })
   updatedAt: Date; // Timestamp of last order update
 
-  @Prop({ required: true, type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Products' }] })
-  orderDetails: Products[]; // List of products in the order, referencing the Products collection
+  @Prop({ required: true})
+  paymentMethod: string;
+
+  @Prop([
+    {
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+      quantity: { type: Number, required: true, min: 1 },
+    },
+  ])
+  items: { productId: mongoose.Types.ObjectId; quantity: number }[];
 }
 
 // Create the schema for the Orders class
