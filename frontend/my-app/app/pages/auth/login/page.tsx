@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/app/utils/axiosInstance";
-import { jwtDecode } from "jwt-decode"; // Corrected import
+import {jwtDecode} from "jwt-decode";
 import Link from "next/link";
 
 let backend_url = "http://localhost:3001";
@@ -11,17 +11,10 @@ interface LoginResponse {
   access_token: string; // JWT token
   user: { // Add the user object here to match the structure in the response
     username: string;
-    role: boolean;
+    isAdmin: boolean;
   };
 }
 
-interface DecodedToken {
-  user: {
-    username: string;
-    role: boolean;  // Assuming the backend sends `role` instead of `isAdmin`
-  };
-  exp: number; // Expiration time of the token
-}
 
 const LoginPage = () => {
   const [username, setUsername] = useState<string>("");
@@ -31,66 +24,61 @@ const LoginPage = () => {
   // Define the correct interface for the decoded token
 interface DecodedToken {
   username: string;  // Username field directly at the root
-  role: boolean;     // Role field directly at the root
+  isAdmin: boolean;     // Role field directly at the root
   exp: number;       // Expiration time
 }
+
 
 const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
     console.log("Attempting login with:", { username, password });
+
     const response = await axiosInstance.post<LoginResponse>(`${backend_url}/auth/login`, {
       username,
       password,
     });
 
-    const { status, data } = response;
-    console.log("Login response:", { status, data });
+    if (response.status === 200 || response.status === 201) {
+      const { access_token } = response.data;
 
-    if (status === 200 || status === 201) { // Check for 200 or 201 status
-      const { access_token, user } = data;
-
-      // Instead of storing the token in localStorage, it's stored as a cookie by the backend
       if (access_token) {
         try {
-          const decodedToken: DecodedToken = jwtDecode(access_token); // Decoding token
+          // Decoding the JWT
+          const decodedToken: DecodedToken = jwtDecode<DecodedToken>(access_token);
 
-          // Check if decodedToken has necessary fields
-          if (decodedToken && decodedToken.username && decodedToken.role !== undefined) {
-            const { username, role } = decodedToken;
+          console.log("Decoded token:", decodedToken);
 
-            // Store the decoded data in localStorage (optional, to use in UI)
-            localStorage.setItem("username", username);
-            localStorage.setItem("role", role.toString());  // Store `role` as well
+          if (decodedToken.username && decodedToken.isAdmin !== undefined) {
+            localStorage.setItem("username", decodedToken.username);
+            localStorage.setItem("isAdmin", decodedToken.isAdmin.toString());
 
-            // Redirect based on role
-            if (role) {
-              router.push("/pages/admin/admin-dashboard");  // Redirect to admin dashboard if role is `true`
+            if (decodedToken.isAdmin) {
+              router.push("/pages/admin/admin-dashboard");
             } else {
-              router.push("/pages/client/homepage");  // Redirect to client homepage if role is `false`
+              router.push("/pages/client/homepage");
             }
           } else {
-            console.error("Decoded token or user info is missing:", decodedToken);
+            console.error("Invalid token structure:", decodedToken);
             alert("Login failed. Invalid token structure.");
           }
         } catch (decodeError) {
           console.error("Error decoding token:", decodeError);
-          alert("Login failed. Invalid token.");
+          alert("Login failed. Unable to decode token.");
         }
       } else {
         console.error("No access token received.");
         alert("Login failed. Please check your credentials.");
       }
     } else {
-      console.log("Login failed: Status not 200 or 201, response:", { status, data });
+      console.error("Login failed with response:", response);
       alert("Login failed. Please check your credentials.");
     }
-  } catch (err) {
-    console.error("Login error:", err);
+  } catch (error) {
+    console.error("Login error:", error);
     alert("Login failed. Please check your credentials.");
   }
 };
-
 
   
   return (

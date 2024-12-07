@@ -17,7 +17,7 @@ import { AdapterModule } from './adapter/adapter.module';
     BookingModule,
     ProductsModule,
     OrdersModule,
-    CartModule,
+   CartModule,
     AuthModule,
     AdapterModule,
     

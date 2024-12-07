@@ -53,18 +53,18 @@ export class ProductsController {
   }
 
   // GET /products/productId/:id: Retrieve a product by its ID                     //ANY USER
-  // @Get('productId/:id')
-  // @UseGuards(AuthGuard, AuthorizationGuard) 
-  // async findById(@Param('id') id: string): Promise<Products> {
-  //   try {
-  //     const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
-  //     return product;
-  //   } catch (error) {
-  //     if (error instanceof NotFoundException) {
-  //       throw error;  // Propagate the error if it's already a NotFoundException
-  //     } else {
-  //       throw new NotFoundException(`Product with ID ${id} not found`); // SRP - Single Responsibility (handling HTTP exception)
-  //     }
-  //   }
-  // }
+  @Get('productId/:id')
+  @UseGuards(AuthGuard) 
+  async findById(@Param('id') id: string): Promise<Products> {
+    try {
+      const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
+      return product;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;  // Propagate the error if it's already a NotFoundException
+      } else {
+        throw new NotFoundException(`Product with ID ${id} not found`); // SRP - Single Responsibility (handling HTTP exception)
+      }
+    }
+  }
 }

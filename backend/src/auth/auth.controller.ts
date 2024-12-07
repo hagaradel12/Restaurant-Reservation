@@ -33,7 +33,7 @@ export class AuthController {
             const combinedData = {
                 token: result.access_token,
                 username: result.payload.username,
-                role: result.payload.role,
+                isAdmin: result.payload.isAdmin,
             };
 
             // Convert the object to a JSON string

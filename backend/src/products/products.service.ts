@@ -27,7 +27,7 @@ export class ProductsService {
     async deleteProduct(name: string): Promise<Products> {
         const deletedProduct = await this.productModel.findByIdAndDelete(name).exec();
         if (!deletedProduct) {
-            throw new NotFoundException(`Product with code ${name} not found`); // SRP - Single Responsibility (handling exceptions)
+            throw new NotFoundException(`Product with name ${name} not found`); // SRP - Single Responsibility (handling exceptions)
         }
         return deletedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
@@ -38,7 +38,7 @@ export class ProductsService {
             .findByIdAndUpdate(updateProductDto, { new: true })
             .exec();
         if (!updatedProduct) {
-            throw new NotFoundException("Product with code ${productCode} not found"); // SRP - Single Responsibility (handling exceptions)
+            throw new NotFoundException(`Product not found`); // SRP - Single Responsibility (handling exceptions)
         }
         return updatedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
@@ -52,12 +52,12 @@ export class ProductsService {
         return product; // SRP - Single Responsibility (delegating logic to the model)
     }
 
-    // Get a product by ID WE DONT HAVE IDs
-    // async findById(id: mongoose.Types.ObjectId): Promise<Products> {
-    //     const product = await this.productModel.findOne({ _id:id }).exec();
-    //     if (!product) {
-    //         throw new NotFoundException("product with the id ${id} not found"); // SRP - Single Responsibility (handling exceptions)
-    //     }
-    //     return product; // SRP - Single Responsibility (delegating logic to the model)
-    // }
+   // Get a product by ID 
+    async findById(id: mongoose.Types.ObjectId): Promise<Products> {
+        const product = await this.productModel.findOne({ _id:id }).exec();
+        if (!product) {
+            throw new NotFoundException("product with the id ${id} not found"); // SRP - Single Responsibility (handling exceptions)
+        }
+        return product; // SRP - Single Responsibility (delegating logic to the model)
+    }
 }

@@ -3,7 +3,7 @@ import { HydratedDocument } from 'mongoose';
 
 @Schema()
 export class Booking {
-  @Prop({ required: true })
+  @Prop({ required: false })
   bookingId:number;
   
   @Prop({ required: true })

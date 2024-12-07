@@ -59,7 +59,7 @@ export class AuthService {
         console.log(`User authenticated: ${username}, generating token...`);
       
         // JWT payload
-        const payload = { username: user.username, role: user.isAdmin };
+        const payload = { username: user.username, isAdmin: user.isAdmin };
         console.log("payload met");
         // Debugging JWT configuration
         const secret = process.env.JWT_SECRET || 'yourSuperSecretKey';

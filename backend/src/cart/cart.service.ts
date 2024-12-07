@@ -8,7 +8,8 @@ import { Products, ProductsDocument } from 'src/products/products.schema';
 export class CartService {
   constructor(
     @InjectModel(Cart.name) private readonly cartModel: Model<CartDocument>,
-    @InjectModel(Products.name) private readonly productModel: Model<ProductsDocument>,
+    @InjectModel(Products.name) private productModel: Model<ProductsDocument>
+
   ) {}
 
   // Get the user's cart from username extracted from token, called when user clicks on cart in nav bar in 
@@ -233,7 +234,7 @@ async decrementProductQuantity(username: string, productId: string): Promise<Car
     await cart.save();
   }
 
-
+//want to add delete cart too in the future
 
   //delete a product from the user's cart by product id and username sent from end when
   //user clicks on a delete button/remove icon

@@ -66,14 +66,22 @@ private async randomizedId(): Promise<number> {
     return newBooking.save();
   }
 
-// PUT:Update an existing booking by title & date                                //ADMIN
-    async update(bookingId:number, updateBookingDto: UpdateBookingDto): Promise<Booking> {
-        const updatedBooking = await this.bookingModel.findOneAndUpdate({bookingId, updateBookingDto}, { new: true }).exec();
-        if (!updatedBooking) {
-          throw new NotFoundException(`Booking with id ${bookingId} not found`);
-        }
-        return updatedBooking;
-      }
+// PUT:Update an existing booking by time & date                                //ADMIN
+async update(bookingId: number, updateBookingDto: UpdateBookingDto): Promise<Booking> {
+  const updatedBooking = await this.bookingModel
+    .findOneAndUpdate(
+      { bookingId }, // Filter to find the booking by its ID
+      updateBookingDto, // The update operation with the new data
+      { new: true } // Options to return the updated document
+    )
+    .exec();
+
+  if (!updatedBooking) {
+    throw new NotFoundException(`Booking with id ${bookingId} not found`);
+  }
+
+  return updatedBooking;
+}
 
 //DELETE: Delete a booking by title & date                                          //ADMIN
   async delete(bookingId:number): Promise<Booking> {

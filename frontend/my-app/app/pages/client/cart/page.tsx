@@ -28,7 +28,7 @@ const CartPage = () => {
       }
 
       const username = JSON.parse(userData).username;
-
+      console.log(username)
       axios
         .get(`http://localhost:3001/cart/${username}`, { withCredentials: true })
         .then(async (response) => {

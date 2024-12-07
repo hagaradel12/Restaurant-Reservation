@@ -31,7 +31,7 @@ export class Orders {
  
   @Prop([
     {
-      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+      productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Products', required: true },
       quantity: { type: Number, required: true, min: 1 },
     },
   ])
