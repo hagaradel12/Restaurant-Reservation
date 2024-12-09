@@ -19,18 +19,20 @@ export class BookingService {
     return this.bookingModel.find().exec();
   }
   
- //GET:booking by username                                                     //ADMIN &client by token?
-   async findByUsername(username: string): Promise<Booking[]> {
-    const booking = await this.bookingModel.find({ username }).exec();
-    if (!booking) {
-      throw new NotFoundException(`Booking with username ${username} not found`);
+  //GET: admin find username's booking
+  async findByUsername(username: string): Promise<Booking[]> {
+    // Use a case-insensitive regular expression for partial matches
+    const booking = await this.bookingModel.find({ username: { $regex: username, $options: 'i' },}).exec();
+  
+    if (!booking || booking.length === 0) {
+      throw new NotFoundException(`No bookings found for username matching '${username}'`);
     }
+  
     return booking;
   }
-
   //GET: booking by id                                            //ADMIN
-  async findById(bookingId:number): Promise<Booking[]> {
-    const booking = await this.bookingModel.find({bookingId}).exec();
+  async findById(bookingId:number): Promise<Booking> {
+    const booking = await this.bookingModel.findOne({bookingId}).exec();
     if (!booking) {
       throw new NotFoundException(`Booking with id ${bookingId} not found`);
     }
@@ -58,21 +60,20 @@ private async randomizedId(): Promise<number> {
     return id;
 }
    // Create a new booking
-   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+   async create(createBookingDto: CreateBookingDto, user:any): Promise<Booking> {
     const newBooking = new this.bookingModel(createBookingDto);
-    newBooking.bookingId = await this.randomizedId();
-    return newBooking.save();
+    newBooking.username = user.username;
+  // Generate a random bookingId
+  newBooking.bookingId = await this.randomizedId();
+
+  return newBooking.save();
   }
 
 // PUT:Update an existing booking by time & date                                //ADMIN
 async update(bookingId: number, updateBookingDto: UpdateBookingDto): Promise<Booking> {
-  const updatedBooking = await this.bookingModel
-    .findOneAndUpdate(
-      { bookingId }, // Filter to find the booking by its ID
-      updateBookingDto, // The update operation with the new data
-      { new: true } // Options to return the updated document
-    )
-    .exec();
+  const updatedBooking = await this.bookingModel.findOneAndUpdate({ bookingId }, updateBookingDto, { new: true } ).exec();
+
+  console.log("Updated Booking:", updatedBooking);
 
   if (!updatedBooking) {
     throw new NotFoundException(`Booking with id ${bookingId} not found`);

@@ -1,9 +1,10 @@
-export interface Booking{
-_id:object,
-no_of_people: number,
-Date: Date,
-Time: string,
-username: string
+export interface Booking {
+  _id: string;
+  no_of_people: number;
+  date: string; // ISO Date format
+  time: string;
+  username: string;
+  bookingId: number;
 }
 export interface Product{
     _id:object,

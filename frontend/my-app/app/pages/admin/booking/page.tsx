@@ -52,12 +52,12 @@ export default function BookingPage() {
         if (/^\d+$/.test(searchTerm)) {
           // If searchTerm is all numbers, treat it as an ID
           console.log("Searching by ID...");
-          const idResponse = await axiosInstance.get<Booking>(`${backend_url}/booking/id:${searchTerm}`);
+          const idResponse = await axiosInstance.get<Booking>(`${backend_url}/booking/admin/id/${searchTerm}`);
           setBookings([idResponse.data]); // Wrapping single booking in an array
         } else {
           // Otherwise, treat it as a username
           console.log("Searching by username...");
-          const userResponse = await axiosInstance.get<Booking[]>(`${backend_url}/booking/user:${searchTerm}`);
+          const userResponse = await axiosInstance.get<Booking[]>(`${backend_url}/booking/admin/username/${searchTerm}`);
           setBookings(userResponse.data); // Directly set array of bookings
         }
       } catch (error) {
@@ -71,6 +71,19 @@ export default function BookingPage() {
     router.push(`/pages/admin/booking/updateBooking`);
   };
 
+  const handleDelete = async (bookingId: number) => {
+    try {
+      // Send DELETE request to the backend
+      await axiosInstance.delete(`${backend_url}/booking/delete/${bookingId}`);
+      console.log(`Booking with ID ${bookingId} deleted successfully.`);
+      
+      // Refresh the list of bookings
+      const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/`);
+      setBookings(response.data);
+    } catch (error) {
+      console.error(`Error deleting booking with ID ${bookingId}:`, error);
+    }
+  };
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -85,7 +98,7 @@ export default function BookingPage() {
         <div className="mb-6 flex items-center">
           <input
             type="text"
-            placeholder="Search by username..."
+            placeholder="Search by username or booking ID..."
             value={searchTerm} // Bind the searchTerm state to the input
             onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm state on input change
             className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
@@ -132,9 +145,12 @@ export default function BookingPage() {
                     <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                     <td className="px-4 py-2 text-center">
-                      <button className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition">
-                        Delete
-                      </button>
+                    <button
+                        onClick={() => handleDelete(booking.bookingId)} // Call handleDelete with bookingId
+                        className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
+                        >
+                       Delete
+                     </button>
                     </td>
                   </tr>
                 ))}

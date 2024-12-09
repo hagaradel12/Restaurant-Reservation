@@ -1,23 +1,57 @@
 'use client'; // Marks this file as a client-side component
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Importing useRouter from next/navigation
-import Sidebar from '@/app/components/admin/sidebar/page';
+import { useState, useEffect } from "react";
+import axiosInstance from "@/app/utils/axiosInstance";
+import Link from "next/link";
+import React from "react";
+import { useRouter } from "next/navigation"; // Import from next/navigation
+import Sidebar from "@/app/components/admin/sidebar/page";
 
+let backend_url = "http://localhost:3001";
+interface Booking {
+  _id: string;
+  no_of_people: number;
+  date: string; // ISO Date format
+  time: string;
+  username: string;
+  bookingId: number;
+}
 export default function UpdateBookingPage() {
-  const [bookingId, setBookingId] = useState<string>(''); // for booking ID
+  const [BookingId, setBookingId] = useState<number | string>(''); // for booking ID
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
-  const [date, setDate] = useState<string>(''); // for date
-  const [time, setTime] = useState<string>(''); // for time
+  const [Date, setDate] = useState<string>(''); // for date
+  const [Time, setTime] = useState<string>(''); // for time
 
   const router = useRouter(); // Hook to navigate
 
-  const handleUpdate = () => {
-    // Implement the logic for updating the booking here
-    console.log("Booking updated:", { bookingId, noOfPeople, date, time });
-    // After updating, redirect back to the bookings page or another page
-    router.push('/pages/admin/booking'); // Redirect back to the bookings page
+  const handleUpdate = async (BookingId: number, noOfPeople: number, Date: string, Time: string) => {
+    try {
+      // First, fetch the current booking details from the server
+      const response = await axiosInstance.get<Booking>(`${backend_url}/booking/admin/id/${BookingId}`);
+      const currentBooking = response.data;
+  
+      // Create an updated object, keeping existing values for unchanged fields
+      const updatedto = {
+        no_of_people: noOfPeople || currentBooking.no_of_people, // If noOfPeople is empty, keep current value
+        date: Date || currentBooking.date, // If Date is empty, keep current value
+        time: Time || currentBooking.time, // If Time is empty, keep current value
+      };
+  
+      console.log('Sending update request with data:', updatedto);
+  
+      // Sending PUT request to update the booking
+      await axiosInstance.put(`${backend_url}/booking/update/${BookingId}`, updatedto);
+  
+      console.log(`Booking with ID ${BookingId} updated successfully.`);
+      
+      // Redirect back to the bookings page or another page
+      router.push('/pages/admin/booking');
+    } catch (error) {
+      console.error(`Error updating booking with ID ${BookingId}:`, error);
+    }
   };
+  
+  
 
   const handleCancel = () => {
     router.push('/pages/admin/booking'); 
@@ -37,13 +71,13 @@ export default function UpdateBookingPage() {
         <div className="bg-white shadow-md rounded-lg p-6">
           {/* Booking ID Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Booking ID">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="BookingId">
               Booking ID
             </label>
             <input
-              type="text"
-              id="Booking ID"
-              value={bookingId}
+              type="number"
+              id="BookingId"
+              value={BookingId}
               onChange={(e) => setBookingId(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
@@ -70,8 +104,8 @@ export default function UpdateBookingPage() {
             </label>
             <input
               type="date"
-              id="date"
-              value={date}
+              id="Date"
+              value={Date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
@@ -84,8 +118,8 @@ export default function UpdateBookingPage() {
             </label>
             <input
               type="time"
-              id="time"
-              value={time}
+              id="Time"
+              value={Time}
               onChange={(e) => setTime(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
@@ -100,7 +134,7 @@ export default function UpdateBookingPage() {
               Cancel
             </button>
             <button
-              onClick={handleUpdate}
+              onClick={() => handleUpdate(Number(BookingId),Number( noOfPeople), Date, Time)}
               className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
             >
               Update Booking

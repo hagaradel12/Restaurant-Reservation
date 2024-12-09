@@ -12,7 +12,7 @@ import { AdapterModule } from './adapter/adapter.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://lojineamer:0000@cluster0.ras61.mongodb.net/'),
+    MongooseModule.forRoot('mongodb+srv://lojineamer:0000@cluster0.ras61.mongodb.net/test'),
      UsersModule,
     BookingModule,
     ProductsModule,

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete,NotFoundException,UseGuards   } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete,NotFoundException,UseGuards,Req   } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Booking } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
@@ -23,54 +23,54 @@ export class BookingController {
     }
 
     // GET /booking/:username: Retrieve bookinga of specifc user                          //ADMIN
-  @Get('admin/:username')
-   @Roles(Role.Admin)
    @UseGuards(AuthGuard, AuthorizationGuard)
+   @Roles(Role.Admin)
+   @Get('admin/username/:username')
   async findByUsername(@Param('username') username: string): Promise<Booking[]> {
     return this.bookingService.findByUsername(username);
   }
 
   // GET /booking/:username: Retrieve booking of specifc date                          //ADMIN
-  @Get('/:bookingId')
+  @UseGuards(AuthGuard, AuthorizationGuard)
    @Roles(Role.Admin)
-   @UseGuards(AuthGuard, AuthorizationGuard)
-  async findById(@Param('bookingId')bookingId:number): Promise<Booking[]> {
+   @Get('admin/id/:bookingId')
+  async findById(@Param('bookingId')bookingId:number): Promise<Booking> {
     return this.bookingService.findById(bookingId);
   }
 
 // GET ALL BOOKING FOR CLIENT GET username from token
-@Get('client/:username')
+@UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Customer)
- @UseGuards(AuthGuard, AuthorizationGuard)
+ @Get('client/:username')
 async findClient(@Param('username') username: string): Promise<Booking[]> {
   return this.bookingService.findClient(username);
 }
 
 
 // POST /booking: Create a new booking
-@Post()
+@UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Customer)
-   @UseGuards(AuthGuard, AuthorizationGuard)
-async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
-  return this.bookingService.create(createBookingDto);
+ @Post('createBooking')
+async create(@Req() {user},@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
+  return this.bookingService.create(createBookingDto,user);
 }
 
  // PUT /booking/:username:Date Update an existing booking by its username & date 
  //booking id is unique but prevent user from having multiple bookings with same data and time
            //ADMIN
- @Put('/:bookingId')
+ @UseGuards(AuthGuard, AuthorizationGuard)
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard, AuthorizationGuard)
+  @Put('update/:bookingId')
  async update(@Param('bookingId') bookingId: number, @Body() updateBookingDto: UpdateBookingDto): Promise<Booking> {
    return this.bookingService.update(bookingId, updateBookingDto);
  }
 
 // DELETE /booking/:username:Date Delete an existing booking by its username & date          //ADMIN
- 
-@Delete('/:bookingId')
+@UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Admin)
-   @UseGuards(AuthGuard, AuthorizationGuard)
+@Delete('delete/:bookingId')
 async delete(@Param('bookingId')bookingId:number): Promise<Booking> {
+  console.log("in the Controller");
   return this.bookingService.delete(bookingId);
 }
 }
