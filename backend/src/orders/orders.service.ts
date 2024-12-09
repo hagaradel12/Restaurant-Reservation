@@ -25,6 +25,7 @@ export class OrdersService {
 // Create a new order
   async create(createOrderDto: CreateOrderDto): Promise<ordersDocument> {
     const newOrder = new this.orderModel(createOrderDto);
+    newOrder.orderNo = Math.floor(Math.random() * 1000);  // Generates a random number between 0 and 999
     return await newOrder.save();
   }
 

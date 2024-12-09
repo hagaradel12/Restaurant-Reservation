@@ -38,8 +38,6 @@ export class BookingService {
   }
 
   // GET ALL BOOKING FOR CLIENT GET username from token
-// @Roles(Role.Customer)
-// @UseGuards(AuthGuard, AuthorizationGuard)
 async findClient(username: string): Promise<Booking[]> {
   return this.bookingModel.find({username});
 }

@@ -17,12 +17,13 @@ import { Role, Roles } from 'src/auth/decorators/role.decorator';
 
 @Controller('cart')
 
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
 
   // Get the user's cart, both roles ->tested
+ @UseGuards(AuthGuard)
   @Get('/:username') 
   async getCart(@Param('username') username: string): Promise<CartDocument> {
     return this.cartService.getCart(username);
@@ -36,8 +37,8 @@ export class CartController {
     return this.cartService.getProductInCart(username, productId);
   }
 
-  @UseGuards(AuthorizationGuard)
-@Roles(Role.Admin)
+//   @UseGuards(AuthorizationGuard)
+// @Roles(Role.Admin)
   // Get all carts (admin) ->tested
   @Get()
   async getAllCarts(): Promise<CartDocument[]> {

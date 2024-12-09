@@ -40,7 +40,7 @@ export class AuthController {
             const combinedDataString = JSON.stringify(combinedData);
 
             // Set the single cookie
-            res.cookie('user_data', combinedDataString, {
+            res.cookie('user_data', result, {
                 httpOnly: true, // Prevents client-side JavaScript access
                 secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
                 maxAge: 3600 * 1000, // Cookie expiration time in milliseconds

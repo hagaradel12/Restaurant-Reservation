@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString, IsArray, IsNumber, Min, IsEnum } from 'class-vali
 import { Types } from 'mongoose';  // Import mongoose Types to use ObjectId
 
 export class CreateOrderDto {
-  orderNo: number = Math.floor(Math.random() * 1000000);  // Generates a random number between 0 and 999999
+  
   
   @IsString()
   @IsNotEmpty()

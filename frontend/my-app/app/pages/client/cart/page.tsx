@@ -19,16 +19,20 @@ const CartPage = () => {
         credentials: "include",
       });
       const { userData } = await response.json();
-
-      if (!userData) {
+      console.log(userData.payload.username)
+      
+      if (!userData.payload.username) {
+        
         console.error("No cookie data found");
         setError("No cookie data found");
         setLoading(false);
         return;
       }
+      
+      const username =userData.payload.username;
 
-      const username = JSON.parse(userData).username;
       console.log(username)
+     
       axios
         .get(`http://localhost:3001/cart/${username}`, { withCredentials: true })
         .then(async (response) => {

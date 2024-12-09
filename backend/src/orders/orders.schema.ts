@@ -6,14 +6,12 @@ import { Users } from 'src/users/users.schema';
 @Schema({ timestamps: true })
 export class Orders {
 
-  @Prop({required: true, unique: true})
+  @Prop({required: false, unique: true})
   orderNo:number
 
-  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products' }] })
-  products: Products[];
 
   @Prop({ required: true })
-  Address: string;
+  address: string;
 
   @Prop({
     required: true,
@@ -22,8 +20,8 @@ export class Orders {
   })
   status: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
-  username: Users;
+  @Prop({ required: true})
+  username: string;
 
   @Prop({ required: true})
   paymentMethod: string;

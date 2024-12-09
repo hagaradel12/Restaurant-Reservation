@@ -11,9 +11,10 @@ import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {} // DIP - Dependency Injection
 
-  // GET /products/getAll: Retrieve all products                                  //ADMIN
+  // GET /products/getAll: Retrieve all products     
+  @UseGuards(AuthGuard, AuthorizationGuard)                              //ADMIN
   @Get('/getAll')
-  @UseGuards(AuthGuard, AuthorizationGuard) // OCP - Open for extension (adding new guards without modifying logic)
+  // OCP - Open for extension (adding new guards without modifying logic)
   async getAllProducts(): Promise<Products[]> {
     return await this.productsService.findAll(); // SRP - Single Responsibility (delegating logic to service)
   }
@@ -54,7 +55,7 @@ export class ProductsController {
 
   // GET /products/productId/:id: Retrieve a product by its ID                     //ANY USER
   @Get('productId/:id')
-  @UseGuards(AuthGuard) 
+  // @UseGuards(AuthGuard) 
   async findById(@Param('id') id: string): Promise<Products> {
     try {
       const product = await this.productsService.findById(new mongoose.Types.ObjectId(id)); // SRP - Single Responsibility (delegating logic to service)
