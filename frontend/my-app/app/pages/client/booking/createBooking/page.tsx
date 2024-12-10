@@ -1,23 +1,50 @@
 'use client'; // Marks this file as a client-side component
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Importing useRouter from next/navigation
+import axiosInstance from "@/app/utils/axiosInstance";
+import { useRouter } from 'next/navigation'; 
 import Sidebar from '@/app/components/admin/sidebar/page';
 
+let backend_url = "http://localhost:3001";
+interface Booking {
+  _id: string;
+  no_of_people: number;
+  date: string; // ISO Date format
+  time: string;
+  username: string;
+  bookingId: number;
+}
 export default function CreateBookingPage() {
   const [username, setUsername] = useState<string>(''); // for booking ID
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
-  const [date, setDate] = useState<string>(''); // for date
-  const [time, setTime] = useState<string>(''); // for time
+  const [Date, setDate] = useState<string>(''); // for date
+  const [Time, setTime] = useState<string>(''); // for time
 
   const router = useRouter(); // Hook to navigate
 
-  const handleCreate = () => {
-    // Implement the logic for creating the booking here
-    console.log("New booking created:", { username, noOfPeople, date, time });
-    // After creating, redirect back to the bookings page or another page
-    router.push('/pages/client/booking'); // Redirect back to the bookings page
+  const handleCreate = async (noOfPeople: number, Date: string, Time: string) => {
+    try {
+      const createdto = {
+        no_of_people: noOfPeople ,
+        date: Date ,
+        time: Time ,
+      };
+  
+      console.log('Sending update request with data:', createdto);
+  
+      // Sending PUT request to update the booking
+      await axiosInstance.put(`${backend_url}/booking/createBooking`, createdto);
+  
+      console.log(`Booking cretaed successfully.`);
+      
+      // Redirect back to the bookings page or another page
+      router.push('/pages/client/booking');
+    } catch (error) {
+      console.error(`Error creating booking:`, error);
+    }
   };
+  
+  
 
   const handleCancel = () => {
     router.push('/pages/client/booking'); // Redirect to the bookings page
@@ -65,13 +92,13 @@ export default function CreateBookingPage() {
 
           {/* Date Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="date">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Date">
               Date
             </label>
             <input
               type="date"
-              id="date"
-              value={date}
+              id="Date"
+              value={Date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
@@ -79,13 +106,13 @@ export default function CreateBookingPage() {
 
           {/* Time Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="time">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Time">
               Time
             </label>
             <input
               type="time"
-              id="time"
-              value={time}
+              id="Time"
+              value={Time}
               onChange={(e) => setTime(e.target.value)}
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
@@ -100,7 +127,7 @@ export default function CreateBookingPage() {
               Cancel
             </button>
             <button
-              onClick={handleCreate}
+              onClick={() => handleCreate(Number( noOfPeople), Date, Time)} //need to add username from cookie
               className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
             >
               Create Booking
