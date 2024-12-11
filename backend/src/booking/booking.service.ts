@@ -60,9 +60,8 @@ private async randomizedId(): Promise<number> {
     return id;
 }
    // Create a new booking
-   async create(createBookingDto: CreateBookingDto, user:any): Promise<Booking> {
+   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
     const newBooking = new this.bookingModel(createBookingDto);
-    newBooking.username = user.username;
   // Generate a random bookingId
   newBooking.bookingId = await this.randomizedId();
 

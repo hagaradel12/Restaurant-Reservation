@@ -19,33 +19,60 @@ export default function CreateBookingPage() {
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
   const [Date, setDate] = useState<string>(''); // for date
   const [Time, setTime] = useState<string>(''); // for time
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const router = useRouter(); // Hook to navigate
 
-  const handleCreate = async (noOfPeople: number, Date: string, Time: string) => {
+  const  fetchCookieData = async (noOfPeople: number, Date: string, Time: string) => {
     try {
-      const createdto = {
-        no_of_people: noOfPeople ,
-        date: Date ,
-        time: Time ,
-      };
+      const response = await fetch("http://localhost:3001/auth/get-cookie-data", {
+        credentials: "include",
+      });
+      const { userData } = await response.json();
+      console.log(userData.payload.username);
   
-      console.log('Sending update request with data:', createdto);
+      if (!userData.payload.username) {
+        console.error("No cookie data found");
+        setError("No cookie data found");
+        setLoading(false);
+        return;
+      }
   
-      // Sending PUT request to update the booking
-      await axiosInstance.put(`${backend_url}/booking/createBooking`, createdto);
-  
-      console.log(`Booking cretaed successfully.`);
+      const Username = userData.payload.username;
       
-      // Redirect back to the bookings page or another page
-      router.push('/pages/client/booking');
+      try {
+        const createdto = {
+          no_of_people: noOfPeople ,
+          date: Date ,
+          time: Time ,
+          username: Username,
+        };
+    
+        console.log('Sending update request with data:', createdto);
+    
+        // Sending PUT request to update the booking
+        await axiosInstance.post(`${backend_url}/booking/createBooking`, createdto);
+    
+        console.log(`Booking cretaed successfully.`);
+        
+        // Redirect back to the bookings page or another page
+        router.push('/pages/client/booking');
+      } catch (error) {
+        console.error(`Error creating booking:`, error);
+      }
     } catch (error) {
-      console.error(`Error creating booking:`, error);
+      console.error("Error fetching cookie data:", error);
+      setError("Error fetching cookie data");
+      setLoading(false);
+    } finally {
+      // Optional: Code to execute regardless of success or failure
+      setLoading(false);
     }
-  };
+    return username;
+  }
   
   
-
   const handleCancel = () => {
     router.push('/pages/client/booking'); // Redirect to the bookings page
   };
@@ -62,20 +89,6 @@ export default function CreateBookingPage() {
 
         {/* Form for Creating Booking */}
         <div className="bg-white shadow-md rounded-lg p-6">
-          {/* Booking ID Field */}
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Username">
-              Username
-            </label>
-            <input
-              type="text"
-              id="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
-            />
-          </div>
-
           {/* No. of People Field */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="noOfPeople">
@@ -106,17 +119,17 @@ export default function CreateBookingPage() {
 
           {/* Time Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Time">
-              Time
-            </label>
-            <input
-              type="time"
-              id="Time"
-              value={Time}
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
-            />
-          </div>
+               <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Time">
+    Time
+  </label>
+  <input
+    type="time"
+    id="Time"
+    value={Time}
+    onChange={(e) => setTime(String(e.target.value))} // Ensure the value is explicitly treated as a string
+    className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+  />
+</div>
 
           {/* Buttons */}
           <div className="flex justify-end space-x-4">
@@ -127,11 +140,17 @@ export default function CreateBookingPage() {
               Cancel
             </button>
             <button
-              onClick={() => handleCreate(Number( noOfPeople), Date, Time)} //need to add username from cookie
-              className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
-            >
-              Create Booking
-            </button>
+            onClick={() => {
+              if (!noOfPeople || !Date || !Time) {
+                alert("All fields are required to create a booking."); // Simple alert popup
+                return;
+              }
+              fetchCookieData(Number(noOfPeople), Date, Time); // Add username from cookie
+            }}
+            className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
+          >
+            Create Booking
+          </button>
           </div>
         </div>
       </div>

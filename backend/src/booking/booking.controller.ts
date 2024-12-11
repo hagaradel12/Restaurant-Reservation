@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete,NotFoundException,UseGuards,Req   } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete,NotFoundException,UseGuards,Req,BadRequestException   } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Booking } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
@@ -51,8 +51,13 @@ async findClient(@Param('username') username: string): Promise<Booking[]> {
 @UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Customer)
  @Post('createBooking')
-async create(@Req() {user},@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
-  return this.bookingService.create(createBookingDto,user);
+async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
+  console.log("username is",createBookingDto.username);
+  if (typeof createBookingDto.username !== 'string') {
+    throw new BadRequestException('Invalid username');
+  }
+  console.log(createBookingDto.username);
+  return this.bookingService.create(createBookingDto);
 }
 
  // PUT /booking/:username:Date Update an existing booking by its username & date 

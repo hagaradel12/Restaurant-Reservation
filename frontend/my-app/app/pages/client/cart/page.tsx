@@ -7,6 +7,24 @@ import { Button, Typography, IconButton, MenuItem, Select } from "@mui/material"
 import { Delete, Add, Remove } from "@mui/icons-material";
 import { useRouter } from "next/navigation";  // Import useRouter
 
+
+interface Product {
+  productId: string;
+  quantity: number;
+  product: {
+    name: string;
+    description: string;
+    price: number;
+    image: string;
+  };
+}
+
+interface CartData {
+  username: string;
+  products: Product[];
+}
+
+
 const CartPage = () => {
   const [cart, setCart] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -19,29 +37,26 @@ const CartPage = () => {
         credentials: "include",
       });
       const { userData } = await response.json();
-      console.log(userData.payload.username)
       
       if (!userData.payload.username) {
-        
         console.error("No cookie data found");
         setError("No cookie data found");
         setLoading(false);
         return;
       }
-      
-      const username =userData.payload.username;
 
-      console.log(username)
-     
+      const username = userData.payload.username;
+      console.log(username);
+
       axios
-        .get(`http://localhost:3001/cart/${username}`, { withCredentials: true })
+        .get<CartData>(`http://localhost:3001/cart/${username}`, { withCredentials: true })
         .then(async (response) => {
           const cartData = response.data;
           const updatedCart = await Promise.all(
             cartData.products.map(async (item: any) => {
               try {
                 const productResponse = await axios.get(
-                  http://localhost:3001/products/productId/${item.productId}
+                  `http://localhost:3001/products/productId/${item.productId}`
                 );
                 return { ...item, product: productResponse.data };
               } catch (error) {
@@ -54,10 +69,12 @@ const CartPage = () => {
           setLoading(false);
         })
         .catch((error) => {
-          setError(error.message);
+          console.error("Failed to fetch cart data", error);
+          setError("Failed to fetch cart data");
           setLoading(false);
         });
     } catch (error) {
+      console.error("Error fetching cookie data", error);
       setError("Error fetching cookie data");
       setLoading(false);
     }

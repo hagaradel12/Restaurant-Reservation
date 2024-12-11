@@ -29,7 +29,9 @@ export default function UpdateBookingPage() {
       // First, fetch the current booking details from the server
       const response = await axiosInstance.get<Booking>(`${backend_url}/booking/admin/id/${BookingId}`);
       const currentBooking = response.data;
-  
+
+      
+      
       // Create an updated object, keeping existing values for unchanged fields
       const updatedto = {
         no_of_people: noOfPeople || currentBooking.no_of_people, // If noOfPeople is empty, keep current value
@@ -99,11 +101,11 @@ export default function UpdateBookingPage() {
 
           {/* Date Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="date">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Date">
               Date
             </label>
             <input
-              type="date"
+              type="Date"
               id="Date"
               value={Date}
               onChange={(e) => setDate(e.target.value)}
@@ -113,11 +115,11 @@ export default function UpdateBookingPage() {
 
           {/* Time Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="time">
+            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="Time">
               Time
             </label>
             <input
-              type="time"
+              type="Time"
               id="Time"
               value={Time}
               onChange={(e) => setTime(e.target.value)}

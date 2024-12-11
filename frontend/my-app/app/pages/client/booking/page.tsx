@@ -20,22 +20,45 @@ interface Booking {
 export default function BookingPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch bookings on page load
-  useEffect(() => {
-    const fetchBookings = async () => {
+  async function fetchCookieData() {
+    try {
+      const response = await fetch("http://localhost:3001/auth/get-cookie-data", {
+        credentials: "include",
+      });
+      const { userData } = await response.json();
+      console.log(userData.payload.username);
+  
+      if (!userData.payload.username) {
+        console.error("No cookie data found");
+        setError("No cookie data found");
+        setLoading(false);
+        return;
+      }
+  
+      const username = userData.payload.username;
+  
+      console.log(username);
       try {
-        const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/`);
+        const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/client/${username}`);
         setBookings(response.data);
       } catch (error) {
         console.error("Error fetching bookings:", error);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchBookings();
+    } catch (error) {
+      console.error("Error fetching cookie data:", error);
+      setError("Error fetching cookie data");
+      setLoading(false);
+    }
+  }
+  
+  // Fetch bookings on page load
+  useEffect(() => {
+    fetchCookieData();
   }, []);
 
   // Function to handle navigation to create booking page
@@ -98,4 +121,5 @@ export default function BookingPage() {
       </div>
     </div>
   );
+
 }
