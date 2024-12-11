@@ -2,34 +2,28 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from 'next/navigation';
+import axiosInstance from "../../../utils/axiosInstance";
+import Navbar from "@/app/components/navbar/page";
+import Remi from '@/app/components/remi/page';
+import { Product } from "@/app/_lib/page"; // assuming Product interface exists in _lib/page.ts
+import { Cart } from "@/app/_lib/page";
+import {CartItem}from"@/app/_lib/page";
+import { CartResponse } from "@/app/_lib/page";
 
-interface Product {
-  _id: string;
-  name: string;
-  image?: string;
-  description: string;
-  price: number;
-}
-
-interface CartItem {
-  productId: string;
-  quantity: number;
-  product: Product;
-}
-
-interface CartResponse {
-  products: CartItem[];
-}
-
-const ProductPage = () => {
+export default function Menu() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
+ 
+
+  // Fetch products (dishes) from API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       try {
         const cookieResponse = await fetch(
           "http://localhost:3001/auth/get-cookie-data",
@@ -43,12 +37,6 @@ const ProductPage = () => {
         }
         setUsername(username);
 
-        const productResponse = await axios.get<Product[]>(
-          "http://localhost:3001/products/getAll",
-          { withCredentials: true }
-        );
-        setProducts(productResponse.data);
-
         const cartResponse = await axios.get<CartResponse>(
           `http://localhost:3001/cart/${username}`,
           { withCredentials: true }
@@ -56,15 +44,19 @@ const ProductPage = () => {
         setCart(cartResponse.data.products);
 
         setLoading(false);
-      } catch (err: any) {
+      }catch (err: any) {
         setError(err.message || "An error occurred while fetching data.");
         setLoading(false);
       }
+      try {
+        const response = await axiosInstance.get("/products/getAll");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
     };
-
-    fetchData();
-  }, []);
-
+    fetchProducts();
+  }, []); // Fetch products only once on component mount
   const handleAddToCart = async (productId: string) => {
     try {
       const response = await axios.post(
@@ -78,6 +70,7 @@ const ProductPage = () => {
     }
   };
 
+  
   const handleIncrement = async (productId: string) => {
     try {
       const response = await axios.patch(
@@ -86,6 +79,7 @@ const ProductPage = () => {
         { withCredentials: true }
       );
       setCart(response.data.products);
+      setLoading(false);
     } catch (err: any) {
       setError(err.message || "An error occurred while incrementing quantity.");
     }
@@ -103,25 +97,26 @@ const ProductPage = () => {
       setError(err.message || "An error occurred while decrementing quantity.");
     }
   };
-
   if (loading) return <div className="text-center py-8">Loading...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+ 
+
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#f9f9f9] p-6">
+    <div className="flex flex-col items-center min-h-screen bg-[#f5e4c9] text-[#400000] p-6">
       {/* Navbar */}
-      <div className="w-full text-center mb-8">
-        <img
-          src="https://i.pinimg.com/736x/0f/e7/38/0fe738f4f2ee955eaa85230fb0337c67.jpg"
-          alt="Ratatouille Logo"
-          className="w-32 mx-auto"
-        />
+      <Navbar />
+
+      {/* Logo */}
+      <div className="my-6">
+        <Remi />
       </div>
 
-      <h1 className="text-3xl font-bold text-[#3C312C] mb-8">Ratatouille's Menu</h1>
+      {/* Title */}
+      <h1 className="text-4xl font-bold text-[#400000] mb-8 drop-shadow-lg text-center">Welcome to Ratatouille's Menu</h1>
 
-      {/* Menu List */}
-      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-4xl">
+         {/* Menu List */}
+         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+
         {products.map((product: Product) => {
           const cartItem = cart.find((item) => item.productId === product._id);
           const isInCart = !!cartItem;
@@ -129,14 +124,23 @@ const ProductPage = () => {
           return (
             <li
               key={product._id.toString()}
-              className="bg-white rounded-lg shadow-md p-6 text-center border-2 border-[#D47043]"
+             className="rounded-xl shadow-lg p-6 text-center transition-transform transform hover:scale-105 hover:shadow-2xl"
             >
               <img
                 src={product.image || "https://i.pinimg.com/736x/5c/03/8e/5c038ef5a0d0dc34c86583823c20dc6c.jpg"}
                 alt={product.name}
                 className="w-full h-48 object-cover rounded-md mb-4"
               />
-              <h2 className="text-xl font-semibold text-[#3C312C]">{product.name}</h2>
+             <h2
+              style={{
+                fontFamily: "Roboto, sans-serif",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "#400000",
+              }}
+            >
+              {product.name}
+            </h2>
               <p className="text-gray-600 mt-2">{product.description}</p>
               <p className="text-lg font-bold text-[#D47043] mt-2">${product.price}</p>
 
@@ -169,6 +173,5 @@ const ProductPage = () => {
       </ul>
     </div>
   );
-};
+}
 
-export default ProductPage;
