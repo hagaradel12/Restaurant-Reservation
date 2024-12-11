@@ -220,6 +220,21 @@ async decrementProductQuantity(username: string, productId: string): Promise<Car
 
 
 
+async ifExists(username: string, prodId: string): Promise<boolean> {
+  const pid = new mongoose.Types.ObjectId(prodId);
+  //find the cart if username has a cart
+  const cart: CartDocument | null = await this.cartModel.findOne({ username }).exec();
+  
+  if (!cart) {
+    return false; //if no cart exists, the product ofc cant be in the cart
+  }
+
+  //check if the product exists in the cart's products array by looping
+  //some returns true if at least one product matches condition
+  const productExists = cart.products.some(product => product.productId.equals(pid));
+
+  return productExists;
+}
 
 
   //clear the user's cart by their username from token sent from front end

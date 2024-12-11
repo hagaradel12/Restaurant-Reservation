@@ -41,7 +41,7 @@ const CartPage = () => {
             cartData.products.map(async (item: any) => {
               try {
                 const productResponse = await axios.get(
-                  `http://localhost:3001/products/productId/${item.productId}`
+                  http://localhost:3001/products/productId/${item.productId}
                 );
                 return { ...item, product: productResponse.data };
               } catch (error) {
@@ -91,7 +91,7 @@ const CartPage = () => {
   const handleRemoveItem = async (productId: string) => {
     try {
       await axios.delete(
-        `http://localhost:3001/cart/${cart.username}/product/${productId}`,
+       ` http://localhost:3001/cart/${cart.username}/product/${productId}`,
         { withCredentials: true }
       );
 
@@ -121,40 +121,48 @@ const CartPage = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-gray-100">
-      <div className="w-full max-w-4xl px-4 py-8 bg-white shadow-lg rounded-lg text-black">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+      <div className="w-full max-w-5xl px-6 py-10 bg-white shadow-2xl rounded-lg text-gray-800">
         <Typography
           variant="h4"
-          className="text-center text-black font-semibold mb-6"
+          className="text-center font-bold mb-8 text-gray-900"
         >
           Your Cart
         </Typography>
 
         {cart && cart.products.length > 0 ? (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {cart.products.map((item: any) => (
               <div
                 key={item.productId}
-                className="flex items-center justify-between bg-black-100 p-6 rounded-lg shadow-md"
+                className="flex flex-col sm:flex-row items-center justify-between bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center space-x-6">
                   <img
                     src={item.product?.image || "/default-image.jpg"}
                     alt={item.product?.name || "Product"}
-                    className="w-24 h-24 object-cover rounded-lg"
+                    className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                   />
                   <div>
-                    <Typography variant="h6">{item.product?.name}</Typography>
-                    <Typography variant="body2">
+                    <Typography
+                      variant="h6"
+                      className="font-semibold text-gray-800"
+                    >
+                      {item.product?.name}
+                    </Typography>
+                    <Typography variant="body2" className="text-gray-600">
                       {item.product?.description || "No description available"}
                     </Typography>
-                    <Typography variant="h6">
+                    <Typography
+                      variant="h6"
+                      className="font-bold text-gray-900 mt-2"
+                    >
                       ${item.product?.price?.toFixed(2) || "0.00"}
                     </Typography>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 mt-4 sm:mt-0">
                   <IconButton
                     onClick={() =>
                       handleQuantityChange(
@@ -162,6 +170,7 @@ const CartPage = () => {
                         Math.max(item.quantity - 1, 1)
                       )
                     }
+                    className="bg-gray-200 hover:bg-gray-300 rounded-full p-1"
                   >
                     <Remove />
                   </IconButton>
@@ -170,7 +179,7 @@ const CartPage = () => {
                     onChange={(e) =>
                       handleQuantityChange(item.productId, Number(e.target.value))
                     }
-                    className="border rounded-lg"
+                    className="border border-gray-300 rounded-lg"
                   >
                     {[...Array(10).keys()].map((x) => (
                       <MenuItem key={x + 1} value={x + 1}>
@@ -185,12 +194,13 @@ const CartPage = () => {
                         Math.min(item.quantity + 1, 10)
                       )
                     }
+                    className="bg-gray-200 hover:bg-gray-300 rounded-full p-1"
                   >
                     <Add />
                   </IconButton>
                   <IconButton
                     onClick={() => handleRemoveItem(item.productId)}
-                    className="text-red-500"
+                    className="text-red-500 hover:text-red-600"
                   >
                     <Delete />
                   </IconButton>
@@ -199,31 +209,39 @@ const CartPage = () => {
             ))}
           </div>
         ) : (
-          <Typography variant="h6" className="text-center">
+          <Typography
+            variant="h6"
+            className="text-center text-gray-700 mt-8"
+          >
             Your cart is empty.
           </Typography>
         )}
 
         {cart && cart.products.length > 0 && (
-          <div className="mt-6 text-center">
+          <div className="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Button
               variant="outlined"
               color="secondary"
               onClick={handleClearCart}
+              className="w-full sm:w-auto border border-gray-400 hover:bg-gray-200"
             >
               Clear Cart
             </Button>
             <Button
-  variant="contained"
-  color="primary"
-  onClick={() => {
-    const cartItems = JSON.stringify(cart.products);  // Serialize cart items to pass in query
-    router.push(`/pages/client/cart/checkout?username=${cart.username}&items=${encodeURIComponent(cartItems)}`);
-  }}
->
-  Checkout
-</Button>
-
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                const cartItems = JSON.stringify(cart.products); // Serialize cart items to pass in query
+                router.push(
+                  `/pages/client/cart/checkout?username=${cart.username}&items=${encodeURIComponent(
+                    cartItems
+                  )}`
+                );
+              }}
+              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+            >
+              Checkout
+            </Button>
           </div>
         )}
       </div>

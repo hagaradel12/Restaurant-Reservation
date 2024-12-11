@@ -38,7 +38,7 @@ export class ProductsService {
             .findByIdAndUpdate(updateProductDto, { new: true })
             .exec();
         if (!updatedProduct) {
-            throw new NotFoundException(`Product not found`); // SRP - Single Responsibility (handling exceptions)
+            throw new NotFoundException("Product not found"); // SRP - Single Responsibility (handling exceptions)
         }
         return updatedProduct; // SRP - Single Responsibility (delegating logic to the model)
     }
