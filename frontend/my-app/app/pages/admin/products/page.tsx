@@ -11,9 +11,10 @@ export default function Menu() {
   const [productName, setProductName] = useState<string>("");
   const [productDescription, setProductDescription] = useState<string>("");
   const [productPrice, setProductPrice] = useState<number>(0);
+  const [productImage, setProductImage] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [productImage,setproductImage]= useState<string>("");
-  
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -32,14 +33,14 @@ export default function Menu() {
         name: productName,
         price: productPrice,
         description: productDescription,
-       image:productImage
+        image: productImage,
       };
       const response = await axiosInstance.post("/products", newProduct);
       setProducts([...products, response.data]);
       setProductName("");
       setProductDescription("");
       setProductPrice(0);
-      setproductImage("");
+      setProductImage("");
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occurred while adding the product.");
     }
@@ -54,13 +55,31 @@ export default function Menu() {
     }
   };
 
-  const handleUpdateProduct = async (product: Product) => {
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setProductName(product.name);
+    setProductDescription(product.description);
+    setProductPrice(product.price);
+    setProductImage(product.image || "");
+  };
+
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return;
     try {
-      const updatedProduct = { ...product, description: "Updated Description", price: product.price + 1 };
-      const response = await axiosInstance.put(`/products/${product.name}`, updatedProduct);
-      setProducts(
-        products.map((p) => (p.name === product.name ? response.data : p))
-      );
+      const updatedProduct = {
+        ...editingProduct,
+        name: productName,
+        description: productDescription,
+        price: productPrice,
+        image: productImage,
+      };
+      const response = await axiosInstance.put(`/products/${editingProduct.name}`, updatedProduct);
+      setProducts(products.map((p) => (p.name === editingProduct.name ? response.data : p)));
+      setEditingProduct(null);
+      setProductName("");
+      setProductDescription("");
+      setProductPrice(0);
+      setProductImage("");
     } catch (error) {
       console.error("Error updating product:", error);
     }
@@ -83,7 +102,9 @@ export default function Menu() {
 
       {/* Product Form */}
       <div className="mb-8 w-full max-w-md">
-        <h2 className="text-2xl font-semibold text-[#400000] mb-4">Add a New Product</h2>
+        <h2 className="text-2xl font-semibold text-[#400000] mb-4">
+          {editingProduct ? "Edit Product" : "Add a New Product"}
+        </h2>
         <input
           type="text"
           placeholder="Product Name"
@@ -97,10 +118,10 @@ export default function Menu() {
           onChange={(e) => setProductDescription(e.target.value)}
           className="w-full p-2 mb-2 border border-gray-400 rounded"
         />
-         <textarea
-          placeholder="product url"
+        <textarea
+          placeholder="Product Image URL"
           value={productImage}
-          onChange={(e) => setproductImage(e.target.value)}
+          onChange={(e) => setProductImage(e.target.value)}
           className="w-full p-2 mb-2 border border-gray-400 rounded"
         />
         <input
@@ -111,10 +132,10 @@ export default function Menu() {
           className="w-full p-2 mb-4 border border-gray-400 rounded"
         />
         <button
-          onClick={handleAddProduct}
+          onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
           className="px-6 py-2 bg-[#400000] text-[#f2d4a5] font-semibold rounded-lg shadow-md hover:bg-[#551010] transition duration-300"
         >
-          Add Product
+          {editingProduct ? "Update Product" : "Add Product"}
         </button>
         {error && <p className="text-red-500 mt-4">{error}</p>}
       </div>
@@ -136,10 +157,10 @@ export default function Menu() {
             <p className="text-lg font-bold text-[#D47043] mt-2">${product.price}</p>
             <div className="flex justify-center gap-4 mt-4">
               <button
-                onClick={() => handleUpdateProduct(product)}
+                onClick={() => handleEditProduct(product)}
                 className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600"
               >
-                Update
+                Edit
               </button>
               <button
                 onClick={() => handleDeleteProduct(product.name)}

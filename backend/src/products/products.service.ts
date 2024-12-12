@@ -25,11 +25,11 @@ export class ProductsService {
 
     // Delete a product
     async deleteProduct(name: string): Promise<Products> {
-        const deletedProduct = await this.productModel.findByIdAndDelete(name).exec();
+        const deletedProduct = await this.productModel.findOneAndDelete({ name }).exec();
         if (!deletedProduct) {
-            throw new NotFoundException(`Product with name ${name} not found`); // SRP - Single Responsibility (handling exceptions)
+            throw new NotFoundException(`Product with name "${name}" not found`);
         }
-        return deletedProduct; // SRP - Single Responsibility (delegating logic to the model)
+        return deletedProduct;
     }
 
     // Update a product
