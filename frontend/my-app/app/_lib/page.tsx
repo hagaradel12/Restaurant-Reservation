@@ -28,6 +28,15 @@ export interface Cart{
     username: string,  
     products: Product[]
     }
+   export interface CartItem {
+      productId: string;
+      quantity: number;
+      product: Product;
+    }
+    
+   export interface CartResponse {
+      products: CartItem[];
+    }
     
     export interface User{
         _id:object,

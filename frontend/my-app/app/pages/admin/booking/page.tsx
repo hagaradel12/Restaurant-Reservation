@@ -7,7 +7,6 @@ import React from "react";
 import { useRouter } from "next/navigation"; // Import from next/navigation
 import Sidebar from "@/app/components/admin/sidebar/page";
 
-
 let backend_url = "http://localhost:3001";
 
 interface Booking {
@@ -18,6 +17,14 @@ interface Booking {
   username: string;
   bookingId: number;
 }
+
+const formatDateToDDMMYYYY = (isoDate: string) => {
+  const date = new Date(isoDate);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
 
 export default function BookingPage() {
   const router = useRouter();
@@ -84,6 +91,7 @@ export default function BookingPage() {
       console.error(`Error deleting booking with ID ${bookingId}:`, error);
     }
   };
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
@@ -127,7 +135,7 @@ export default function BookingPage() {
             <table className="w-full">
               <thead className="bg-[#C6A570] text-white">
                 <tr>
-                <th className="text-left px-4 py-2">Booking ID</th>
+                  <th className="text-left px-4 py-2">Booking ID</th>
                   <th className="text-left px-4 py-2">Username</th>
                   <th className="text-left px-4 py-2">Date</th>
                   <th className="text-left px-4 py-2">Time</th>
@@ -139,18 +147,18 @@ export default function BookingPage() {
                 {/* Rendering bookings dynamically */}
                 {bookings.map((booking) => (
                   <tr key={booking._id} className="border-t border-[#B1B7B9]">
-                     <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.date}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{formatDateToDDMMYYYY(booking.date)}</td> {/* Formatting date */}
                     <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                     <td className="px-4 py-2 text-center">
-                    <button
+                      <button
                         onClick={() => handleDelete(booking.bookingId)} // Call handleDelete with bookingId
                         className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
-                        >
-                       Delete
-                     </button>
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -162,3 +170,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+

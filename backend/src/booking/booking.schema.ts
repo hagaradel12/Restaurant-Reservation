@@ -10,7 +10,7 @@ export class Booking {
   no_of_people: number;
 
   @Prop({ required: true })
-  date: string;
+  date: Date;
 
   @Prop({ required: true })
   time: string;

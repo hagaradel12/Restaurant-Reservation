@@ -1,4 +1,4 @@
-import { Injectable ,NotFoundException } from '@nestjs/common';
+import { Injectable ,NotFoundException,BadRequestException  } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Booking, bookingDocument } from './booking.schema';
@@ -60,15 +60,41 @@ private async randomizedId(): Promise<number> {
     return id;
 }
    // Create a new booking
-   async create(createBookingDto: CreateBookingDto): Promise<Booking> {
-    const newBooking = new this.bookingModel(createBookingDto);
+  // Create a new booking
+async create(createBookingDto: CreateBookingDto): Promise<Booking> {
+  // Parse and validate the date in DD/MM/YYYY format
+  const [day, month, year] = createBookingDto.date.split('/').map(Number); // Split and convert to numbers
+
+  // Check if any of the parts are invalid
+  if (!day || !month || !year) {
+    throw new BadRequestException(`Invalid date format: ${createBookingDto.date}`);
+  }
+
+  // Construct a valid ISO string in the format YYYY-MM-DD
+  const isoDateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  
+  // Check if the constructed date string is a valid date
+  const parsedDate = new Date(isoDateString);
+
+  // Ensure the date is valid
+  if (isNaN(parsedDate.getTime())) {
+    throw new BadRequestException(`Invalid date format: ${createBookingDto.date}`);
+  }
+
+  // Create a new booking instance
+  const newBooking = new this.bookingModel({
+    ...createBookingDto,
+    date: parsedDate, // Use the parsed Date object
+  });
+
   // Generate a random bookingId
   newBooking.bookingId = await this.randomizedId();
 
+  // Save and return the new booking
   return newBooking.save();
-  }
+}
 
-// PUT:Update an existing booking by time & date                                //ADMIN
+// PUT:Update an existing booking by booking id                              //ADMIN
 async update(bookingId: number, updateBookingDto: UpdateBookingDto): Promise<Booking> {
   const updatedBooking = await this.bookingModel.findOneAndUpdate({ bookingId }, updateBookingDto, { new: true } ).exec();
 
@@ -98,3 +124,5 @@ async update(bookingId: number, updateBookingDto: UpdateBookingDto): Promise<Boo
 //affect existing findByusername method and create &update DTO allow for update done easily without changing create and update logic
 //Liskov Substitution Principle: subtypes compatible with base types example:use of BookingDocument which is subtype done 
 //for type safety and compatibilty with mongoos model schema 
+
+
