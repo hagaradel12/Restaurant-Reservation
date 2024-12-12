@@ -12,8 +12,8 @@ export default function Menu() {
   const [productDescription, setProductDescription] = useState<string>("");
   const [productPrice, setProductPrice] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
-const [productImage,setproductImage]= useState<string>("");
-  // Fetch products (dishes) from API
+  const [productImage,setproductImage]= useState<string>("");
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -30,15 +30,16 @@ const [productImage,setproductImage]= useState<string>("");
     try {
       const newProduct = {
         name: productName,
-        description: productDescription,
         price: productPrice,
-        url:productImage
+        description: productDescription,
+       image:productImage
       };
       const response = await axiosInstance.post("/products", newProduct);
       setProducts([...products, response.data]);
       setProductName("");
       setProductDescription("");
       setProductPrice(0);
+      setproductImage("");
     } catch (error: any) {
       setError(error.response?.data?.message || "An error occurred while adding the product.");
     }
