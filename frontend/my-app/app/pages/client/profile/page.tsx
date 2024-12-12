@@ -23,8 +23,21 @@ const ProfilePage: React.FC = () => {
                 setLoading(true);
                 setError(null);
 
-                // Simulate fetching the username from cookies
-                const username = localStorage.getItem("username")
+                
+                try {
+                    const cookieResponse = await fetch(
+                      "http://localhost:3001/auth/get-cookie-data",
+                      { credentials: "include" }
+                    );
+                    const { userData } = await cookieResponse.json();
+                    const username = userData?.payload?.username;
+            
+                    if (!username) {
+                      throw new Error("User not logged in.");
+                    }
+                    setUsername(username);
+            
+               // const username = localStorage.getItem("username")
                 console.log("------------------------------" + username);
                 if (!username) {
                     throw new Error('Username not found in cookies');
