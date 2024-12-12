@@ -11,7 +11,7 @@ let backend_url = "http://localhost:3001";
 interface Booking {
   _id: string;
   no_of_people: number;
-  date: string; // ISO Date format
+  date: Date; // ISO Date format
   time: string;
   username: string;
   bookingId: number;
@@ -109,7 +109,9 @@ export default function BookingPage() {
                   <tr key={booking._id} className="border-t border-[#B1B7B9]">
                     <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.date}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">
+                {new Date(booking.date).toLocaleDateString('en-GB')} {/* Formats as DD/MM/YYYY */}
+                  </td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                   </tr>
@@ -123,3 +125,4 @@ export default function BookingPage() {
   );
 
 }
+

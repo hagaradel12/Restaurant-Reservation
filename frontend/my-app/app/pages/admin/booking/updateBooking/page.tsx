@@ -1,13 +1,13 @@
 'use client'; // Marks this file as a client-side component
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axiosInstance from "@/app/utils/axiosInstance";
-import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation"; // Import from next/navigation
 import Sidebar from "@/app/components/admin/sidebar/page";
 
 let backend_url = "http://localhost:3001";
+
 interface Booking {
   _id: string;
   no_of_people: number;
@@ -16,6 +16,37 @@ interface Booking {
   username: string;
   bookingId: number;
 }
+
+const formatDateToDDMMYYYY = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+const formatDateInput = (dateString: string) => {
+  const parts = dateString.split('/');
+  return `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert DD/MM/YYYY to YYYY-MM-DD for the API
+};
+
+const isValidDate = (dateString: string) => {
+  const parts = dateString.split('/');
+  if (parts.length !== 3) return false;
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // Month is 0-based
+  const year = parseInt(parts[2], 10);
+  const date = new Date(year, month, day);
+
+  // Check if date is valid and if it is today or a future date
+  return (
+    date instanceof Date && 
+    !isNaN(date.getTime()) && 
+    date >= new Date(new Date().setHours(0, 0, 0, 0)) // Compare with today's date
+  );
+};
+
 export default function UpdateBookingPage() {
   const [BookingId, setBookingId] = useState<number | string>(''); // for booking ID
   const [noOfPeople, setNoOfPeople] = useState<number | string>(''); // for number of people
@@ -25,35 +56,37 @@ export default function UpdateBookingPage() {
   const router = useRouter(); // Hook to navigate
 
   const handleUpdate = async (BookingId: number, noOfPeople: number, Date: string, Time: string) => {
+    // Validate date only if it's not empty
+    if (Date && !isValidDate(Date)) {
+      alert("Please enter a valid date equal to or greater than today (DD/MM/YYYY).");
+      return;
+    }
+
     try {
       // First, fetch the current booking details from the server
       const response = await axiosInstance.get<Booking>(`${backend_url}/booking/admin/id/${BookingId}`);
       const currentBooking = response.data;
 
-      
-      
       // Create an updated object, keeping existing values for unchanged fields
       const updatedto = {
-        no_of_people: noOfPeople || currentBooking.no_of_people, // If noOfPeople is empty, keep current value
-        date: Date || currentBooking.date, // If Date is empty, keep current value
-        time: Time || currentBooking.time, // If Time is empty, keep current value
+        no_of_people: noOfPeople || currentBooking.no_of_people,
+        date: Date ? formatDateInput(Date) : currentBooking.date, // Format the date for API
+        time: Time || currentBooking.time,
       };
-  
+
       console.log('Sending update request with data:', updatedto);
-  
+
       // Sending PUT request to update the booking
       await axiosInstance.put(`${backend_url}/booking/update/${BookingId}`, updatedto);
-  
+
       console.log(`Booking with ID ${BookingId} updated successfully.`);
-      
+
       // Redirect back to the bookings page or another page
       router.push('/pages/admin/booking');
     } catch (error) {
       console.error(`Error updating booking with ID ${BookingId}:`, error);
     }
   };
-  
-  
 
   const handleCancel = () => {
     router.push('/pages/admin/booking'); 
@@ -105,10 +138,11 @@ export default function UpdateBookingPage() {
               Date
             </label>
             <input
-              type="Date"
+              type="text"
               id="Date"
               value={Date}
               onChange={(e) => setDate(e.target.value)}
+              placeholder="DD/MM/YYYY"
               className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
             />
           </div>
@@ -119,7 +153,7 @@ export default function UpdateBookingPage() {
               Time
             </label>
             <input
-              type="Time"
+              type="time"
               id="Time"
               value={Time}
               onChange={(e) => setTime(e.target.value)}
@@ -136,7 +170,13 @@ export default function UpdateBookingPage() {
               Cancel
             </button>
             <button
-              onClick={() => handleUpdate(Number(BookingId),Number( noOfPeople), Date, Time)}
+              onClick={() => {
+                if (!BookingId) {
+                  alert("Booking ID is required to update the booking.");
+                  return;
+                }
+                handleUpdate(Number(BookingId), Number(noOfPeople), Date, Time);
+              }}
               className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
             >
               Update Booking
@@ -147,3 +187,4 @@ export default function UpdateBookingPage() {
     </div>
   );
 }
+
