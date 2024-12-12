@@ -1,11 +1,7 @@
-import { IsEnum, IsString, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UpdateOrderDto {
-  @IsEnum(['pending', 'shipped', 'delivered', 'canceled'])
-  @IsOptional()
-  status?: string;
-
-  @IsString()
-  @IsOptional()
-  Address?: string;
+  @IsEnum(['pending', 'shipped', 'delivered', 'canceled'], { message: 'Invalid status' })
+  @IsNotEmpty({ message: 'Status is required' })
+  status: string;
 }

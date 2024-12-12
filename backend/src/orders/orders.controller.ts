@@ -54,10 +54,15 @@ export class OrdersController {
   }
 
   // Admin: Update order status
-  @Roles(Role.Admin)
+
   @Put('admin/status/:orderNo')
-  async adminUpdateOrderStatus(@Param('orderNo') orderNo: string,@Body() status: string,) {
-    return await this.ordersService.adminUpdateOrderStatus(orderNo, status);
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, AuthorizationGuard)
+  async adminUpdateOrderStatus(
+    @Param('orderNo') orderNo: string,
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return await this.ordersService.adminUpdateOrderStatus(orderNo, updateOrderDto.status);
   }
 
   // Admin: Delete order by order number

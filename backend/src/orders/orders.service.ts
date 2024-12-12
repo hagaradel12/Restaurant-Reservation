@@ -116,8 +116,20 @@ export class OrdersService {
     if (!validStatuses.includes(status)) {
       throw new Error('Invalid status');
     }
-    return await this.orderModel.findOneAndUpdate({ orderNo },{ status },{ new: true });
+  
+    const updatedOrder = await this.orderModel.findOneAndUpdate(
+      { orderNo },
+      { status },
+      { new: true },
+    );
+  
+    if (!updatedOrder) {
+      throw new Error(`Order with orderNo ${orderNo} not found`);
+    }
+  
+    return updatedOrder;
   }
+  
 
   // Admin: Delete order by order number
   async adminDeleteOrder(orderNo: string): Promise<ordersDocument> {

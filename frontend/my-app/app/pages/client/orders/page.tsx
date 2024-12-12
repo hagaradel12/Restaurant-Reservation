@@ -1,12 +1,13 @@
 
 "use client"; 
-"use client"; 
 import React, { useState } from 'react';
 
 import Navbar from "@/app/components/navbar/page";
 
+let backend_url ="http://localhost3001";
 const Orders = () => {
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
+  
 
   const orders = {
     current: [

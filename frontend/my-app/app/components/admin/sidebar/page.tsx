@@ -42,6 +42,15 @@ export default function Sidebar() {
               Profile
             </Link>
           </li>
+          {/* New Orders link */}
+          <li>
+            <Link
+              href="/pages/admin/orders"
+              className="block py-3 hover:bg-[#D47043] text-[#B1B7B9] rounded transition"
+            >
+              Orders
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>
