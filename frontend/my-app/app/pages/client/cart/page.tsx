@@ -6,6 +6,7 @@ import axios from "axios";
 import { Button, Typography, IconButton, MenuItem, Select } from "@mui/material";
 import { Delete, Add, Remove } from "@mui/icons-material";
 import { useRouter } from "next/navigation";  // Import useRouter
+import axiosInstance from "@/app/utils/axiosInstance";
 
 
 interface Product {
@@ -48,14 +49,14 @@ const CartPage = () => {
       const username = userData.payload.username;
       console.log(username);
 
-      axios
+      axiosInstance
         .get<CartData>(`http://localhost:3001/cart/${username}`, { withCredentials: true })
         .then(async (response) => {
           const cartData = response.data;
           const updatedCart = await Promise.all(
             cartData.products.map(async (item: any) => {
               try {
-                const productResponse = await axios.get(
+                const productResponse = await axiosInstance.get(
                   `http://localhost:3001/products/productId/${item.productId}`
                 );
                 return { ...item, product: productResponse.data };
@@ -86,7 +87,7 @@ const CartPage = () => {
 
   const handleQuantityChange = async (productId: string, quantity: number) => {
     try {
-      await axios.patch(
+      await axiosInstance.patch(
         `http://localhost:3001/cart/${cart.username}/product/${productId}`,
         { quantity },
         { withCredentials: true }
@@ -107,7 +108,7 @@ const CartPage = () => {
 
   const handleRemoveItem = async (productId: string) => {
     try {
-      await axios.delete(
+      await axiosInstance.delete(
        ` http://localhost:3001/cart/${cart.username}/product/${productId}`,
         { withCredentials: true }
       );
@@ -125,7 +126,7 @@ const CartPage = () => {
 
   const handleClearCart = async () => {
     try {
-      await axios.delete(`http://localhost:3001/cart/${cart.username}`, {
+      await axiosInstance.delete(`http://localhost:3001/cart/${cart.username}`, {
         withCredentials: true,
       });
       setCart({ username: cart.username, products: [] });

@@ -7,7 +7,7 @@ export interface Booking {
   bookingId: number;
 }
 export interface Product{
-    _id:object,
+    _id:string,
     name: string,
   price: number,
   description: string,

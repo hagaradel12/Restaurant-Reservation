@@ -105,23 +105,26 @@ export default function OrdersPage() {
     }
   };
 
-  // Handle status update
   const handleStatusUpdate = async (orderNo: number, newStatus: string) => {
     try {
       await axiosInstance.put(`${backend_url}/orders/admin/status/${orderNo}`, {
         status: newStatus,
       });
-
+  
       console.log(`Order status updated to ${newStatus} for order ${orderNo}.`);
+  
       setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order.orderNo === orderNo ? { ...order, status: newStatus } : order
-        )
+        newStatus === 'delivered'
+          ? prevOrders.filter((order) => order.orderNo !== orderNo) // Remove delivered orders
+          : prevOrders.map((order) =>
+              order.orderNo === orderNo ? { ...order, status: newStatus } : order
+            )
       );
     } catch (error) {
       console.error(`Error updating status for order ${orderNo}:`, error);
     }
   };
+  
 
   return (
     <div className="flex min-h-screen">

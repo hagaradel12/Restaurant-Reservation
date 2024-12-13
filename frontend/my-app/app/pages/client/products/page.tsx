@@ -49,7 +49,7 @@ export default function Menu() {
         setLoading(false);
       }
       try {
-        const response = await axiosInstance.get("/products/getAll");
+        const response = await axiosInstance.get<Product[]>("/products/getAll");
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -59,12 +59,12 @@ export default function Menu() {
   }, []); // Fetch products only once on component mount
   const handleAddToCart = async (productId: string) => {
     try {
-      const response = await axios.post(
-        `http://localhost:3001/cart/${username}/product`,
-        { productId, quantity: 1 },
+      const response = await axios.post(`http://localhost:3001/cart/${username}/product`, 
+        { productId, quantity: 1 }, 
         { withCredentials: true }
       );
-      setCart(response.data.products);
+      const data = response.data as CartResponse; // Cast response.data to CartResponse
+      setCart(data.products); // Access the `products` array
     } catch (err: any) {
       setError(err.message || "An error occurred while adding to cart.");
     }
@@ -73,13 +73,12 @@ export default function Menu() {
   
   const handleIncrement = async (productId: string) => {
     try {
-      const response = await axios.patch(
-       ` http://localhost:3001/cart/${username}/product/${productId}/increment`,
-        {},
+      const response = await axios.patch(`http://localhost:3001/cart/${username}/product/${productId}/increment`, 
+        {}, 
         { withCredentials: true }
       );
-      setCart(response.data.products);
-      setLoading(false);
+      const data = response.data as CartResponse; // Cast response.data to CartResponse
+      setCart(data.products); // Access the `products` array
     } catch (err: any) {
       setError(err.message || "An error occurred while incrementing quantity.");
     }
@@ -87,12 +86,12 @@ export default function Menu() {
 
   const handleDecrement = async (productId: string) => {
     try {
-      const response = await axios.patch(
-        `http://localhost:3001/cart/${username}/product/${productId}/decrement`,
-        {},
+      const response = await axios.patch(`http://localhost:3001/cart/${username}/product/${productId}/decrement`, 
+        {}, 
         { withCredentials: true }
       );
-      setCart(response.data.products);
+      const data = response.data as CartResponse; // Cast response.data to CartResponse
+      setCart(data.products); // Access the `products` array
     } catch (err: any) {
       setError(err.message || "An error occurred while decrementing quantity.");
     }
