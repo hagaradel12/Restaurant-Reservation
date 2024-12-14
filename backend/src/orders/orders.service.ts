@@ -10,82 +10,63 @@ export class OrdersService {
   constructor(
     @InjectModel(Orders.name) private orderModel: Model<ordersDocument>,
   ) {}
-//CLIENT
-  //create order for client DONE
-  //view current order DONE
-  //view past orders DONE
-  //no update no delete 
-  
-//ADMIN
-  //view all orders DONE
-  //find an order by user name or orderNo DONE
-  //update order status DONE
-  //delete order  DONE
 
-// Create a new order
+  // Create a new order
   async create(createOrderDto: CreateOrderDto): Promise<ordersDocument> {
-    const newOrder = new this.orderModel(createOrderDto);
-    newOrder.orderNo = Math.floor(Math.random() * 1000);  // Generates a random number between 0 and 999
-    return await newOrder.save();
-  }
-
- //client should be able to view current order
- //username will be extarcted from the token
- async findCurrentOrder(username: string): Promise<ordersDocument | null> {
-  try {
-    const currentOrder = await this.orderModel
-      .findOne({ username, status: { $in: ['pending', 'shipped'] }}).exec();
-
-    if (!currentOrder) {
-      throw new Error('No current order found for this user.');
+    if (!createOrderDto.items || createOrderDto.items.length === 0) {
+      throw new Error('Order must contain at least one item');
     }
 
-    return currentOrder;
-  } catch (error) {
-    throw new Error(`Failed to fetch current order: ${error.message}`);
+    const newOrder = new this.orderModel(createOrderDto);
+    
+    // Generating a random order number
+    newOrder.orderNo = Math.floor(Math.random() * 1000); // Generates a random number between 0 and 999
+    
+    // Optionally, add other business logic here (e.g., calculating total price)
+    // For now, just save the order
+    const savedOrder = await newOrder.save();
+    
+    console.log(savedOrder);  // Log the saved order to verify the 'items' field
+    return savedOrder;
   }
-}
 
+  // Client: Find current order
+  // async findCurrentOrder(username: string): Promise<ordersDocument | null> {
+  //   try {
+  //     const currentOrder = await this.orderModel
+  //       .findOne({ username, status: { $in: ['pending', 'shipped'] } })
+  //       .exec();
 
-   //view past orders
-   async findPastOrders(username: string): Promise<ordersDocument[]> {
-      const pastOrders = await this.orderModel.find({ username, status: 'delivered' }).sort({ createdAt: -1 }); 
-      return pastOrders;
-   }
+  //     if (!currentOrder) {
+  //       throw new Error('No current order found for this user.');
+  //     }
 
-  // Delete an order by orderNo if within 5 minutes of creation
-  // async delete(orderNo: string): Promise<ordersDocument> {
-  //   const order = await this.orderModel.findOne({ orderNo }).exec();
-  //   if (!order) {
-  //     throw new Error('Order not found');
+  //     return currentOrder;
+  //   } catch (error) {
+  //     throw new Error(`Failed to fetch current order: ${error.message}`);
   //   }
-
-  //   const isOlderThan5Min = new Date().getTime() - order.createdAt.getTime() > 5 * 60 * 1000;
-  //   if (isOlderThan5Min) {
-  //     throw new Error('Order can only be deleted within 5 minutes of creation');
-  //   }
-
-  //   return await this.orderModel.findByIdAndDelete(order._id);
   // }
 
-  // Update an order if within 5 minutes of creation
-  // async update(orderNo: string, updateOrderDto: UpdateOrderDto): Promise<ordersDocument> {
-  //   const order = await this.orderModel.findOne({ orderNo }).exec();
-  //   if (!order) {
-  //     throw new Error('Order not found');
-  //   }
+  // // Client: View past orders
+  // async findPastOrders(username: string): Promise<ordersDocument[]> {
+  //   const pastOrders = await this.orderModel
+  //     .find({ username, status: 'delivered' })
+  //     .sort({ createdAt: -1 });
 
-  //   const isOlderThan5Min = new Date().getTime() - order.createdAt.getTime() > 5 * 60 * 1000;
-  //   if (isOlderThan5Min) {
-  //     throw new Error('Order can only be updated within 5 minutes of creation');
-  //   }
-
-  //   return await this.orderModel.findByIdAndUpdate(order._id, updateOrderDto, { new: true });
+  //   return pastOrders;
   // }
-
-
-
-  // Get order by order number or username
+  async findAllOrders(username: string): Promise<ordersDocument[]> {
+    try {
+      // Fetch all orders for the user
+      return await this.orderModel
+        .find({ username })
+        .sort({ createdAt: -1 }) // Sort by most recent
+        .exec();
+    } catch (error) {
+      throw new Error(`Failed to fetch orders: ${error.message}`);
+    }
+  }
+  // Admin: Get order by order number or username
   async getOrderByOrderNoOrUsername(orderNo?: string, username?: string): Promise<ordersDocument | null> {
     try {
       if (!orderNo && !username) {
@@ -103,7 +84,6 @@ export class OrdersService {
       throw new Error(`Failed to fetch the order: ${error.message}`);
     }
   }
-  
 
   // Admin: Get all orders
   async getAllOrders(): Promise<ordersDocument[]> {
@@ -116,20 +96,19 @@ export class OrdersService {
     if (!validStatuses.includes(status)) {
       throw new Error('Invalid status');
     }
-  
+
     const updatedOrder = await this.orderModel.findOneAndUpdate(
       { orderNo },
       { status },
       { new: true },
     );
-  
+
     if (!updatedOrder) {
       throw new Error(`Order with orderNo ${orderNo} not found`);
     }
-  
+
     return updatedOrder;
   }
-  
 
   // Admin: Delete order by order number
   async adminDeleteOrder(orderNo: string): Promise<ordersDocument> {

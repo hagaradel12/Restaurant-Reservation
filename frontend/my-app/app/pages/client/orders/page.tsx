@@ -7,115 +7,93 @@ import Navbar from "@/app/components/navbar/page";
 
 const backend_url = "http://localhost:3001";
 
-const Orders = () => {
-  const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
+export default function Orders() {
   const [currentOrders, setCurrentOrders] = useState<Order[]>([]);
-  const [pastOrders, setPastOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [username, setUsername] = useState("");
 
-  async function fetchOrders() {
-    setLoading(true);
+  // Async function to fetch cookie data and current orders
+  const fetchCookieData = async () => {
     try {
       const response = await fetch(`${backend_url}/auth/get-cookie-data`, {
         credentials: "include",
       });
       const { userData } = await response.json();
 
-      if (!userData?.payload?.username) {
-        throw new Error("No cookie data found. Please log in.");
+      if (!userData.payload?.username) {
+        throw new Error("No cookie data found");
       }
 
-      const fetchedUsername = userData.payload.username;
-      setUsername(fetchedUsername);
+      const username = userData.payload.username;
 
-      const [currentResponse, pastResponse] = await Promise.all([
-        axiosInstance.get<Order[]>(`${backend_url}/orders/user-orders?username=${fetchedUsername}&type=current`),
-        axiosInstance.get<Order[]>(`${backend_url}/orders/user-orders?username=${fetchedUsername}&type=past`),
-      ]);
+      const currentResponse = await axiosInstance.get<Order[]>(
+        `${backend_url}/orders/${username}`
+      );
+      console.log(currentResponse.data);  // Log the response to verify the structure
 
-      setCurrentOrders(currentResponse.data);
-      setPastOrders(pastResponse.data);
+      setCurrentOrders(currentResponse.data || []);
     } catch (error) {
-      setError("Failed to fetch orders.");
+      console.error("Error fetching data:", error);
+      setError(error instanceof Error ? error.message : "An unknown error occurred");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
+  // Fetch data on page load
   useEffect(() => {
-    fetchOrders();
+    fetchCookieData();
   }, []);
 
-  const renderOrders = (orders: Order[]) =>
-    orders.length > 0 ? (
-      orders.map((order, index) => (
-        <div key={index} className="p-4 bg-white rounded-md shadow-md">
-          <h2 className="text-xl font-semibold text-[#3C312C]">Order #{order.orderNo}</h2>
-          <p className="text-sm text-[#525757]">Status: {order.status}</p>
-          <p className="text-sm text-[#525757]">Address: {order.address}</p>
-          <ul className="list-disc pl-6">
-            {order.products.map((item, i) => (
-              <li key={i}>
-                Product ID: {item._id}, Quantity: {item.price}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))
-    ) : (
-      <p className="text-lg text-[#3C312C]">No orders found in this category.</p>
+  const renderOrders = (orders: Order[]) => {
+    if (!Array.isArray(orders)) {
+      return <p className="text-lg text-red-500">Invalid orders data.</p>;
+    }
+
+    if (orders.length === 0) {
+      return <p className="text-lg text-gray-800">No current orders found.</p>;
+    }
+    
+    return (
+      <ul className="list-disc space-y-4">
+        {orders.map((order, index) => (
+          <li key={index} className="p-4 bg-white rounded-md shadow-md">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Order #{order.orderNo}
+            </h2>
+            <p className="text-sm text-gray-600">Status: {order.status}</p>
+            <p className="text-sm text-gray-600">Address: {order.address}</p>
+            <ul className="list-disc pl-6">
+              {Array.isArray(order.products) && order.products.length > 0 ? (
+                order.products.map((item, i) => (
+                  <li key={i}>
+                    Product ID: {item._id}, Quantity: {item.price}
+                  </li>
+                ))
+              ) : (
+                <li>No products available</li>
+              )}
+            </ul>
+          </li>
+        ))}
+      </ul>
     );
+  };
 
   return (
-    <div className="min-h-screen bg-[#B1B7B9]">
-      <div className="px-6 py-8 mt-4">
-        <Navbar />
-        <h1 className="text-3xl font-bold text-[#3C312C] mb-6">My Orders</h1>
-
-        {/* Tabs */}
-        <div className="flex space-x-4 mb-6">
-          {["current", "past"].map((tab) => (
-            <button
-              key={tab}
-              className={`px-4 py-2 rounded-md text-xl font-medium transition-colors duration-300 ${
-                activeTab === tab
-                  ? "bg-[#D47043] text-white hover:bg-[#C0735B]"
-                  : "bg-[#C6A570] text-[#3C312C] hover:bg-[#D47043] hover:text-white"
-              }`}
-              onClick={() => setActiveTab(tab as 'current' | 'past')}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)} Orders
-            </button>
-          ))}
-        </div>
-
-        {/* Order List */}
-        <div className="space-y-4">
-          {loading ? (
-            <p className="text-lg text-[#3C312C]">Loading orders...</p>
-          ) : error ? (
-            <p className="text-lg text-red-500">{error}</p>
-          ) : activeTab === "current" ? (
-            renderOrders(currentOrders)
-          ) : (
-            renderOrders(pastOrders)
-          )}
-        </div>
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Your Orders</h1>
+        {loading ? (
+          <p className="text-lg text-gray-800">Loading orders...</p>
+        ) : error ? (
+          <p className="text-lg text-red-500">{error}</p>
+        ) : (
+          renderOrders(currentOrders)
+        )}
       </div>
     </div>
   );
-};
+}
 
-export default Orders;
-
-// export interface Order {
-//   _id: object;
-//   orderNo: number;
-//   products: { productId: string; quantity: number }[];
-//   address: string;
-//   status: string;
-//   username: string;
-//   createdAt: Date;
-// }
