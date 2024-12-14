@@ -6,8 +6,9 @@ import { Users } from 'src/users/users.schema';
 @Schema({ timestamps: true })
 export class Orders {
 
-  @Prop({required: false, unique: true})
-  orderNo:number
+  @Prop({ required: true, unique: true })
+  orderNo: number;
+  
 
 
   @Prop({ required: true })
