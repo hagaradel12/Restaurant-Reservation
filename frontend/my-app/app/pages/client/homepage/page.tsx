@@ -1,17 +1,26 @@
-// app/homepage/page.tsx
-
+'use client'
 import Navbar from "@/app/components/navbar/page";
+import HeroSection from "./HeroSection";
+import MenuPreview from "./MenuPreview";
+import OrderOnlineSection from "./OrderOnline";
 
-const HomePage = () => {
+const Home = () => {
   return (
-    <div className="bg-white min-h-screen"> {/* White Background for the Page */}
-<Navbar />
+    <div>
+      <Navbar />
+      {/* Hero Section */}
+      <HeroSection />
 
-      <div className="flex items-center justify-center h-screen">
-        <h1 className="text-4xl font-semibold text-[#BB8A52]">Ready to Order?</h1> {/* Coral Pink Text */}
-      </div>
+      {/* Menu Preview */}
+      <MenuPreview />
+
+      {/* Order Online Section */}
+      <OrderOnlineSection />
+
+      {/* Book a Table Section */}
+      {/* <BookTableSection /> */}
     </div>
   );
 };
 
-export default HomePage;
+export default Home;

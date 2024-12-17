@@ -100,7 +100,7 @@ export default function BookingPage() {
       {/* Main Content */}
       <div className="flex-1 p-6 bg-[#F7F4F2]">
         {/* Page Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">Manage Bookings</h1>
+        <h1 className="text-3xl font-bold mb-6 text-[#AA3320]">Manage Bookings</h1> {/* Xanthous for title */}
 
         {/* Search Bar and Buttons */}
         <div className="mb-6 flex items-center">
@@ -109,16 +109,16 @@ export default function BookingPage() {
             placeholder="Search by username or booking ID..."
             value={searchTerm} // Bind the searchTerm state to the input
             onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm state on input change
-            className="w-full sm:w-1/3 p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+            className="w-full sm:w-1/3 p-2 border border-[#AA3320] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]" // Focus ring with Xanthous
           />
           <button
-            className="ml-4 px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
+            className="ml-4 px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#AA3320] transition" // Blood Red for button and hover with Brown for hover
             onClick={handleSearch} // Call handleSearch on button click
           >
             Search
           </button>
           <button
-            className="ml-4 px-6 py-2 bg-[#C6A570] text-white rounded-lg hover:bg-[#D47043] transition"
+            className="ml-4 px-6 py-2 bg-[#AA3320] text-white rounded-lg hover:bg-[#6B0504] transition" // Brown for button and hover with Blood Red for hover
             onClick={handleNavigateToUpdate}
           >
             Update
@@ -128,12 +128,12 @@ export default function BookingPage() {
         {/* Bookings Table */}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           {loading ? (
-            <p className="text-center py-6">Loading bookings...</p>
+            <p className="text-center py-6 text-[#3C312C]">Loading bookings...</p> 
           ) : bookings.length === 0 ? (
-            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p>
+            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p> 
           ) : (
             <table className="w-full">
-              <thead className="bg-[#C6A570] text-white">
+              <thead className="bg-[#AA3320] text-white">
                 <tr>
                   <th className="text-left px-4 py-2">Booking ID</th>
                   <th className="text-left px-4 py-2">Username</th>
@@ -147,15 +147,15 @@ export default function BookingPage() {
                 {/* Rendering bookings dynamically */}
                 {bookings.map((booking) => (
                   <tr key={booking._id} className="border-t border-[#B1B7B9]">
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">{formatDateToDDMMYYYY(booking.date)}</td> {/* Formatting date */}
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td> {/* Brown text */}
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td> {/* Brown text */}
+                    <td className="px-4 py-2 text-[#3C312C]">{formatDateToDDMMYYYY(booking.date)}</td> {/* Formatting date with Brown text */}
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td> {/* Brown text */}
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td> {/* Brown text */}
                     <td className="px-4 py-2 text-center">
                       <button
                         onClick={() => handleDelete(booking.bookingId)} // Call handleDelete with bookingId
-                        className="px-4 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
+                        className="px-4 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition" // Blood Red for button and hover with Xanthous hover
                       >
                         Delete
                       </button>
@@ -170,5 +170,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-

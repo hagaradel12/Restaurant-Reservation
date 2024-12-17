@@ -35,7 +35,7 @@ export class ProductsService {
     // Update a product
     async update(updateProductDto: UpdateProductDto): Promise<Products> {
         const updatedProduct = await this.productModel
-            .findByIdAndUpdate(updateProductDto, { new: true })
+            .findOneAndUpdate(updateProductDto, { new: true })
             .exec();
         if (!updatedProduct) {
             throw new NotFoundException("Product not found"); // SRP - Single Responsibility (handling exceptions)

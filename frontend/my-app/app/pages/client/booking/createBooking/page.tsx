@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/app/components/admin/sidebar/page';
 import DatePicker from 'react-datepicker';  // Import react-datepicker
 import "react-datepicker/dist/react-datepicker.css"; // Styles for the date picker
+import Navbar from '@/app/components/navbar/page';
 
 let backend_url = "http://localhost:3001";
 interface Booking {
@@ -109,18 +110,18 @@ export default function CreateBookingPage() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar />
+      <Navbar />
   
       {/* Main Content */}
-      <div className="flex-1 p-6 bg-[#F7F4F2]">
+      <div className="flex-1 p-6 bg-[#FBFFFE]">
         {/* Page Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">Create Booking</h1>
+        <h1 className="text-3xl font-bold mb-6 text-[#AA3320]">Create Booking</h1>
   
         {/* Form for Creating Booking */}
         <div className="bg-white shadow-md rounded-lg p-6">
           {/* No. of People Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="noOfPeople">
+            <label className="block text-sm font-semibold text-[#AA3320]" htmlFor="noOfPeople">
               No. of People
             </label>
             <input
@@ -128,26 +129,26 @@ export default function CreateBookingPage() {
               id="noOfPeople"
               value={noOfPeople}
               onChange={(e) => setNoOfPeople(e.target.value)}
-              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
   
           {/* Date Field (using react-datepicker) */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="date">
+            <label className="block text-sm font-semibold text-[#AA3320]" htmlFor="date">
               Date
             </label>
             <DatePicker
               selected={Date}  // Ensure the variable name is consistent
               onChange={handleDateChange}
               dateFormat="dd/MM/yyyy"
-              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
   
           {/* Time Field */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-[#3C312C]" htmlFor="time">
+            <label className="block text-sm font-semibold text-[#AA3320]" htmlFor="time">
               Time
             </label>
             <input
@@ -155,7 +156,7 @@ export default function CreateBookingPage() {
               id="time"
               value={Time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#D47043]"
+              className="w-full p-2 border border-[#B1B7B9] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
   
@@ -163,28 +164,25 @@ export default function CreateBookingPage() {
           <div className="flex justify-end space-x-4">
             <button
               onClick={handleCancel}
-              className="px-6 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
+              className="px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#3C312C] transition"
             >
               Cancel
             </button>
             <button
-          onClick={() => {
-            if (!noOfPeople || !Date || !Time) {
-              alert("All fields are required to create a booking.");
-              return;
-            }
-            fetchCookieData(Number(noOfPeople), formatDateToDDMMYYYY(Date), Time); // Add username from cookie
-          }}
-          className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
-        >
-          Create Booking
-        </button>
+              onClick={() => {
+                if (!noOfPeople || !Date || !Time) {
+                  alert("All fields are required to create a booking.");
+                  return;
+                }
+                fetchCookieData(Number(noOfPeople), formatDateToDDMMYYYY(Date), Time); // Add username from cookie
+              }}
+              className="px-6 py-2 bg-[#E6AF2E] text-white rounded-lg hover:bg-[#C6A570] transition"
+            >
+              Create Booking
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
-

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import Navbar from '@/app/components/navbar/page';
 
 // Define the structure for a single cart item
 interface CartItem {
@@ -96,7 +97,7 @@ const CheckoutPage: React.FC = () => {
         withCredentials: true,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         setSuccess('Order placed successfully!');
         setError('');
         // Redirect to the home page after a successful order
@@ -111,55 +112,59 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
+ 
   return (
-    <div className="bg-[#B1B7B9] min-h-screen flex justify-center items-center">
-      <div className="w-full max-w-lg bg-[#C6A570] p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-[#3C312C] mb-4">Checkout</h1>
+    <div className="bg-[#FBFFFE] min-h-screen flex justify-center items-center">
+      {/* Navbar */}
+      <Navbar />
+
+      <div className="w-full max-w-lg bg-[#6B0504] p-8 rounded-lg shadow-md">
+        <h1 className="text-2xl font-bold text-[#FBFFFE] mb-4">Checkout</h1>
 
         {/* Display any error or success message */}
-        {error && <div className="text-[#C0735B] text-sm font-medium mb-2">{error}</div>}
-        {success && <div className="text-[#525757] text-sm font-medium mb-2">{success}</div>}
+        {error && <div className="text-[#6B0504] text-sm font-medium mb-2">{error}</div>}
+        {success && <div className="text-[#001514] text-sm font-medium mb-2">{success}</div>}
 
         <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
           {/* Username Field */}
           <div>
-            <label className="block text-sm font-medium text-[#3C312C]">Username</label>
+            <label className="block text-sm font-medium text-[#FBFFFE]">Username</label>
             <input
               type="text"
               value={username}
               readOnly
               required
-              className="w-full mt-1 px-4 py-2 border border-[#B1B7B9] rounded-md focus:outline-none focus:ring-2 focus:ring-[#D47043]"
+              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
           {/* Address Field */}
           <div>
-            <label className="block text-sm font-medium text-[#3C312C]">Address</label>
+            <label className="block text-sm font-medium text-[#FBFFFE]">Address</label>
             <textarea
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
-              className="w-full mt-1 px-4 py-2 border border-[#B1B7B9] rounded-md focus:outline-none focus:ring-2 focus:ring-[#D47043]"
+              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
           {/* Payment Method Field */}
           <div>
-            <label className="block text-sm font-medium text-[#3C312C]">Payment Method</label>
+            <label className="block text-sm font-medium text-[#FBFFFE]">Payment Method</label>
             <input
               type="text"
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
               required
-              className="w-full mt-1 px-4 py-2 border border-[#B1B7B9] rounded-md focus:outline-none focus:ring-2 focus:ring-[#D47043]"
+              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
           {/* Order Summary */}
           <div>
-            <h3 className="text-lg font-semibold text-[#3C312C]">Order Summary</h3>
-            <ul className="list-disc list-inside text-sm text-[#525757] mt-2">
+            <h3 className="text-lg font-semibold text-[#FBFFFE]">Order Summary</h3>
+            <ul className="list-disc list-inside text-sm text-[#6B0504] mt-2">
               {Array.isArray(items) && items.length > 0 ? (
                 items.map((item, index) => (
                   <li key={index}>
@@ -177,7 +182,7 @@ const CheckoutPage: React.FC = () => {
             <button
               type="button"
               onClick={handleOrder}
-              className="w-full bg-[#D47043] text-white text-sm font-medium py-2 rounded-md hover:bg-[#C0735B] focus:outline-none focus:ring-2 focus:ring-[#D47043]"
+              className="w-full bg-[#001514] text-[#AA33203] text-sm font-medium py-2 rounded-md hover:bg-[#FBFFFE] focus:outline-none focus:ring-2 focus:ring-[#FBFFFE]"
             >
               Place Order
             </button>

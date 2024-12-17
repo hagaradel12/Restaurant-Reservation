@@ -7,6 +7,7 @@ import { Button, Typography, IconButton, MenuItem, Select } from "@mui/material"
 import { Delete, Add, Remove } from "@mui/icons-material";
 import { useRouter } from "next/navigation";  // Import useRouter
 import axiosInstance from "@/app/utils/axiosInstance";
+import Navbar from "@/app/components/navbar/page";
 
 
 interface Product {
@@ -137,13 +138,15 @@ const CartPage = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-100 to-gray-200 p-4">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-[#FBFFFE] to-[#6B0504] p-4">
+      {/* Navbar */}
+      <Navbar />
+
       <div className="w-full max-w-5xl px-6 py-10 bg-white shadow-2xl rounded-lg text-gray-800">
         <Typography
           variant="h4"
-          className="text-center font-bold mb-8 text-gray-900"
+          className="text-center font-bold mb-8 text-[#001514]"
         >
           Your Cart
         </Typography>
@@ -153,27 +156,27 @@ const CartPage = () => {
             {cart.products.map((item: any) => (
               <div
                 key={item.productId}
-                className="flex flex-col sm:flex-row items-center justify-between bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                className="flex flex-col sm:flex-row items-center justify-between bg-[#FBFFFE] p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center space-x-6">
                   <img
                     src={item.product?.image || "/default-image.jpg"}
                     alt={item.product?.name || "Product"}
-                    className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                    className="w-20 h-20 object-cover rounded-lg border border-[#6B0504]"
                   />
                   <div>
                     <Typography
                       variant="h6"
-                      className="font-semibold text-gray-800"
+                      className="font-semibold text-[#001514]"
                     >
                       {item.product?.name}
                     </Typography>
-                    <Typography variant="body2" className="text-gray-600">
+                    <Typography variant="body2" className="text-[#6B0504]">
                       {item.product?.description || "No description available"}
                     </Typography>
                     <Typography
                       variant="h6"
-                      className="font-bold text-gray-900 mt-2"
+                      className="font-bold text-[#6B0504] mt-2"
                     >
                       ${item.product?.price?.toFixed(2) || "0.00"}
                     </Typography>
@@ -188,7 +191,7 @@ const CartPage = () => {
                         Math.max(item.quantity - 1, 1)
                       )
                     }
-                    className="bg-gray-200 hover:bg-gray-300 rounded-full p-1"
+                    className="bg-[#FBFFFE] hover:bg-[#6B0504] rounded-full p-1"
                   >
                     <Remove />
                   </IconButton>
@@ -197,7 +200,7 @@ const CartPage = () => {
                     onChange={(e) =>
                       handleQuantityChange(item.productId, Number(e.target.value))
                     }
-                    className="border border-gray-300 rounded-lg"
+                    className="border border-[#6B0504] rounded-lg"
                   >
                     {[...Array(10).keys()].map((x) => (
                       <MenuItem key={x + 1} value={x + 1}>
@@ -212,7 +215,7 @@ const CartPage = () => {
                         Math.min(item.quantity + 1, 10)
                       )
                     }
-                    className="bg-gray-200 hover:bg-gray-300 rounded-full p-1"
+                    className="bg-[#FBFFFE] hover:bg-[#6B0504] rounded-full p-1"
                   >
                     <Add />
                   </IconButton>
@@ -229,7 +232,7 @@ const CartPage = () => {
         ) : (
           <Typography
             variant="h6"
-            className="text-center text-gray-700 mt-8"
+            className="text-center text-[#001514] mt-8"
           >
             Your cart is empty.
           </Typography>
@@ -241,7 +244,7 @@ const CartPage = () => {
               variant="outlined"
               color="secondary"
               onClick={handleClearCart}
-              className="w-full sm:w-auto border border-gray-400 hover:bg-gray-200"
+              className="w-full sm:w-auto border border-[#6B0504] hover:bg-[#FBFFFE]"
             >
               Clear Cart
             </Button>
@@ -256,7 +259,7 @@ const CartPage = () => {
                   )}`
                 );
               }}
-              className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+              className="w-full sm:w-auto bg-[#6B0504] hover:bg-[#3C312C]"
             >
               Checkout
             </Button>

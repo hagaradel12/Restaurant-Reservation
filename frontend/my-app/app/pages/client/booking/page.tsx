@@ -5,6 +5,7 @@ import axiosInstance from "@/app/utils/axiosInstance";
 import React from "react";
 import { useRouter } from "next/navigation"; // Import from next/navigation
 import Sidebar from "@/app/components/admin/sidebar/page";
+import Navbar from "@/app/components/navbar/page";
 
 let backend_url = "http://localhost:3001";
 
@@ -69,7 +70,7 @@ export default function BookingPage() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar />
+      <Navbar />
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-[#F7F4F2]">

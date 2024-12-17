@@ -4,31 +4,42 @@ import mongoose, { Model, Types } from 'mongoose';
 import { Orders, ordersDocument } from './orders.schema';
 import { UpdateOrderDto } from './dto/updateOrderDto';
 import { CreateOrderDto } from './dto/CreateOrder.dto';
+import { CartService } from 'src/cart/cart.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectModel(Orders.name) private orderModel: Model<ordersDocument>,
+    private cartService: CartService
   ) {}
 
   // Create a new order
+  //call clear cart
   async create(createOrderDto: CreateOrderDto): Promise<ordersDocument> {
     if (!createOrderDto.items || createOrderDto.items.length === 0) {
       throw new Error('Order must contain at least one item');
     }
-
+  
     const newOrder = new this.orderModel(createOrderDto);
-    
+  
     // Generating a random order number
     newOrder.orderNo = Math.floor(Math.random() * 1000); // Generates a random number between 0 and 999
-    
-    // Optionally, add other business logic here (e.g., calculating total price)
-    // For now, just save the order
+  
+    // Save the order
     const savedOrder = await newOrder.save();
-    
-    console.log(savedOrder);  // Log the saved order to verify the 'items' field
+  
+    // Clear the user's cart after order creation
+    try {
+      await this.cartService.clearCart(createOrderDto.username);
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      throw new Error('Order placed, but failed to clear cart.');
+    }
+  
+    console.log(savedOrder); // Log the saved order to verify the 'items' field
     return savedOrder;
   }
+  
 
   // Client: Find current order
   // async findCurrentOrder(username: string): Promise<ordersDocument | null> {

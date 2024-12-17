@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import Sidebar from "@/app/components/admin/sidebar/page"; 
+import Sidebar from "@/app/components/admin/sidebar/page";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
         label: 'Total Orders',
         data: [150, 200, 250, 300, 350, 400, 450],
         fill: false,
-        borderColor: '#C9A47F',
+        borderColor: '#E6AF2E', // Xanthous for the chart line
         tension: 0.1,
       },
     ],
@@ -30,19 +30,21 @@ const AdminDashboard = () => {
         title: {
           display: true,
           text: 'Months',
+          color: '#E6AF2E', // Xanthous for axis titles
         },
       },
       y: {
         title: {
           display: true,
           text: 'Orders',
+          color: '#E6AF2E', // Xanthous for axis titles
         },
       },
     },
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex">
+    <div className="min-h-screen bg-[#001514] text-white flex"> {/* Rich Black background */}
       {/* Sidebar */}
       <Sidebar />
 
@@ -50,7 +52,7 @@ const AdminDashboard = () => {
       <div className="flex-1 p-6">
         {/* Top Bar */}
         <div className="flex justify-between items-center mb-6">
-          <div className="text-3xl font-bold text-[#C9A47F]">Dashboard</div>
+          <div className="text-3xl font-bold text-[#E6AF2E]">Dashboard</div> {/* Xanthous for title */}
           <div className="flex items-center space-x-4">
             <div className="relative">
               <button className="text-white">
@@ -66,80 +68,80 @@ const AdminDashboard = () => {
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-gray-700 p-6 rounded-lg flex items-center justify-between">
+          <div className="bg-[#2D3748] p-6 rounded-lg flex items-center justify-between">
             <div>
-              <div className="text-lg font-semibold">Total Bookings</div>
-              <div className="text-3xl">1,258</div>
+              <div className="text-lg font-semibold text-[#AA3320]">Total Bookings</div> {/* Brown for key text */}
+              <div className="text-3xl text-[#E6AF2E]">1,258</div> {/* Xanthous for the value */}
             </div>
-            <div className="text-[#C9A47F] text-4xl">📅</div>
+            <div className="text-[#E6AF2E] text-4xl">📅</div> {/* Xanthous for icon */}
           </div>
-          <div className="bg-gray-700 p-6 rounded-lg flex items-center justify-between">
+          <div className="bg-[#2D3748] p-6 rounded-lg flex items-center justify-between">
             <div>
-              <div className="text-lg font-semibold">Total Orders</div>
-              <div className="text-3xl">4,512</div>
+              <div className="text-lg font-semibold text-[#AA3320]">Total Orders</div> {/* Brown for key text */}
+              <div className="text-3xl text-[#E6AF2E]">4,512</div> {/* Xanthous for the value */}
             </div>
-            <div className="text-[#C9A47F] text-4xl">🍔</div>
+            <div className="text-[#E6AF2E] text-4xl">🍔</div> {/* Xanthous for icon */}
           </div>
-          <div className="bg-gray-700 p-6 rounded-lg flex items-center justify-between">
+          <div className="bg-[#2D3748] p-6 rounded-lg flex items-center justify-between">
             <div>
-              <div className="text-lg font-semibold">Avg Order Price</div>
-              <div className="text-3xl">$29.99</div>
+              <div className="text-lg font-semibold text-[#AA3320]">Avg Order Price</div> {/* Brown for key text */}
+              <div className="text-3xl text-[#E6AF2E]">$29.99</div> {/* Xanthous for the value */}
             </div>
-            <div className="text-[#C9A47F] text-4xl">💸</div>
+            <div className="text-[#E6AF2E] text-4xl">💸</div> {/* Xanthous for icon */}
           </div>
-          <div className="bg-gray-700 p-6 rounded-lg flex items-center justify-between">
+          <div className="bg-[#2D3748] p-6 rounded-lg flex items-center justify-between">
             <div>
-              <div className="text-lg font-semibold">Pending Bookings</div>
-              <div className="text-3xl">32</div>
+              <div className="text-lg font-semibold text-[#AA3320]">Pending Bookings</div> {/* Brown for key text */}
+              <div className="text-3xl text-[#E6AF2E]">32</div> {/* Xanthous for the value */}
             </div>
-            <div className="text-[#C9A47F] text-4xl">🔔</div>
+            <div className="text-[#E6AF2E] text-4xl">🔔</div> {/* Xanthous for icon */}
           </div>
         </div>
 
         {/* Trend Chart */}
-        <div className="bg-gray-700 p-6 rounded-lg mt-8">
-          <h3 className="text-2xl font-semibold mb-6">Orders Trend</h3>
+        <div className="bg-[#2D3748] p-6 rounded-lg mt-8">
+          <h3 className="text-2xl font-semibold text-[#E6AF2E] mb-6">Orders Trend</h3> {/* Xanthous for the title */}
           <Line data={chartData} options={chartOptions} />
         </div>
 
         {/* Main Content (Menu & Bookings) */}
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-white mb-6">Recent Activity</h2>
+          <h2 className="text-2xl font-semibold text-[#E6AF2E] mb-6">Recent Activity</h2> {/* Xanthous for title */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Menu Section */}
-            <div className="bg-gray-700 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-4">Menu Items</h3>
+            <div className="bg-[#2D3748] p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-[#E6AF2E] mb-4">Menu Items</h3> {/* Xanthous for section title */}
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <div>Cheeseburger</div>
-                  <div>$8.99</div>
+                  <div className="text-[#AA3320]">Cheeseburger</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">$8.99</div> {/* Xanthous for price */}
                 </div>
                 <div className="flex justify-between">
-                  <div>Veggie Pizza</div>
-                  <div>$12.99</div>
+                  <div className="text-[#AA3320]">Veggie Pizza</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">$12.99</div> {/* Xanthous for price */}
                 </div>
                 <div className="flex justify-between">
-                  <div>Pasta Alfredo</div>
-                  <div>$11.49</div>
+                  <div className="text-[#AA3320]">Pasta Alfredo</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">$11.49</div> {/* Xanthous for price */}
                 </div>
               </div>
             </div>
 
             {/* Bookings Section */}
-            <div className="bg-gray-700 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-4">Recent Bookings</h3>
+            <div className="bg-[#2D3748] p-6 rounded-lg">
+              <h3 className="text-xl font-semibold text-[#E6AF2E] mb-4">Recent Bookings</h3> {/* Xanthous for section title */}
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <div>John Doe</div>
-                  <div>12:30 PM</div>
+                  <div className="text-[#AA3320]">John Doe</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">12:30 PM</div> {/* Xanthous for time */}
                 </div>
                 <div className="flex justify-between">
-                  <div>Jane Smith</div>
-                  <div>1:00 PM</div>
+                  <div className="text-[#AA3320]">Jane Smith</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">1:00 PM</div> {/* Xanthous for time */}
                 </div>
                 <div className="flex justify-between">
-                  <div>Mike Johnson</div>
-                  <div>2:00 PM</div>
+                  <div className="text-[#AA3320]">Mike Johnson</div> {/* Brown for text */}
+                  <div className="text-[#E6AF2E]">2:00 PM</div> {/* Xanthous for time */}
                 </div>
               </div>
             </div>

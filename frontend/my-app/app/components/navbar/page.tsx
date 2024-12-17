@@ -1,39 +1,51 @@
-import Link from "next/link";  // Import Link from Next.js
+import Link from "next/link"; // Import Link from Next.js
 
 const Navbar = () => {
-  return ( 
+  return (
     <div>
       {/* Navbar */}
-      <div className="bg-[#6D9773] text-white h-16 flex items-center justify-between px-6"> {/* Coral Pink Background */}
-        <h2 className="text-2xl font-semibold">DineOnline!</h2>
+      <div
+        className="fixed top-0 left-0 w-full bg-[#001514] text-[#FBFFFE] h-16 flex items-center justify-between px-6 z-50"
+      >
+        {/* Logo or Restaurant Name */}
+        <h2 className="text-2xl font-semibold">Below The Hat</h2>
 
         {/* Menu Links */}
         <div className="flex space-x-6">
           <h3 className="text-xl font-medium">
-            <Link href="/pages/profile" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Profile</Link> {/* Soft Ivory Text and Mint Green Hover */}
-          </h3>          
-          <h3 className="text-xl font-medium">
-            <Link href="/pages/client/products" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Menu Items</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/homepage" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              Home
+            </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/cart" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Cart</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/products" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              Menu Items
+            </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/booking" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Book</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/booking" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              Book
+            </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/orders" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">My Orders</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/cart" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              Cart
+            </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/signout" className="text-[#F7F3E3] hover:bg-[#A3D8B2] px-4 py-2 rounded-md">Sign Out</Link> {/* Soft Ivory Text and Mint Green Hover */}
+            <Link href="/pages/client/orders" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              My Orders
+            </Link>
+          </h3>
+          <h3 className="text-xl font-medium">
+            <Link href="/signout" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+              Sign Out
+            </Link>
           </h3>
         </div>
       </div>
-
-      {/* Main Content */}
-     
     </div>
   );
-}
+};
 
 export default Navbar;

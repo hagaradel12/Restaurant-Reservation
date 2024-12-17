@@ -165,7 +165,7 @@ export default function UpdateBookingPage() {
           <div className="flex justify-end space-x-4">
             <button
               onClick={handleCancel}
-              className="px-6 py-2 bg-[#C0735B] text-white rounded-lg hover:bg-[#3C312C] transition"
+              className="px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition"
             >
               Cancel
             </button>
@@ -177,7 +177,7 @@ export default function UpdateBookingPage() {
                 }
                 handleUpdate(Number(BookingId), Number(noOfPeople), Date, Time);
               }}
-              className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
+              className="px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition"
             >
               Update Booking
             </button>
