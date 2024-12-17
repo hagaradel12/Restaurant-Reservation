@@ -3,7 +3,7 @@
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import Sidebar from "@/app/components/admin/sidebar/page";
+import NavbarA from '@/app/components/navbarA/page';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-[#001514] text-white flex"> {/* Rich Black background */}
       {/* Sidebar */}
-      <Sidebar />
+      <NavbarA />
 
       {/* Main Content */}
       <div className="flex-1 p-6">

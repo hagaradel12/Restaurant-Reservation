@@ -72,6 +72,11 @@ export class OrdersController {
     }
   }
 
+  @Get('admin')
+  async getOrdersForAdmin() {
+    return await this.ordersService.getAllForAdmin();
+  }
+
   // Get a single order by order number or username
   @Roles(Role.Admin) // Restrict access to Admins
   @UseGuards(AuthGuard, AuthorizationGuard)

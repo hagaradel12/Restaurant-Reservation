@@ -1,6 +1,7 @@
+'use client'
 import Link from "next/link"; // Import Link from Next.js
 
-const Navbar = () => {
+const NavbarA = () => {
   return (
     <div>
       {/* Navbar */}
@@ -13,28 +14,23 @@ const Navbar = () => {
         {/* Menu Links */}
         <div className="flex space-x-6">
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/homepage" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+            <Link href="/pages/admin/admin-dashboard" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
               Home
             </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/products" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+            <Link href="/pages/admin/products" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
               Menu Items
             </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/booking" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+            <Link href="/pages/admin/booking" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
               Book
             </Link>
           </h3>
           <h3 className="text-xl font-medium">
-            <Link href="/pages/client/cart" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
-              Cart
-            </Link>
-          </h3>
-          <h3 className="text-xl font-medium">
-            <Link href="/pages/client/orders" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
-              My Orders
+            <Link href="/pages/admin/orders" className="text-[#FBFFFE] hover:bg-[#6B0504] px-4 py-2 rounded-md">
+               Orders
             </Link>
           </h3>
           <h3 className="text-xl font-medium">
@@ -61,4 +57,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavbarA;

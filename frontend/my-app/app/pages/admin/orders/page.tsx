@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/app/utils/axiosInstance";
-import Sidebar from "@/app/components/admin/sidebar/page"; // Ensure Sidebar is correctly imported
+
 import { useRouter } from "next/navigation"; // Import from next/navigation
+import NavbarA from "@/app/components/navbarA/page";
 
 const backend_url = "http://localhost:3001"; // Base URL for backend API
 
@@ -38,8 +39,13 @@ export default function OrdersPage() {
       try {
         const response = await axiosInstance.get<Order[]>(`${backend_url}/orders/admin/all`);
         console.log('Fetched orders:', response.data); // Debugging line
+  
         if (Array.isArray(response.data)) {
-          setOrders(response.data);
+          // Filter for orders with status 'pending' or 'shipped'
+          const filteredOrders = response.data.filter(
+            (order) => order.status === 'pending' || order.status === 'shipped'
+          );
+          setOrders(filteredOrders);
         } else {
           setOrders([]); // Handle unexpected response structure
         }
@@ -49,9 +55,10 @@ export default function OrdersPage() {
         setLoading(false);
       }
     };
-
+  
     fetchOrders();
   }, []);
+  
 
   // Handle search by order number or username
   const handleSearch = async () => {
@@ -129,7 +136,7 @@ export default function OrdersPage() {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <Sidebar />
+      <NavbarA />
 
       {/* Main Content */}
       <div className="flex-1 p-6 bg-[#F7F4F2]">

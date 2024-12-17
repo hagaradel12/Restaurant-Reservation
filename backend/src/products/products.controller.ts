@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Products } from './products.schema';
 import { CreateProductDto } from './dto/create.dto';
@@ -38,15 +38,18 @@ export class ProductsController {
     return await this.productsService.deleteProduct(name); // SRP - Single Responsibility (delegating logic to service)
   }
 
-  // PUT /products/:productCode: Update an existing product by its productCode     //ADMIN
-  @Put(':name')
+  // PUT /products/:productCode: Update an existing product      //ADMIN
+  @Patch(':name')
   @Roles(Role.Admin)
-  @UseGuards(AuthGuard, AuthorizationGuard) 
+  @UseGuards(AuthGuard, AuthorizationGuard)
   async updateProduct(
+    @Param('name') name: string, // Extract the product name from the route parameter
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Products> {
-    return await this.productsService.update(updateProductDto); // SRP - Single Responsibility (delegating logic to service)
+    // Ensure the name from the route is included in the DTO
+    return await this.productsService.update({ ...updateProductDto, name });
   }
+  
 
   // GET /products/:name: Retrieve a product by its name                           //ANY USER
   @Get(':name')

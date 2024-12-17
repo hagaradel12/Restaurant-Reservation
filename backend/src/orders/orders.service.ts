@@ -96,10 +96,21 @@ export class OrdersService {
     }
   }
 
-  // Admin: Get all orders
+  // client: Get all orders
   async getAllOrders(): Promise<ordersDocument[]> {
     return await this.orderModel.find().exec();
   }
+
+  //get all orders for admin if pending or shipped
+  async getAllForAdmin(): Promise<ordersDocument[]> {
+    // Filter orders with status 'pending' or 'shipped'
+    const orders = await this.orderModel.find({
+      status: { $in: ['pending', 'shipped'] },
+    }).exec();
+  
+    return orders;
+  }
+  
 
   // Admin: Update order status
   async adminUpdateOrderStatus(orderNo: string, status: string): Promise<ordersDocument> {

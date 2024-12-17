@@ -2,17 +2,103 @@
 
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../../utils/axiosInstance";
-import Remi from '@/app/components/remi/page';
 import { Product } from "@/app/_lib/page";
-import Sidebar from "@/app/components/admin/sidebar/page";
+import NavbarA from "@/app/components/navbarA/page";
+import Remi from "@/app/components/remi/page";
 
-export default function Menu() {
-  const [products, setProducts] = useState<Product[]>([]);
+interface ProductFormProps {
+  onSubmit: (product: Partial<Product>) => void;
+  onClose: () => void;
+  editingProduct: Product | null;
+}
+
+function ProductForm({ onSubmit, onClose, editingProduct }: ProductFormProps) {
   const [productName, setProductName] = useState<string>("");
   const [productDescription, setProductDescription] = useState<string>("");
   const [productPrice, setProductPrice] = useState<number>(0);
   const [productImage, setProductImage] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (editingProduct) {
+      setProductName(editingProduct.name);
+      setProductDescription(editingProduct.description);
+      setProductPrice(editingProduct.price);
+      setProductImage(editingProduct.image || "");
+    }
+  }, [editingProduct]);
+
+  const handleSubmit = () => {
+    if (!productName || productPrice <= 0) {
+      setError("Product name and price are required.");
+      return;
+    }
+    onSubmit({
+      name: productName,
+      description: productDescription,
+      price: productPrice,
+      image: productImage,
+    });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg w-full max-w-xl shadow-lg">
+        <h2 className="text-2xl font-semibold text-[#581845] mb-4">
+          {editingProduct ? "Edit Product" : "Add a New Product"}
+        </h2>
+        <input
+          type="text"
+          placeholder="Product Name"
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+          className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
+        />
+        <textarea
+          placeholder="Product Description"
+          value={productDescription}
+          onChange={(e) => setProductDescription(e.target.value)}
+          className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
+        />
+        <textarea
+          placeholder="Product Image URL"
+          value={productImage}
+          onChange={(e) => setProductImage(e.target.value)}
+          className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
+        />
+        <input
+          type="number"
+          placeholder="Product Price"
+          value={productPrice}
+          onChange={(e) => setProductPrice(parseFloat(e.target.value))}
+          className="w-full p-3 mb-4 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
+        />
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-md hover:bg-gray-400 transition-all duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-[#581845] text-[#FFFAF0] font-semibold rounded-lg shadow-md hover:bg-[#900C3F] transition-all duration-300"
+          >
+            {editingProduct ? "Update Product" : "Add Product"}
+          </button>
+        </div>
+        {error && (
+          <p className="text-red-500 mt-4 text-center font-medium">{error}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function Menu() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [showForm, setShowForm] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -20,163 +106,124 @@ export default function Menu() {
       try {
         const response = await axiosInstance.get<Product[]>("/products/getAll");
         setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      } catch (error: any) {
+        console.error("Error fetching products:", error.message);
       }
     };
     fetchProducts();
   }, []);
 
-  const handleAddProduct = async () => {
+  const handleAddProduct = async (newProduct: Partial<Product>) => {
     try {
-      const newProduct = {
-        name: productName,
-        price: productPrice,
-        description: productDescription,
-        image: productImage,
-      };
       const response = await axiosInstance.post<Product>("/products", newProduct);
       setProducts([...products, response.data]);
-      setProductName("");
-      setProductDescription("");
-      setProductPrice(0);
-      setProductImage("");
     } catch (error: any) {
-      setError(error.response?.data?.message || "An error occurred while adding the product.");
+      console.error("Error adding product:", error.message);
     }
   };
 
-  const handleDeleteProduct = async (productName: string) => {
+  const handleDeleteProduct = async (productId: string) => {
     try {
-      await axiosInstance.delete(`/products/${productName}`);
-      setProducts(products.filter((product) => product.name !== productName));
-    } catch (error) {
-      console.error("Error deleting product:", error);
+      await axiosInstance.delete(`/products/${productId}`);
+      setProducts(products.filter((product) => product._id !== productId));
+    } catch (error: any) {
+      console.error("Error deleting product:", error.message);
     }
   };
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    setProductName(product.name);
-    setProductDescription(product.description);
-    setProductPrice(product.price);
-    setProductImage(product.image || "");
+    setShowForm(true);
   };
 
-  const handleUpdateProduct = async () => {
+  const handleUpdateProduct = async (updatedProduct: Partial<Product>) => {
     if (!editingProduct) return;
     try {
-      const updatedProduct = {
-        ...editingProduct,
-        name: productName,
-        description: productDescription,
-        price: productPrice,
-        image: productImage,
-      };
-      const response = await axiosInstance.put(`/products/${editingProduct.name}`, updatedProduct);
-      setProducts(products.map((p) => (p.name === editingProduct.name ? response.data : p)));
+      const response = await axiosInstance.patch(
+        `/products/${editingProduct._id}`,
+        updatedProduct
+      );
+      setProducts(
+        products.map((p) =>
+          p._id === editingProduct._id ? response.data : p
+        )
+      );
       setEditingProduct(null);
-      setProductName("");
-      setProductDescription("");
-      setProductPrice(0);
-      setProductImage("");
-    } catch (error) {
-      console.error("Error updating product:", error);
+    } catch (error: any) {
+      console.error("Error updating product:", error.message);
     }
   };
+
+  const handleFormSubmit = (product: Partial<Product>) => {
+    if (editingProduct) {
+      handleUpdateProduct(product);
+    } else {
+      handleAddProduct(product);
+    }
+    setShowForm(false);
+  };
+
   return (
-    <div className="flex min-h-screen bg-[#FBFFFE]">
-      {/* Sidebar */}
-      <Sidebar />
-  
-      {/* Main Content Area */}
-      <div className="flex-1 ml-64 p-6">
-        {/* Logo */}
-        <div className="my-6 text-center">
-          <Remi />
-        </div>
-  
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-[#581845] mb-8 drop-shadow-lg text-center">
-          Welcome to Ratatouille's Menu
-        </h1>
-  
-        {/* Product Form */}
-        <div className="mb-8 w-full max-w-md bg-[#F3E5AB] p-6 rounded-lg shadow-md mx-auto">
-          <h2 className="text-2xl font-semibold text-[#581845] mb-4">
-            {editingProduct ? "Edit Product" : "Add a New Product"}
-          </h2>
-          <input
-            type="text"
-            placeholder="Product Name"
-            value={productName}
-            onChange={(e) => setProductName(e.target.value)}
-            className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
-          />
-          <textarea
-            placeholder="Product Description"
-            value={productDescription}
-            onChange={(e) => setProductDescription(e.target.value)}
-            className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
-          />
-          <textarea
-            placeholder="Product Image URL"
-            value={productImage}
-            onChange={(e) => setProductImage(e.target.value)}
-            className="w-full p-3 mb-3 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
-          />
-          <input
-            type="number"
-            placeholder="Product Price"
-            value={productPrice}
-            onChange={(e) => setProductPrice(parseFloat(e.target.value))}
-            className="w-full p-3 mb-4 border border-[#D47043] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#D47043] focus:border-transparent"
-          />
+    <div className="flex flex-col items-center min-h-screen bg-[#FBFFFE] text-[#001514] p-6 mt-16">
+    {/* Navbar */}
+    <NavbarA />
+
+    {/* Logo */}
+    {/* <div className="my-6">
+      <Remi />
+    </div> */}
+
+    {/* Title */}
+    <h1 className="text-4xl font-bold text-[#001514] mb-8 drop-shadow-lg text-center">
+      Welcome to Ratatouille's Menu
+    </h1>
+        <div className="mb-8 text-center">
           <button
-            onClick={editingProduct ? handleUpdateProduct : handleAddProduct}
+            onClick={() => setShowForm(true)}
             className="px-6 py-2 bg-[#581845] text-[#FFFAF0] font-semibold rounded-lg shadow-md hover:bg-[#900C3F] transition-all duration-300"
           >
-            {editingProduct ? "Update Product" : "Add Product"}
+            Add New Product
           </button>
-          {error && <p className="text-red-500 mt-4 text-center font-medium">{error}</p>}
         </div>
-  
-        {/* Menu List */}
-        <ul className="flex flex-col gap-8 w-full max-w-4xl mx-auto">
-          {products.map((product: Product) => (
-            <li
-              key={product._id.toString()}
-              className="flex flex-col items-start rounded-xl shadow-lg p-6 transition-transform transform hover:scale-105 hover:shadow-2xl bg-[#FFF4E6] border border-gray-200"
-            >
+        {showForm && (
+          <ProductForm
+            onSubmit={handleFormSubmit}
+            onClose={() => setShowForm(false)}
+            editingProduct={editingProduct}
+          />
+        )}
+        <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {products.map((product) => (
+            <li key={product._id} className="rounded-xl shadow-lg p-6">
               <img
-                src={product.image || "https://i.pinimg.com/736x/5c/03/8e/5c038ef5a0d0dc34c86583823c20dc6c.jpg"}
+                src={
+                  product.image ||
+                  "https://i.pinimg.com/736x/5c/03/8e/5c038ef5a0d0dc34c86583823c20dc6c.jpg"
+                }
                 alt={product.name}
-                className="w-full md:w-48 h-48 object-cover rounded-md mb-4 transition-transform hover:scale-105"
+                className="w-full h-48 object-cover rounded-md mb-4"
               />
-              <div className="flex-1">
-                <h2 className="text-2xl font-semibold text-[#581845]">{product.name}</h2>
-                <p className="text-gray-700 mt-2">{product.description}</p>
-                <p className="text-lg font-bold text-[#D47043] mt-2">${product.price}</p>
-                <div className="flex justify-start gap-4 mt-4">
-                  <button
-                    onClick={() => handleEditProduct(product)}
-                    className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(product.name)}
-                    className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300"
-                  >
-                    Delete
-                  </button>
-                </div>
+              <h2 className="text-2xl font-semibold">{product.name}</h2>
+              <p>{product.description}</p>
+              <p className="text-lg font-bold">${product.price}</p>
+              <div className="flex justify-center gap-4 mt-4">
+                <button
+                  onClick={() => handleEditProduct(product)}
+                  className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteProduct(product._id)}
+                  className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg"
+                >
+                  Delete
+                </button>
               </div>
             </li>
           ))}
         </ul>
       </div>
-    </div>
+    
   );
-  
 }

@@ -32,16 +32,28 @@ export class ProductsService {
         return deletedProduct;
     }
 
-    // Update a product
-    async update(updateProductDto: UpdateProductDto): Promise<Products> {
-        const updatedProduct = await this.productModel
-            .findOneAndUpdate(updateProductDto, { new: true })
-            .exec();
-        if (!updatedProduct) {
-            throw new NotFoundException("Product not found"); // SRP - Single Responsibility (handling exceptions)
-        }
-        return updatedProduct; // SRP - Single Responsibility (delegating logic to the model)
+// Update a product
+async update(updateProductDto: UpdateProductDto): Promise<Products> {
+    const { name, ...updateFields } = updateProductDto;
+
+    // Ensure 'name' is provided to locate the product
+    if (!name) {
+        throw new NotFoundException('Product name is required for update');
     }
+
+    // Find and update the product
+    const updatedProduct = await this.productModel
+        .findOneAndUpdate({ name }, updateFields, { new: true })
+        .exec();
+
+    // Throw an exception if the product was not found
+    if (!updatedProduct) {
+        throw new NotFoundException(`Product with name "${name}" not found`);
+    }
+
+    return updatedProduct;
+}
+
 
     // Get a product by name
     async findByName(name: string): Promise<Products> {
