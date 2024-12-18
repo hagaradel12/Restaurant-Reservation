@@ -1,4 +1,4 @@
-'use client'; // Marks this file as a client-side component
+'use client'; // Marks this file as a client-side component 
 
 import { useState, useEffect } from "react";
 import axiosInstance from "@/app/utils/axiosInstance";
@@ -51,25 +51,20 @@ export default function BookingPage() {
   // Function to handle search
   const handleSearch = async () => {
     if (searchTerm.trim() === "") {
-      // If search term is empty, fetch all bookings
       const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/`);
       setBookings(response.data);
     } else {
       try {
         if (/^\d+$/.test(searchTerm)) {
-          // If searchTerm is all numbers, treat it as an ID
-          console.log("Searching by ID...");
           const idResponse = await axiosInstance.get<Booking>(`${backend_url}/booking/admin/id/${searchTerm}`);
-          setBookings([idResponse.data]); // Wrapping single booking in an array
+          setBookings([idResponse.data]);
         } else {
-          // Otherwise, treat it as a username
-          console.log("Searching by username...");
           const userResponse = await axiosInstance.get<Booking[]>(`${backend_url}/booking/admin/username/${searchTerm}`);
-          setBookings(userResponse.data); // Directly set array of bookings
+          setBookings(userResponse.data);
         }
       } catch (error) {
         console.error("Error fetching bookings:", error);
-        setBookings([]); // Clear bookings on failure
+        setBookings([]);
       }
     }
   };
@@ -80,11 +75,7 @@ export default function BookingPage() {
 
   const handleDelete = async (bookingId: number) => {
     try {
-      // Send DELETE request to the backend
       await axiosInstance.delete(`${backend_url}/booking/delete/${bookingId}`);
-      console.log(`Booking with ID ${bookingId} deleted successfully.`);
-      
-      // Refresh the list of bookings
       const response = await axiosInstance.get<Booking[]>(`${backend_url}/booking/`);
       setBookings(response.data);
     } catch (error) {
@@ -92,45 +83,71 @@ export default function BookingPage() {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await axiosInstance.get<ArrayBuffer>(`${backend_url}/export/export`, {
+        responseType: 'arraybuffer', // Ensures binary data is returned
+      });
+  
+      // Create a Blob from the ArrayBuffer
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+  
+      // Generate a URL for the Blob and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'bookings-report.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading Booking sheet:", error);
+    }
+  };
+  
+
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       <NavbarA />
 
-      {/* Main Content */}
       <div className="flex-1 p-6 bg-[#F7F4F2]">
-        {/* Page Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#AA3320]">Manage Bookings</h1> {/* Xanthous for title */}
+        <h1 className="text-3xl font-bold mb-6 text-[#AA3320]">Manage Bookings</h1>
 
-        {/* Search Bar and Buttons */}
         <div className="mb-6 flex items-center">
           <input
             type="text"
             placeholder="Search by username or booking ID..."
-            value={searchTerm} // Bind the searchTerm state to the input
-            onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm state on input change
-            className="w-full sm:w-1/3 p-2 border border-[#AA3320] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]" // Focus ring with Xanthous
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full sm:w-1/3 p-2 border border-[#AA3320] rounded-lg focus:ring-2 focus:ring-[#E6AF2E]"
           />
           <button
-            className="ml-4 px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#AA3320] transition" // Blood Red for button and hover with Brown for hover
-            onClick={handleSearch} // Call handleSearch on button click
+            className="ml-4 px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#AA3320] transition"
+            onClick={handleSearch}
           >
             Search
           </button>
           <button
-            className="ml-4 px-6 py-2 bg-[#AA3320] text-white rounded-lg hover:bg-[#6B0504] transition" // Brown for button and hover with Blood Red for hover
+            className="ml-4 px-6 py-2 bg-[#AA3320] text-white rounded-lg hover:bg-[#6B0504] transition"
             onClick={handleNavigateToUpdate}
           >
             Update
           </button>
+          <button
+            className="ml-4 px-6 py-2 bg-[#E6AF2E] text-white rounded-lg hover:bg-[#AA3320] transition"
+            onClick={handleDownload}
+          >
+            Download
+          </button>
         </div>
 
-        {/* Bookings Table */}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           {loading ? (
-            <p className="text-center py-6 text-[#3C312C]">Loading bookings...</p> 
+            <p className="text-center py-6 text-[#3C312C]">Loading bookings...</p>
           ) : bookings.length === 0 ? (
-            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p> 
+            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p>
           ) : (
             <table className="w-full">
               <thead className="bg-[#AA3320] text-white">
@@ -144,18 +161,17 @@ export default function BookingPage() {
                 </tr>
               </thead>
               <tbody>
-                {/* Rendering bookings dynamically */}
                 {bookings.map((booking) => (
                   <tr key={booking._id} className="border-t border-[#B1B7B9]">
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td> {/* Brown text */}
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td> {/* Brown text */}
-                    <td className="px-4 py-2 text-[#3C312C]">{formatDateToDDMMYYYY(booking.date)}</td> {/* Formatting date with Brown text */}
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td> {/* Brown text */}
-                    <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td> {/* Brown text */}
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{formatDateToDDMMYYYY(booking.date)}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
+                    <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                     <td className="px-4 py-2 text-center">
                       <button
-                        onClick={() => handleDelete(booking.bookingId)} // Call handleDelete with bookingId
-                        className="px-4 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition" // Blood Red for button and hover with Xanthous hover
+                        onClick={() => handleDelete(booking.bookingId)}
+                        className="px-4 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition"
                       >
                         Delete
                       </button>

@@ -144,9 +144,7 @@ export default function Menu() {
         updatedProduct
       );
       setProducts(
-        products.map((p) =>
-          p._id === editingProduct._id ? response.data : p
-        )
+        products.map((p) =>p._id === editingProduct._id ? response.data : p)
       );
       setEditingProduct(null);
     } catch (error: any) {
