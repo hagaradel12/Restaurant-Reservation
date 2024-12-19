@@ -139,7 +139,7 @@ export default function Menu() {
   const handleUpdateProduct = async (updatedProduct: Partial<Product>) => {
     if (!editingProduct) return;
     try {
-      const response = await axiosInstance.patch(
+      const response = await axiosInstance.patch<Product>(
         `/products/${editingProduct._id}`,
         updatedProduct
       );

@@ -254,9 +254,7 @@ const CartPage = () => {
               onClick={() => {
                 const cartItems = JSON.stringify(cart.products); // Serialize cart items to pass in query
                 router.push(
-                  `/pages/client/cart/checkout?username=${cart.username}&items=${encodeURIComponent(
-                    cartItems
-                  )}`
+                  `/pages/client/cart/checkout`
                 );
               }}
               className="w-full sm:w-auto bg-[#6B0504] hover:bg-[#3C312C]"

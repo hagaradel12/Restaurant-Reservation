@@ -16,7 +16,7 @@ export interface Product{
 export interface Order{
     _id:object,
     orderNo: number,
-    products: Product[],
+    items: Product[],
     address: string,
     status: string,
     username: string,

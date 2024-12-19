@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/app/components/navbar/page';
+import axiosInstance from '@/app/utils/axiosInstance';
 
 // Define the structure for a single cart item
 interface CartItem {
@@ -10,16 +11,28 @@ interface CartItem {
   quantity: number;
 }
 
+interface products {
+  name: string;
+  quantity: number;
+}
+
+interface Product {
+ // _id:string;
+  name: string;
+//  quantity:number
+}
+
 // Define the structure of the cart response
 interface CartResponse {
-  items: CartItem[];  // The cart contains an array of CartItems
+  products: CartItem[];  // The cart contains an array of CartItems
+
 }
 
 const CheckoutPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [address, setAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [items, setItems] = useState<CartItem[]>([]); // Initialize items as an empty array
+  const [items, setItems] = useState<products[]>([]); // Initialize items as an empty array
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true); // Add loading state
@@ -55,20 +68,30 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
-  // Fetch cart data based on username
-  const fetchCart = async (username: string) => {
-    try {
-      const response = await axios.get<CartResponse>(`http://localhost:3001/cart/${username}`, {
-        withCredentials: true,
+// Fetch cart data based on username
+const fetchCart = async (username: string) => {
+  try {
+    const response = await axiosInstance.get<CartResponse>(`http://localhost:3001/cart/${username}`, {
+      withCredentials: true,
+    });
+
+    const products: { name: string, quantity: number }[] = [];
+
+    for (const product of response.data.products) {
+      const productResponse = await axiosInstance.get<Product>(`http://localhost:3001/products/productId/${product.productId}`);
+      products.push({
+        name: productResponse.data.name,
+        quantity: product.quantity,
       });
-      setItems(response.data.items); // Update the items state with the fetched data
-      setLoading(false); // Set loading to false once data is fetched
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
-      setError('Failed to fetch cart items. Please try again.');
-      setLoading(false);
+      console.log(product)
     }
-  };
+
+    setItems(products); // Update the items state with the fetched data
+    setLoading(false); // Set loading to false once data is fetched
+  } catch (error) {
+    console.error('Error fetching cart items')
+    }};
+
 
   // Fetch data on component mount
   useEffect(() => {
@@ -134,7 +157,7 @@ const CheckoutPage: React.FC = () => {
               value={username}
               readOnly
               required
-              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
+              className="text-black w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
@@ -145,7 +168,7 @@ const CheckoutPage: React.FC = () => {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
-              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
+              className="text-black w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
@@ -157,18 +180,18 @@ const CheckoutPage: React.FC = () => {
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
               required
-              className="w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
+              className="text-black w-full mt-1 px-4 py-2 border border-[#FBFFFE] rounded-md focus:outline-none focus:ring-2 focus:ring-[#E6AF2E]"
             />
           </div>
 
           {/* Order Summary */}
           <div>
             <h3 className="text-lg font-semibold text-[#FBFFFE]">Order Summary</h3>
-            <ul className="list-disc list-inside text-sm text-[#6B0504] mt-2">
+            <ul className="list-disc list-inside text-sm text-[#6B0504] mt-2 text-black">
               {Array.isArray(items) && items.length > 0 ? (
                 items.map((item, index) => (
                   <li key={index}>
-                    {item.productId} - Quantity: {item.quantity}
+                    {item.name} - Quantity: {item.quantity}
                   </li>
                 ))
               ) : (
