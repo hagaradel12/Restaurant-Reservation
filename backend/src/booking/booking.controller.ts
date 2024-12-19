@@ -3,9 +3,9 @@ import { BookingService } from './booking.service';
 import { Booking } from './booking.schema';
 import { UpdateBookingDto } from './dto/UpdateBooking.dto';
 import { CreateBookingDto } from './dto/CreateBooking.dto';
-import { AuthGuard } from 'src/auth/guards/authentication.guard';
-import { Roles, Role } from 'src/auth/decorators/role.decorator';
-import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { AuthGuard } from '../auth/guards/authentication.guard';
+import { Roles, Role } from '../auth/decorators/role.decorator';
+import { AuthorizationGuard } from '../auth/guards/authorization.guard';
 
 
 
@@ -14,7 +14,7 @@ export class BookingController {
     constructor(private readonly bookingService: BookingService) {}                                                         
 
    //Get all bookings as admin but not booking that have passed                     //ADMIN   
-                
+        //jana        
     @Get()
      @UseGuards(AuthGuard, AuthorizationGuard)
      @Roles(Role.Admin)  
@@ -22,6 +22,7 @@ export class BookingController {
       return this.bookingService.findAllAdmin();
     }
 
+    //jana
     // GET /booking/:username: Retrieve bookinga of specifc user                          //ADMIN
    @UseGuards(AuthGuard, AuthorizationGuard)
    @Roles(Role.Admin)
@@ -30,14 +31,22 @@ export class BookingController {
     return this.bookingService.findByUsername(username);
   }
 
+
+  //farah
   // GET /booking/:username: Retrieve booking of specifc date                          //ADMIN
   @UseGuards(AuthGuard, AuthorizationGuard)
    @Roles(Role.Admin)
    @Get('admin/id/:bookingId')
-  async findById(@Param('bookingId')bookingId:number): Promise<Booking> {
-    return this.bookingService.findById(bookingId);
+  async findById(@Param('bookingId') bookingId:number): Promise<Booking> {
+    const booking = await this.bookingService.findById(bookingId);
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    return booking;
   }
 
+
+  //hagar
 // GET ALL BOOKING FOR CLIENT GET username from token
 @UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Customer)
@@ -47,6 +56,8 @@ async findClient(@Param('username') username: string): Promise<Booking[]> {
 }
 
 
+
+//farah
 // POST /booking: Create a new booking
 @UseGuards(AuthGuard, AuthorizationGuard)
  @Roles(Role.Customer)

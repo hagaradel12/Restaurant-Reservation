@@ -1,18 +1,135 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BookingController } from './booking.controller';
+import { BookingService } from './booking.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+
+// Mock CreateBookingDto
+class CreateBookingDto {
+  username: string;
+  no_of_people: number;
+  date: string;
+  time: string;
+}
+
+// Mock BookingModel
+const mockBookingModel = {
+  create: jest.fn(),
+  find: jest.fn(),
+  findById: jest.fn(),
+  updateOne: jest.fn(),
+  deleteOne: jest.fn(),
+};
 
 describe('BookingController', () => {
-  let controller: BookingController;
+  let bookingController: BookingController;
+  let bookingService: BookingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BookingController],
-    }).compile();
+      providers: [
+        BookingService,
+        {
+          provide: 'BookingModel',
+          useValue: mockBookingModel,
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn(() => 'mockToken'),
+          },
+        },
+        Reflector,
+      ],
+    })
+      .overrideGuard(AuthGuard('jwt'))
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
-    controller = module.get<BookingController>(BookingController);
+    bookingController = module.get<BookingController>(BookingController);
+    bookingService = module.get<BookingService>(BookingService);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  describe('create', () => {
+    let mockBooking: any;
+
+    beforeEach(() => {
+      mockBooking = {
+        bookingId: 5,
+        username: 'john_doe',
+        no_of_people: 4,
+        date: '2024-12-25',
+        time: '18:00',
+      };
+
+      jest.spyOn(bookingService, 'create').mockResolvedValue(mockBooking);
+    });
+
+    it('should call bookingService.create and return the created booking', async () => {
+      const createBookingDto: CreateBookingDto = {
+        username: 'john_doe',
+        no_of_people: 4,
+        date: '2024-12-25',
+        time: '18:00',
+      };
+
+      const result = await bookingController.create(createBookingDto);
+
+      expect(result).toEqual(mockBooking);
+      expect(bookingService.create).toHaveBeenCalledWith(createBookingDto);
+    });
+
+    it('should ensure bookingId is between 1 and 100', async () => {
+      const createBookingDto: CreateBookingDto = {
+        username: 'john_doe',
+        no_of_people: 4,
+        date: '2024-12-25',
+        time: '18:00',
+      };
+
+      const result = await bookingController.create(createBookingDto);
+
+      expect(result.bookingId).toBeGreaterThanOrEqual(1);
+      expect(result.bookingId).toBeLessThanOrEqual(100);
+    });
   });
+
+  describe('findById', () => {
+    it('should return a booking by id', async () => {
+      const mockBooking = {
+        bookingId: 1,
+        username: 'john_doe',
+        no_of_people: 4,
+        date: new Date('2024-12-25'), // Fixed: using Date object
+        time: '18:00',
+      };
+  
+      const bookingId = 1;
+  
+      // Mock the service call
+      jest.spyOn(bookingService, 'findById').mockResolvedValue(mockBooking);
+  
+      // Call the controller method
+      const result = await bookingController.findById(bookingId);
+  
+      // Assertions
+      expect(bookingService.findById).toHaveBeenCalledWith(bookingId);
+      expect(result).toEqual(mockBooking);
+    });
+  
+    it('should throw an error if booking not found', async () => {
+      const bookingId = 999; // Non-existent booking
+  
+      // Mock the service to return null or throw an error
+      jest.spyOn(bookingService, 'findById').mockResolvedValue(null);
+  
+      // Call the controller method and expect an error
+      await expect(bookingController.findById(bookingId)).rejects.toThrow(
+        new Error('Booking not found'),
+      );
+    });
+  });
+  
 });
