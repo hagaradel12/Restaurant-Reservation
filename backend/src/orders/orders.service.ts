@@ -41,6 +41,10 @@ export class OrdersService {
   }
   
 
+
+ async getAllOrders(){
+   return await this.orderModel.find();
+ }
   // Client: Find current order
   // async findCurrentOrder(username: string): Promise<ordersDocument | null> {
   //   try {
@@ -97,9 +101,6 @@ export class OrdersService {
   }
 
   // client: Get all orders
-  async getAllOrders(): Promise<ordersDocument[]> {
-    return await this.orderModel.find().exec();
-  }
 
   //get all orders for admin if pending or shipped
   async getAllForAdmin(): Promise<ordersDocument[]> {
