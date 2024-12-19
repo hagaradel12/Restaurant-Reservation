@@ -20,6 +20,7 @@ const mockBookingModel = {
   findById: jest.fn(),
   updateOne: jest.fn(),
   deleteOne: jest.fn(),
+  findClient :jest.fn()
 };
 
 describe('BookingController', () => {
@@ -130,6 +131,67 @@ describe('BookingController', () => {
         new Error('Booking not found'),
       );
     });
-  });
+
+  });  
+
+  describe('findClient', () => {
+    it('should return bookings for a specific username', async () => {
+      const mockBookings = [
+        {
+          bookingId: 1,
+          username: 'john_doe',
+          no_of_people: 4,
+          date: new Date('2024-12-25'),
+          time: '18:00',
+        },
+        {
+          bookingId: 2,
+          username: 'john_doe',
+          no_of_people: 2,
+          date: new Date('2024-12-26'),
+          time: '12:00',
+        },
+      ];
+      const username = 'john_doe';
   
+      // Mock the service call
+      jest.spyOn(bookingService, 'findClient').mockResolvedValue(mockBookings);
+  
+      // Call the controller method
+      const result = await bookingController.findClient(username);
+  
+      // Assertions
+      expect(bookingService.findClient).toHaveBeenCalledWith(username);
+      expect(result).toEqual(mockBookings);
+    });
+  
+    it('should return an empty array if no bookings are found', async () => {
+      const username = 'non_existent_user';
+  
+      // Mock the service to return an empty array
+      jest.spyOn(bookingService, 'findClient').mockResolvedValue([]);
+  
+      // Call the controller method
+      const result = await bookingController.findClient(username);
+  
+      // Assertions
+      expect(bookingService.findClient).toHaveBeenCalledWith(username);
+      expect(result).toEqual([]);
+    });
+  
+    it('should throw an error if the service call fails', async () => {
+      const username = 'john_doe';
+  
+      // Mock the service to throw an error
+      jest.spyOn(bookingService, 'findClient').mockRejectedValue(
+        new Error('Service error'),
+      );
+  
+      // Call the controller method and expect an error
+      await expect(bookingController.findClient(username)).rejects.toThrow(
+        new Error('Service error'),
+      );
+    });
+  });
+
 });
