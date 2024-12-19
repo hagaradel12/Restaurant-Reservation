@@ -31,6 +31,8 @@ export class OrdersController {
     return await this.ordersService.create(createOrderDto);
   }
 
+
+
   // Get user orders (current and past)
   // @UseGuards(AuthGuard, AuthorizationGuard)
   // @Roles(Role.Admin, Role.Customer) // Accessible by both admin and customer
@@ -100,6 +102,8 @@ export class OrdersController {
   async getAllOrders() {
     return await this.ordersService.getAllOrders();
   }
+
+
 
   // Admin: Update order status
   @Put('admin/status/:orderNo')
