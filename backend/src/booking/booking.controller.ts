@@ -27,8 +27,12 @@ export class BookingController {
    @UseGuards(AuthGuard, AuthorizationGuard)
    @Roles(Role.Admin)
    @Get('admin/username/:username')
-  async findByUsername(@Param('username') username: string): Promise<Booking[]> {
-    return this.bookingService.findByUsername(username);
+   async findByUsername(@Param('username') username: string): Promise<Booking[]> {
+    const bookings = await this.bookingService.findByUsername(username);
+    if (!bookings || bookings.length === 0) {
+      throw new NotFoundException(`No bookings found for username matching '${username}'`);
+    }
+    return bookings;
   }
 
 

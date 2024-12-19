@@ -4,6 +4,7 @@ import { BookingService } from './booking.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
+import { NotFoundException } from '@nestjs/common';
 
 // Mock CreateBookingDto
 class CreateBookingDto {
@@ -97,6 +98,66 @@ describe('BookingController', () => {
     });
   });
 
+  describe('Admin Booking Retrieval', () => {
+    describe('findAllAdmin', () => {
+      it('should return all bookings for admin', async () => {
+        const mockBookings = [
+          { bookingId: 1, username: 'user1', no_of_people: 2, date:'2024-12-25', time: '18:00' },
+          { bookingId: 2, username: 'user2', no_of_people: 4, date:'2024-12-26', time: '20:00' },
+        ];
+  
+        // Mock the service call
+        jest.spyOn(bookingService, 'findAllAdmin').mockResolvedValue(mockBookings as any);
+  
+        // Call the controller method
+        const result = await bookingController.findAllAdmin();
+  
+        // Assertions
+        expect(bookingService.findAllAdmin).toHaveBeenCalled();
+        expect(result).toEqual(mockBookings);
+      });
+  
+      it('should return an empty array if no bookings are found', async () => {
+        jest.spyOn(bookingService, 'findAllAdmin').mockResolvedValue([]);
+  
+        const result = await bookingController.findAllAdmin();
+  
+        expect(bookingService.findAllAdmin).toHaveBeenCalled();
+        expect(result).toEqual([]);
+      });
+    });
+  
+    describe('findByUsername', () => {
+      it('should return bookings for the specified username', async () => {
+        const mockBookings = [
+          { bookingId: 1, username: 'john_doe', no_of_people: 4, date: new Date('2024-12-25'), time: '18:00' },
+        ];
+        const username = 'john_doe';
+  
+        // Mock the service call
+        jest.spyOn(bookingService, 'findByUsername').mockResolvedValue(mockBookings);
+  
+        // Call the controller method
+        const result = await bookingController.findByUsername(username);
+  
+        // Assertions
+        expect(bookingService.findByUsername).toHaveBeenCalledWith(username);
+        expect(result).toEqual(mockBookings);
+      });
+  
+      it('should throw an error if no bookings are found for the username', async () => {
+        const username = 'non_existent_user';
+  
+        jest.spyOn(bookingService, 'findByUsername').mockResolvedValue([]);
+  
+        await expect(bookingController.findByUsername(username)).rejects.toThrow(
+          new NotFoundException(`No bookings found for username matching '${username}'`),
+        );
+      });
+    });
+  });
+
+  
   describe('findById', () => {
     it('should return a booking by id', async () => {
       const mockBooking = {
