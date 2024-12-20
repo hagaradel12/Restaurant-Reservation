@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import '../profile/style.css'; // Import the CSS file
 import Navbar from "@/app/components/navbar/page";
+import NavbarA from "@/app/components/navbarA/page";
 
 type UserDetails = {
   username: string;
@@ -16,6 +17,7 @@ const ProfilePage: React.FC = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [NavbarComponent, setNavbarComponent] = useState<React.FC | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -29,7 +31,11 @@ const ProfilePage: React.FC = () => {
         );
         const { userData } = await cookieResponse.json();
         const username = userData?.payload?.username;
-
+       
+        if(userData?.payload?.isAdmin){
+          setNavbarComponent(() => NavbarA);
+        }
+        else  setNavbarComponent(() => Navbar);
         if (!username) {
           throw new Error("User not logged in.");
         }
@@ -54,7 +60,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <div className="profile-container">
-      <Navbar />
+       {NavbarComponent && <NavbarComponent />}
       <h1>User Profile</h1>
       {userDetails ? (
         <table className="profile-table">
