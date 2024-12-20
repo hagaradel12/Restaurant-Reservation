@@ -13,6 +13,12 @@ class CreateBookingDto {
   date: string;
   time: string;
 }
+//mock update dto
+class UpdateBookingDto{
+  readonly no_of_people?: number;
+    readonly date?: Date;
+    readonly time?: string;
+}
 
 // Mock BookingModel
 const mockBookingModel = {
@@ -292,4 +298,56 @@ describe('BookingController', () => {
     });
     
   });
+  describe('update booking', () => {
+    it('should update a booking by its id and return the updated booking', async () => {
+      const mockBooking = {
+        bookingId: 1,
+        username: 'john_doe',
+        no_of_people: 4,
+        date: new Date('2024-12-25'),
+        time: '18:00',
+      };
+  
+      const updateBookingDto: UpdateBookingDto = {
+        no_of_people: 12,
+        date: new Date('2024-12-29'),
+        time: '20:00',
+      };
+  
+      const updatedBooking = {
+        ...mockBooking,
+        ...updateBookingDto,
+      };
+  
+      // Mock the service call
+      jest.spyOn(bookingService, 'update').mockResolvedValue(updatedBooking);
+  
+      // Call the controller method
+      const result = await bookingController.update(mockBooking.bookingId, updateBookingDto);
+  
+      // Assertions
+      expect(bookingService.update).toHaveBeenCalledWith(mockBooking.bookingId, updateBookingDto);
+      expect(result).toEqual(updatedBooking);
+    });
+  
+    it('should throw a NotFoundException if the booking is not found', async () => {
+      const bookingId = 999; // Non-existent booking ID
+      const updateBookingDto: UpdateBookingDto = {
+        no_of_people: 10,
+        date: new Date('2024-12-30'),
+      };
+  
+      // Mock the service to throw a NotFoundException
+      jest.spyOn(bookingService, 'update').mockRejectedValue(
+        new NotFoundException(`Booking with id ${bookingId} not found`)
+      );
+  
+      // Expect the controller method to throw a NotFoundException
+      await expect(bookingController.update(bookingId, updateBookingDto)).rejects.toThrow(
+        new NotFoundException(`Booking with id ${bookingId} not found`)
+      );
+    });
+  });
+  
+
 });
