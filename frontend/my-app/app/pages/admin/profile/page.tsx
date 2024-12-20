@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import "./page.css"; // Import the CSS file
 // Define the type for user details
 type UserDetails = {
   username: string;
   name: string;
-  phoneNumber: string;
+  phoneNo: string;
   email: string;
 };
 
@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
             <strong>Name:</strong> {userDetails.name}
           </p>
           <p>
-            <strong>Phone Number:</strong> {userDetails.phoneNumber}
+            <strong>Phone Number:</strong> {userDetails.phoneNo}
           </p>
           <p>
             <strong>Email:</strong> {userDetails.email}
