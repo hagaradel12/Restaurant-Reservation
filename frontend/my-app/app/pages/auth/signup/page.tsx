@@ -80,7 +80,7 @@ const SignupPage = () => {
       <div className="bg-black bg-opacity-50 min-h-screen w-full flex items-center justify-center px-4">
         <div className="bg-white bg-opacity-90 shadow-xl rounded-lg p-8 w-full max-w-md">
           {/* Title */}
-          <h1 className="text-3xl font-bold text-[#C9A47F] text-center mb-6">Sign Up</h1>
+          <h1 className="text-3xl font-bold text-[#6B0504] text-center mb-6">Sign Up</h1>
 
           {/* Sign Up Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -178,7 +178,7 @@ const SignupPage = () => {
 
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-[#C9A47F] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
+              className="w-full px-6 py-3 bg-[#6B0504] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
             >
               Sign Up
             </button>

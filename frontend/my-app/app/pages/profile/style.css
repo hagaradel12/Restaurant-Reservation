@@ -1,0 +1,130 @@
+/* General page styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #bfc4c4; /* Matching gray background */
+    color: #333;
+  }
+  
+  /* Profile container */
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Center vertically */
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff; /* White card-like background */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }/* General page styling */  
+body {  
+    font-family: Arial, sans-serif;  
+    margin: 0;  
+    padding: 0;  
+    background-color: #001514; /* Rich black background */  
+    color: #FBFFFE; /* White text for contrast */  
+}  
+  
+/* Profile container */  
+.profile-container {  
+    display: flex;  
+    flex-direction: column;  
+    justify-content: center;  
+    align-items: center;  
+    height: 100vh; /* Center vertically */  
+    padding: 20px;  
+    border-radius: 8px;  
+    background-color: #FBFFFE; /* White card-like background */  
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+    color: #001514; /* Text inside the container */  
+}  
+  
+/* Heading styling */  
+.profile-container h1 {  
+    text-align: center;  
+    color: #6B0504; /* Blood red for headings */  
+    font-size: 28px;  
+    margin-bottom: 20px;  
+}  
+  
+/* Table styling */  
+.profile-table {  
+    width: 80%;  
+    max-width: 800px;  
+    border-collapse: collapse;  
+    background-color: #FBFFFE; /* White table background */  
+    border-radius: 8px; /* Rounded corners for the table */  
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+    overflow: hidden; /* Ensures rounded corners */  
+}  
+  
+.profile-table th,  
+.profile-table td {  
+    border: 1px solid #A3320B; /* Brown for table borders */  
+    padding: 12px;  
+    text-align: left;  
+    font-size: 16px;  
+    color: #001514; /* Rich black for text */  
+}  
+  
+.profile-table th {  
+    background-color: #6B0504; /* Blood red for header background */  
+    color: #FBFFFE; /* White text for header */  
+    font-weight: bold;  
+    font-size: 18px;  
+}  
+  
+.profile-table tr:nth-child(even) {  
+    background-color: #E6AF2E; /* Xanthous for alternate rows */  
+    color: #001514; /* Rich black text */  
+}  
+  
+.profile-table tr:hover {  
+    background-color: #A3320B; /* Brown for hover effect */  
+    color: #FBFFFE; /* White text on hover */  
+}  
+
+  
+  /* Heading styling */
+  .profile-container h1 {
+    text-align: center;
+    color: #3e7048; /* Matching green for headings */
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  /* Table styling */
+  .profile-table {
+    width: 80%;
+    max-width: 800px;
+    border-collapse: collapse;
+    background-color: #fff; /* White table background */
+    border-radius: 8px; /* Rounded corners for the table */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensures rounded corners */
+  }
+  
+  .profile-table th,
+  .profile-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+  }
+  
+  .profile-table th {
+    background-color: #A3320B; /* Green for header background */
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .profile-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Light gray for alternate rows */
+  }
+  
+  .profile-table tr:hover {
+    background-color: #e9ecef; /* Slightly darker gray on hover */
+  }

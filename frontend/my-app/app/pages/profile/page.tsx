@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./page.css"; // Import the CSS file
-// Define the type for user details
+import '../profile/style.css'; // Import the CSS file
+import Navbar from "@/app/components/navbar/page";
+
 type UserDetails = {
   username: string;
   name: string;
@@ -12,9 +13,9 @@ type UserDetails = {
 };
 
 const ProfilePage: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null); // State to store user data
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -22,7 +23,6 @@ const ProfilePage: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch user data from cookies
         const cookieResponse = await fetch(
           "http://localhost:3001/auth/get-cookie-data",
           { credentials: "include" }
@@ -34,12 +34,11 @@ const ProfilePage: React.FC = () => {
           throw new Error("User not logged in.");
         }
 
-        // Fetch user details from the API
         const response = await axios.get<UserDetails>(
           `http://localhost:3001/users/${username}`
         );
 
-        setUserDetails(response.data); // Set the fetched data
+        setUserDetails(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -50,27 +49,34 @@ const ProfilePage: React.FC = () => {
     fetchUserData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="loading">Loading...</p>;
+  if (error) return <p className="error">Error: {error}</p>;
 
   return (
-    <div>
+    <div className="profile-container">
+      <Navbar />
       <h1>User Profile</h1>
       {userDetails ? (
-        <div>
-          <p>
-            <strong>Username:</strong> {userDetails.username}
-          </p>
-          <p>
-            <strong>Name:</strong> {userDetails.name}
-          </p>
-          <p>
-            <strong>Phone Number:</strong> {userDetails.phoneNo}
-          </p>
-          <p>
-            <strong>Email:</strong> {userDetails.email}
-          </p>
-        </div>
+        <table className="profile-table">
+          <tbody>
+            <tr>
+              <th>Username</th>
+              <td>{userDetails.username}</td>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <td>{userDetails.name}</td>
+            </tr>
+            <tr>
+              <th>Phone Number</th>
+              <td>{userDetails.phoneNo}</td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td>{userDetails.email}</td>
+            </tr>
+          </tbody>
+        </table>
       ) : (
         <p>No user data available.</p>
       )}

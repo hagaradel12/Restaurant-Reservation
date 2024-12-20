@@ -123,7 +123,7 @@ const handleLogin = async (e: React.FormEvent) => {
 
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-[#C9A47F] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
+              className="w-full px-6 py-3 bg-[#6B0504] text-white font-semibold rounded-lg hover:bg-[#b1906b] shadow-md transition duration-300"
             >
               Login
             </button>
@@ -132,7 +132,7 @@ const handleLogin = async (e: React.FormEvent) => {
           {/* Signup Link */}
           <p className="mt-6 text-center text-black">
             Don't have an account?{" "}
-            <Link href="/pages/auth/signup" className="text-[#C9A47F] font-semibold hover:underline">
+            <Link href="/pages/auth/signup" className="text-[#E6AF2E] font-semibold hover:underline">
               Sign Up
             </Link>
           </p>
