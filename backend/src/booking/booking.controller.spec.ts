@@ -20,7 +20,7 @@ const mockBookingModel = {
   find: jest.fn(),
   findById: jest.fn(),
   updateOne: jest.fn(),
-  deleteOne: jest.fn(),
+  delete: jest.fn(),
   findClient :jest.fn()
 };
 
@@ -254,5 +254,42 @@ describe('BookingController', () => {
       );
     });
   });
-
+  describe('delete', () => {
+    it('should successfully delete a booking and return the deleted booking', async () => {
+      const mockBooking = {
+        bookingId: 1,
+        username: 'john_doe',
+        no_of_people: 4,
+        date: new Date('2024-12-25'),
+        time: '18:00',
+      };
+  
+      const bookingId = 1;
+  
+      // Mock the service call to return the mock booking on deletion
+      jest.spyOn(bookingService, 'delete').mockResolvedValue(mockBooking);
+  
+      // Call the controller method
+      const result = await bookingController.delete(bookingId);
+  
+      // Assertions
+      expect(bookingService.delete).toHaveBeenCalledWith(bookingId);
+      expect(result).toEqual(mockBooking); // Ensure the result matches the mock booking
+    });
+  
+    it('should throw a NotFoundException if the booking is not found', async () => {
+      const bookingId = 999; // Non-existent booking ID
+      
+      // Mock the service to return null when looking for the booking
+      jest.spyOn(bookingService, 'delete').mockRejectedValue(
+        new NotFoundException(`Booking with id ${bookingId} not found`)
+      );
+    
+      // Expect the controller method to throw a NotFoundException
+      await expect(bookingController.delete(bookingId)).rejects.toThrow(
+        new NotFoundException(`Booking with id ${bookingId} not found`)
+      );
+    });
+    
+  });
 });

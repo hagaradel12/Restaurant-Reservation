@@ -87,10 +87,11 @@ async create(@Body() createBookingDto: CreateBookingDto): Promise<Booking> {
 
 // DELETE /booking/:username:Date Delete an existing booking by its username & date          //ADMIN
 @UseGuards(AuthGuard, AuthorizationGuard)
- @Roles(Role.Admin)
+@Roles(Role.Admin)
 @Delete('delete/:bookingId')
-async delete(@Param('bookingId')bookingId:number): Promise<Booking> {
-  console.log("in the Controller");
-  return this.bookingService.delete(bookingId);
+async delete(@Param('bookingId') bookingId: number): Promise<Booking> {
+  const deletedBooking = await this.bookingService.delete(bookingId);
+  return deletedBooking;
 }
+
 }

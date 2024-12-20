@@ -108,13 +108,14 @@ async update(bookingId: number, updateBookingDto: UpdateBookingDto): Promise<Boo
 }
 
 //DELETE: Delete a booking by title & date                                          //ADMIN
-  async delete(bookingId:number): Promise<Booking> {
-    const deletedBooking = await this.bookingModel.findOneAndDelete({bookingId}).exec();
-    if (!deletedBooking) {
-      throw new NotFoundException(`Booking with id ${bookingId} not found`);
-    }
-    return deletedBooking;
+async delete(bookingId: number): Promise<Booking> {
+  const deletedBooking = await this.bookingModel.findOneAndDelete({ bookingId }).exec();
+  if (!deletedBooking) {
+    throw new NotFoundException(`Booking with id ${bookingId} not found`);
   }
+  return deletedBooking;
+}
+
 
 }
 
