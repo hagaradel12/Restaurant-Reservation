@@ -12,12 +12,13 @@ interface CartItem {
 }
 
 interface products {
+ // _id:string;
   name: string;
   quantity: number;
 }
 
 interface Product {
- // _id:string;
+  _id:string;
   name: string;
 //  quantity:number
 }
@@ -36,7 +37,8 @@ const CheckoutPage: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true); // Add loading state
-
+  const [cart, setCart] = useState<CartItem[]>(); // Add loading state
+  
   const router = useRouter(); // Initialize the router
 
   // Function to fetch user data from the cookie
@@ -74,18 +76,22 @@ const fetchCart = async (username: string) => {
     const response = await axiosInstance.get<CartResponse>(`http://localhost:3001/cart/${username}`, {
       withCredentials: true,
     });
-
+    
     const products: { name: string, quantity: number }[] = [];
-
+    const products2: {productId:string, quantity: number}[]=[];
     for (const product of response.data.products) {
       const productResponse = await axiosInstance.get<Product>(`http://localhost:3001/products/productId/${product.productId}`);
       products.push({
         name: productResponse.data.name,
         quantity: product.quantity,
       });
+      products2.push({
+        productId:productResponse.data._id,
+        quantity: product.quantity,
+      })
       console.log(product)
     }
-
+    setCart(products2)
     setItems(products); // Update the items state with the fetched data
     setLoading(false); // Set loading to false once data is fetched
   } catch (error) {
@@ -108,7 +114,7 @@ const fetchCart = async (username: string) => {
     // Prepare the order data with items from the cart
     const orderData = {
       username,
-      items, // Cart items
+      cart,
       address,
       paymentMethod,
       status: 'pending', // Default order status
@@ -116,7 +122,7 @@ const fetchCart = async (username: string) => {
 
     try {
       // Send the order data to the backend API
-      const response = await axios.post('http://localhost:3001/orders', orderData, {
+      const response = await axiosInstance.post('http://localhost:3001/orders', orderData, {
         withCredentials: true,
       });
 
@@ -165,6 +171,7 @@ const fetchCart = async (username: string) => {
           <div>
             <label className="block text-sm font-medium text-[#FBFFFE]">Address</label>
             <textarea
+              id="address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
@@ -176,6 +183,7 @@ const fetchCart = async (username: string) => {
           <div>
             <label className="block text-sm font-medium text-[#FBFFFE]">Payment Method</label>
             <input
+            id="paymentMethod"
               type="text"
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}

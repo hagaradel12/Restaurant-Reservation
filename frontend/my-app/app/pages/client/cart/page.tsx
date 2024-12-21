@@ -156,7 +156,7 @@ const CartPage = () => {
             {cart.products.map((item: any) => (
               <div
                 key={item.productId}
-                className="flex flex-col sm:flex-row items-center justify-between bg-[#FBFFFE] p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                className="cart-item flex flex-col sm:flex-row items-center justify-between bg-[#FBFFFE] p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-center space-x-6">
                   <img
@@ -167,7 +167,7 @@ const CartPage = () => {
                   <div>
                     <Typography
                       variant="h6"
-                      className="font-semibold text-[#001514]"
+                      className="font-semibold text-[#001514] product-name"
                     >
                       {item.product?.name}
                     </Typography>
@@ -239,7 +239,7 @@ const CartPage = () => {
         )}
 
         {cart && cart.products.length > 0 && (
-          <div className="mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+          <div className=" mt-8 flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Button
               variant="outlined"
               color="secondary"
