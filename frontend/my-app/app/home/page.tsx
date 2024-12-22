@@ -19,12 +19,12 @@ const HomePage = () => {
 
         {/* Call to Action */}
         <div className="mt-8 space-x-4">
-          <Link href="/auth/login">
+          <Link href="/pages/auth/login">
             <button className="px-8 py-3 text-lg font-semibold text-[#FBFFFE] bg-[#6B0504] rounded-lg hover:bg-[#A3320B] shadow-md transition duration-300">
               Login
             </button>
           </Link>
-          <Link href="/auth/signup">
+          <Link href="/pages/auth/signup">
             <button className="px-8 py-3 text-lg font-semibold text-[#6B0504] bg-transparent border border-[#6B0504] rounded-lg hover:bg-[#6B0504] hover:text-[#FBFFFE] shadow-md transition duration-300">
               Sign Up
             </button>

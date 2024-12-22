@@ -22,9 +22,13 @@ const MenuPreview = () => {
           <p className="mt-2" style={{ color: '#AA3320' }}>Composed of many small sugary choux pastry rolls filled with cream</p> {/* Brown for Text */}
         </div>
       </div>
-      <Link href="/menu" className="mt-6 inline-block text-xl font-medium text-[#001514]">
-        View Full Menu
-      </Link> {/* Rich Black for Link */}
+      <Link
+  href="/pages/client/products"
+  className="mt-6 inline-block text-xl font-medium text-blue-600 hover:text-blue-800 hover:underline"
+>
+  View Full Menu
+</Link>
+{/* Rich Black for Link */}
     </section>
   );
 };

@@ -82,7 +82,7 @@ export class OrdersController {
   // Get a single order by order number or username
   @Roles(Role.Admin) // Restrict access to Admins
   @UseGuards(AuthGuard, AuthorizationGuard)
-  @Get('search')
+  @Get(':search')
   async getOrderByOrderNoOrUsername(
     @Query('orderNo') orderNo?: string,
     @Query('username') username?: string,

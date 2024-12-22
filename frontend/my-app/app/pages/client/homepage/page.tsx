@@ -3,6 +3,7 @@ import Navbar from "@/app/components/navbar/page";
 import HeroSection from "./HeroSection";
 import MenuPreview from "./MenuPreview";
 import OrderOnlineSection from "./OrderOnline";
+import AboutUs from "./aboutus";
 
 const Home = () => {
   return (
@@ -13,6 +14,8 @@ const Home = () => {
 
       {/* Menu Preview */}
       <MenuPreview />
+
+      <AboutUs/>
 
       {/* Order Online Section */}
       <OrderOnlineSection />

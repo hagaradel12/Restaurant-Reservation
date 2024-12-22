@@ -70,31 +70,31 @@ export default function BookingPage() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <Navbar />
-
+  
       {/* Main Content */}
-      <div className="flex-1 p-6 bg-[#F7F4F2]">
+      <div className="flex-1 p-6 bg-[#FBFFFE]"> {/* Background color set to White */}
         {/* Page Title */}
-        <h1 className="text-3xl font-bold mb-6 text-[#3C312C]">View Bookings</h1>
-
+        <h1 className="text-3xl font-bold mb-6 text-[#6B0504]">View Bookings</h1> {/* Blood Red for Title */}
+  
         {/* Button to navigate to Create Booking */}
         <div className="mb-6">
           <button
-            className="px-6 py-2 bg-[#D47043] text-white rounded-lg hover:bg-[#C6A570] transition"
+            className="px-6 py-2 bg-[#6B0504] text-white rounded-lg hover:bg-[#E6AF2E] transition" 
             onClick={handleNavigateToCreate}
           >
             Create Booking
           </button>
         </div>
-
+  
         {/* Bookings Table */}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           {loading ? (
-            <p className="text-center py-6">Loading bookings...</p>
+            <p className="text-center py-6 text-[#6B0504]">Loading bookings...</p> 
           ) : bookings.length === 0 ? (
-            <p className="text-center py-6 text-[#3C312C]">No bookings found!</p>
+            <p className="text-center py-6 text-[#6B0504]">No bookings found!</p> 
           ) : (
             <table className="w-full">
-              <thead className="bg-[#C6A570] text-white">
+              <thead className="bg-[#E6AF2E] text-[#001514]"> {/* Xanthous background and Rich Black text */}
                 <tr>
                   <th className="text-left px-4 py-2">Booking ID</th>
                   <th className="text-left px-4 py-2">Username</th>
@@ -110,8 +110,8 @@ export default function BookingPage() {
                     <td className="px-4 py-2 text-[#3C312C]">{booking.bookingId}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.username}</td>
                     <td className="px-4 py-2 text-[#3C312C]">
-                {new Date(booking.date).toLocaleDateString('en-GB')} {/* Formats as DD/MM/YYYY */}
-                  </td>
+                      {new Date(booking.date).toLocaleDateString('en-GB')} {/* Formats as DD/MM/YYYY */}
+                    </td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.time}</td>
                     <td className="px-4 py-2 text-[#3C312C]">{booking.no_of_people}</td>
                   </tr>
@@ -123,6 +123,6 @@ export default function BookingPage() {
       </div>
     </div>
   );
-
+  
 }
 

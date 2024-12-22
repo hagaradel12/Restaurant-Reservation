@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import axiosInstance from "@/app/utils/axiosInstance";
 import { useRouter } from 'next/navigation'; 
-import Sidebar from '@/app/components/admin/sidebar/page';
 import DatePicker from 'react-datepicker';  // Import react-datepicker
 import "react-datepicker/dist/react-datepicker.css"; // Styles for the date picker
 import Navbar from '@/app/components/navbar/page';

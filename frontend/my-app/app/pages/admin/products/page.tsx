@@ -122,14 +122,15 @@ export default function Menu() {
     }
   };
 
-  const handleDeleteProduct = async (productId: string) => {
+  const handleDeleteProduct = async (productName: string) => {
     try {
-      await axiosInstance.delete(`/products/${productId}`);
-      setProducts(products.filter((product) => product._id !== productId));
-    } catch (error: any) {
-      console.error("Error deleting product:", error.message);
+      await axiosInstance.delete(`/products/${productName}`);
+      setProducts(products.filter((product) => product.name !== productName));
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   };
+
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
@@ -140,11 +141,11 @@ export default function Menu() {
     if (!editingProduct) return;
     try {
       const response = await axiosInstance.patch<Product>(
-        `/products/${editingProduct._id}`,
+        `/products/${editingProduct.name}`,
         updatedProduct
       );
       setProducts(
-        products.map((p) =>p._id === editingProduct._id ? response.data : p)
+        products.map((p) =>p.name === editingProduct.name ? response.data : p)
       );
       setEditingProduct(null);
     } catch (error: any) {
@@ -212,7 +213,7 @@ export default function Menu() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDeleteProduct(product._id)}
+                  onClick={() => handleDeleteProduct(product.name)}
                   className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg"
                 >
                   Delete
